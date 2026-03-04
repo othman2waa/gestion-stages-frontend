@@ -1,0 +1,62 @@
+<div class="dashboard">
+  <h2 class="page-title">Tableau de Bord</h2>
+
+  <div class="stats-grid">
+    <mat-card class="stat-card blue">
+      <mat-icon>school</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats?.totalStagiaires ?? 0 }}</span>
+        <span class="stat-label">Stagiaires</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card green">
+      <mat-icon>work</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats?.totalStages ?? 0 }}</span>
+        <span class="stat-label">Stages</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card orange">
+      <mat-icon>description</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats?.totalConventions ?? 0 }}</span>
+        <span class="stat-label">Conventions</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card purple">
+      <mat-icon>star_rate</mat-icon>
+      <div class="stat-info">
+        <span class="stat-number">{{ stats?.totalEvaluations ?? 0 }}</span>
+        <span class="stat-label">Évaluations</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="status-grid">
+    <mat-card class="status-card">
+      <mat-card-header>
+        <mat-card-title>Statut des Stages</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="status-item">
+          <span class="dot orange"></span>
+          <span>En attente</span>
+          <strong>{{ stats?.stagesEnAttente ?? 0 }}</strong>
+        </div>
+        <div class="status-item">
+          <span class="dot green"></span>
+          <span>En cours</span>
+          <strong>{{ stats?.stagesEnCours ?? 0 }}</strong>
+        </div>
+        <div class="status-item">
+          <span class="dot blue"></span>
+          <span>Terminés</span>
+          <strong>{{ stats?.stagesTermines ?? 0 }}</strong>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

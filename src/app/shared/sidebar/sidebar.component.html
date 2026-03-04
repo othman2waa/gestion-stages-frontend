@@ -1,0 +1,34 @@
+<div class="sidebar" [class.collapsed]="isCollapsed">
+
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="logo-circle">
+      <span>OCP</span>
+    </div>
+    <span class="logo-title" *ngIf="!isCollapsed">Gestion Stages</span>
+  </div>
+
+  <!-- Menu Items -->
+  <nav class="sidebar-nav">
+    <a class="nav-item"
+       *ngFor="let item of filteredMenuItems"
+       [routerLink]="item.route"
+       [class.active]="isActive(item.route)"
+       [matTooltip]="isCollapsed ? item.label : ''"
+       matTooltipPosition="right">
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span *ngIf="!isCollapsed">{{ item.label }}</span>
+    </a>
+  </nav>
+
+  <!-- Logout -->
+  <div class="sidebar-footer">
+    <a class="nav-item logout" (click)="logout()"
+       [matTooltip]="isCollapsed ? 'Déconnexion' : ''"
+       matTooltipPosition="right">
+      <mat-icon>logout</mat-icon>
+      <span *ngIf="!isCollapsed">Déconnexion</span>
+    </a>
+  </div>
+
+</div>

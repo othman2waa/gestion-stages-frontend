@@ -1,0 +1,17 @@
+<mat-toolbar class="navbar">
+  <button mat-icon-button (click)="toggleSidebar.emit()">
+    <mat-icon>{{ isCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
+  </button>
+
+  <span class="page-title">OCP — Gestion des Stages</span>
+
+  <span class="spacer"></span>
+
+  <div class="user-info" *ngIf="authService.getCurrentUser() as user">
+    <mat-icon>account_circle</mat-icon>
+    <div class="user-details">
+      <span class="username">{{ user.username }}</span>
+      <span class="role">{{ user.role }}</span>
+    </div>
+  </div>
+</mat-toolbar>

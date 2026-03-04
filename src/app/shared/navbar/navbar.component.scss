@@ -1,0 +1,38 @@
+.navbar {
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  left: 260px;
+  z-index: 999;
+  background: white !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  transition: left 0.3s ease;
+  height: 64px !important;
+  color: #333 !important;
+}
+
+.page-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1a237e;
+  margin-left: 8px;
+}
+
+.spacer { flex: 1; }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+
+  mat-icon { color: #1565c0; font-size: 2rem; width: 2rem; height: 2rem; }
+
+  .user-details {
+    display: flex;
+    flex-direction: column;
+
+    .username { font-weight: 600; font-size: 0.9rem; color: #333; }
+    .role { font-size: 0.75rem; color: #1565c0; font-weight: 500; }
+  }
+}

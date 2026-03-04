@@ -1,0 +1,9 @@
+<div class="app-layout">
+  <app-sidebar [isCollapsed]="isCollapsed"></app-sidebar>
+  <div class="main-content" [class.collapsed]="isCollapsed">
+    <app-navbar (toggleSidebar)="isCollapsed = !isCollapsed" [isCollapsed]="isCollapsed"></app-navbar>
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
