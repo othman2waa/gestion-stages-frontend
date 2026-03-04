@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEdit ? 'edit' : 'add' }}</mat-icon>
+  {{ isEdit ? 'Modifier Évaluation' : 'Nouvelle Évaluation' }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-grid">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Stage</mat-label>
+      <mat-select formControlName="stageId">
+        <mat-option *ngFor="let s of stages" [value]="s.id">{{ s.sujet }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Encadrant</mat-label>
+      <mat-select formControlName="encadrantId">
+        <mat-option *ngFor="let e of encadrants" [value]="e.id">{{ e.nom }} {{ e.prenom }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Note (/20)</mat-label>
+      <input matInput formControlName="note" type="number" min="0" max="20">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Type d'Évaluation</mat-label>
+      <mat-select formControlName="typeEvaluation">
+        <mat-option *ngFor="let t of typesEval" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date d'Évaluation</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="dateEval">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Commentaire</mat-label>
+      <textarea matInput formControlName="commentaire" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || isLoading">
+    <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+    <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
+  </button>
+</mat-dialog-actions>

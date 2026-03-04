@@ -1,0 +1,71 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEdit ? 'edit' : 'add' }}</mat-icon>
+  {{ isEdit ? 'Modifier le Stage' : 'Nouveau Stage' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-grid">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Sujet</mat-label>
+      <input matInput formControlName="sujet">
+      <mat-error *ngIf="form.get('sujet')?.hasError('required')">Requis</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Stagiaire</mat-label>
+      <mat-select formControlName="stagiaireId">
+        <mat-option *ngFor="let s of stagiaires" [value]="s.id">
+          {{ s.nom }} {{ s.prenom }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Encadrant</mat-label>
+      <mat-select formControlName="encadrantId">
+        <mat-option *ngFor="let e of encadrants" [value]="e.id">
+          {{ e.nom }} {{ e.prenom }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type de Stage</mat-label>
+      <mat-select formControlName="typeStage">
+        <mat-option *ngFor="let t of typeStages" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Statut</mat-label>
+      <mat-select formControlName="statut">
+        <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Date Début</mat-label>
+      <input matInput [matDatepicker]="pickerDebut" formControlName="dateDebut">
+      <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+      <mat-datepicker #pickerDebut></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Date Fin</mat-label>
+      <input matInput [matDatepicker]="pickerFin" formControlName="dateFin">
+      <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+      <mat-datepicker #pickerFin></mat-datepicker>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()"
+          [disabled]="form.invalid || isLoading">
+    <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+    <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
+  </button>
+</mat-dialog-actions>

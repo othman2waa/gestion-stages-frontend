@@ -19,28 +19,3 @@
 .no-data { text-align: center; padding: 40px !important; color: #999; }
 table { width: 100%; }
 th.mat-header-cell { font-weight: 700; color: #333; background: #f5f7fa; }
-
-// form
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 16px;
-  padding-top: 8px;
-  .full-width { grid-column: span 2; }
-}
-mat-dialog-content { min-width: 500px; }
-h2[mat-dialog-title] {
-  display: flex; align-items: center; gap: 8px; color: #1a237e;
-  mat-icon { color: #1565c0; }
-}
-
-// name cell
-.name-cell {
-  display: flex; align-items: center; gap: 10px;
-  .avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: linear-gradient(135deg, #1565c0, #0288d1);
-    color: white; display: flex; align-items: center;
-    justify-content: center; font-weight: 700; font-size: 0.8rem;
-  }
-}

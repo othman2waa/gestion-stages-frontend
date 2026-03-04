@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEdit ? 'edit' : 'add' }}</mat-icon>
+  {{ isEdit ? 'Modifier le Stagiaire' : 'Nouveau Stagiaire' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="nom">
+      <mat-error *ngIf="form.get('nom')?.hasError('required')">Requis</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="prenom">
+      <mat-error *ngIf="form.get('prenom')?.hasError('required')">Requis</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email">
+      <mat-error *ngIf="form.get('email')?.hasError('required')">Requis</mat-error>
+      <mat-error *ngIf="form.get('email')?.hasError('email')">Email invalide</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Téléphone</mat-label>
+      <input matInput formControlName="telephone">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>CIN</mat-label>
+      <input matInput formControlName="cin">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Filière</mat-label>
+      <input matInput formControlName="filiere">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Niveau</mat-label>
+      <input matInput formControlName="niveau" placeholder="ex: Bac+5">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary"
+          (click)="onSubmit()"
+          [disabled]="form.invalid || isLoading">
+    <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+    <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
+  </button>
+</mat-dialog-actions>

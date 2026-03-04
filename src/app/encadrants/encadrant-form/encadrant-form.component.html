@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEdit ? 'edit' : 'add' }}</mat-icon>
+  {{ isEdit ? 'Modifier Encadrant' : 'Nouvel Encadrant' }}
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="nom">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="prenom">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fonction</mat-label>
+      <input matInput formControlName="fonction">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || isLoading">
+    <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+    <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
+  </button>
+</mat-dialog-actions>
