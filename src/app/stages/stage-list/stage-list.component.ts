@@ -14,7 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { StageService } from '../../core/services/stage.service';
 import { StageFormComponent } from '../stage-form/stage-form.component';
-
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-stage-list',
   standalone: true,
@@ -22,7 +22,7 @@ import { StageFormComponent } from '../stage-form/stage-form.component';
     CommonModule, FormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatInputModule, MatFormFieldModule, MatCardModule,
     MatSnackBarModule, MatDialogModule, MatTooltipModule,
-    MatProgressSpinnerModule, MatChipsModule
+    MatProgressSpinnerModule, MatChipsModule,RouterModule
   ],
   templateUrl: './stage-list.component.html',
   styleUrls: ['./stage-list.component.scss']

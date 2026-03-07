@@ -6,7 +6,31 @@
     margin-bottom: 24px;
   }
 }
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 
+  .chart-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.chart-card {
+  mat-card-header { padding-bottom: 0.5rem; }
+  mat-card-title { font-size: 1rem; font-weight: 600; color: #475569; }
+}
+
+.chart-wrapper {
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+
+  canvas { max-height: 250px; }
+}
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

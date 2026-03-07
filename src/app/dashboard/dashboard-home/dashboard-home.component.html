@@ -1,6 +1,7 @@
 <div class="dashboard">
   <h2 class="page-title">Tableau de Bord</h2>
 
+  <!-- KPI Cards -->
   <div class="stats-grid">
     <mat-card class="stat-card blue">
       <mat-icon>school</mat-icon>
@@ -9,7 +10,6 @@
         <span class="stat-label">Stagiaires</span>
       </div>
     </mat-card>
-
     <mat-card class="stat-card green">
       <mat-icon>work</mat-icon>
       <div class="stat-info">
@@ -17,7 +17,6 @@
         <span class="stat-label">Stages</span>
       </div>
     </mat-card>
-
     <mat-card class="stat-card orange">
       <mat-icon>description</mat-icon>
       <div class="stat-info">
@@ -25,7 +24,6 @@
         <span class="stat-label">Conventions</span>
       </div>
     </mat-card>
-
     <mat-card class="stat-card purple">
       <mat-icon>star_rate</mat-icon>
       <div class="stat-info">
@@ -35,26 +33,40 @@
     </mat-card>
   </div>
 
-  <div class="status-grid">
-    <mat-card class="status-card">
+  <!-- Charts Row -->
+  <div class="charts-grid">
+    <!-- Donut statuts -->
+    <mat-card class="chart-card">
       <mat-card-header>
         <mat-card-title>Statut des Stages</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="status-item">
-          <span class="dot orange"></span>
-          <span>En attente</span>
-          <strong>{{ stats?.stagesEnAttente ?? 0 }}</strong>
+        <div class="chart-wrapper">
+          <canvas #statutChart></canvas>
         </div>
-        <div class="status-item">
-          <span class="dot green"></span>
-          <span>En cours</span>
-          <strong>{{ stats?.stagesEnCours ?? 0 }}</strong>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Bar types -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>Stages par Type</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-wrapper">
+          <canvas #typeChart></canvas>
         </div>
-        <div class="status-item">
-          <span class="dot blue"></span>
-          <span>Terminés</span>
-          <strong>{{ stats?.stagesTermines ?? 0 }}</strong>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Horizontal bar départements -->
+    <mat-card class="chart-card chart-wide">
+      <mat-card-header>
+        <mat-card-title>Stages par Département</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-wrapper">
+          <canvas #deptChart></canvas>
         </div>
       </mat-card-content>
     </mat-card>
