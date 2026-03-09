@@ -1,0 +1,108 @@
+.onboarding-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.onboarding-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .header-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #6366f1;
+  }
+
+  h2 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #1e293b; }
+  p { margin: 0; color: #64748b; }
+}
+
+.step-card {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem !important;
+  }
+
+  mat-card-actions {
+    padding: 1rem 16px !important;
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.drop-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 1rem 0;
+
+  &:hover { border-color: #6366f1; background: #f8f7ff; }
+
+  .upload-icon { font-size: 3rem; width: 3rem; height: 3rem; color: #94a3b8; }
+
+  p { color: #64748b; margin: 0.5rem 0 0; }
+
+  .file-name {
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .full-width { grid-column: 1 / -1; }
+
+  mat-form-field { width: 100%; }
+}
+
+.success-card {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7) !important;
+  border: 1px solid #86efac !important;
+}
+
+.success-content {
+  text-align: center;
+  padding: 2rem;
+
+  .success-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+    color: #16a34a;
+  }
+
+  h3 { font-size: 1.5rem; color: #15803d; margin: 0.5rem 0; }
+  p { color: #166534; }
+}
+
+.credentials-box {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin: 1rem auto;
+  max-width: 400px;
+  text-align: left;
+  border: 1px solid #bbf7d0;
+
+  p { margin: 0.25rem 0; color: #1e293b; }
+}

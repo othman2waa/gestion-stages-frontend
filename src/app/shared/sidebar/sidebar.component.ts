@@ -21,10 +21,12 @@ export class SidebarComponent {
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT', 'STAGIAIRE'] },
     { label: 'Stagiaires', icon: 'school', route: '/stagiaires', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'] },
     { label: 'Stages', icon: 'work', route: '/stages', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT', 'STAGIAIRE'] },
+    { label: 'Onboarding IA', icon: 'smart_toy', route: '/onboarding', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Encadrants', icon: 'supervisor_account', route: '/encadrants', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Conventions', icon: 'description', route: '/conventions', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Évaluations', icon: 'star_rate', route: '/evaluations', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'] },
     { label: 'Reporting', icon: 'bar_chart', route: '/reporting', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+
   ];
 
   constructor(

@@ -1,0 +1,117 @@
+<div class="onboarding-container">
+  <div class="onboarding-header">
+    <mat-icon class="header-icon">smart_toy</mat-icon>
+    <div>
+      <h2>Onboarding IA — Lecture de CV</h2>
+      <p>Uploadez un CV PDF pour créer automatiquement un compte stagiaire</p>
+    </div>
+  </div>
+
+  <!-- STEP 1: Upload -->
+  <mat-card class="step-card" *ngIf="step === 'upload'">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>upload_file</mat-icon> Étape 1 — Upload du CV
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="drop-zone" (click)="fileInput.click()">
+        <mat-icon class="upload-icon">picture_as_pdf</mat-icon>
+        <p *ngIf="!selectedFile">Cliquez pour sélectionner un CV (PDF)</p>
+        <p *ngIf="selectedFile" class="file-name">
+          <mat-icon>check_circle</mat-icon> {{ selectedFile.name }}
+        </p>
+        <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary"
+        [disabled]="!selectedFile || isLoading"
+        (click)="analyserCV()">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <mat-icon *ngIf="!isLoading">psychology</mat-icon>
+        {{ isLoading ? 'Analyse en cours...' : 'Analyser avec IA' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- STEP 2: Review -->
+  <mat-card class="step-card" *ngIf="step === 'review'">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>fact_check</mat-icon> Étape 2 — Vérification des informations
+      </mat-card-title>
+      <mat-card-subtitle>Vérifiez et corrigez si nécessaire avant de créer le compte</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="info-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.nom">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prénom</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.prenom">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.email" type="email">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Téléphone</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.telephone">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Filière</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.filiere">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Niveau</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.niveau">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Établissement</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.etablissement">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Département suggéré</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.departementSuggere">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Sujet de stage suggéré</mat-label>
+          <input matInput [(ngModel)]="infosExtraites.sujetStage">
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="recommencer()">
+        <mat-icon>arrow_back</mat-icon> Retour
+      </button>
+      <button mat-raised-button color="primary"
+        [disabled]="isLoading"
+        (click)="confirmerEtCreer()">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <mat-icon *ngIf="!isLoading">person_add</mat-icon>
+        {{ isLoading ? 'Création...' : 'Créer le compte' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- STEP 3: Success -->
+  <mat-card class="step-card success-card" *ngIf="step === 'success'">
+    <mat-card-content>
+      <div class="success-content">
+        <mat-icon class="success-icon">check_circle</mat-icon>
+        <h3>Compte créé avec succès !</h3>
+        <p>Un email avec les identifiants de connexion a été envoyé au stagiaire.</p>
+        <div class="credentials-box">
+          <p><strong>👤 Username :</strong> {{ resultatCreation?.username }}</p>
+          <p><strong>📧 Email envoyé à :</strong> {{ infosExtraites?.email }}</p>
+        </div>
+        <button mat-raised-button color="primary" (click)="recommencer()">
+          <mat-icon>add</mat-icon> Nouvel onboarding
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

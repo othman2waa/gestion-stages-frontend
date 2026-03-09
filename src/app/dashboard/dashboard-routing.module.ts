@@ -8,6 +8,7 @@ import { StageDetailComponent } from '../stages/stage-detail/stage-detail.compon
 import { EncadrantListComponent } from '../encadrants/encadrant-list/encadrant-list.component';
 import { ConventionListComponent } from '../conventions/convention-list/convention-list.component';
 import { EvaluationListComponent } from '../evaluations/evaluation-list/evaluation-list.component';
+import { OnboardingComponent } from '../onboarding/onboarding.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,9 @@ const routes: Routes = [
       { path: 'encadrants', component: EncadrantListComponent },
       { path: 'conventions', component: ConventionListComponent },
       { path: 'evaluations', component: EvaluationListComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'onboarding', component: OnboardingComponent },
+
     ]
   }
 ];
