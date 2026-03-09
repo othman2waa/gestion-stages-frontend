@@ -27,4 +27,7 @@ export class ConventionService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
+  getPdf(id: number): Observable<Blob> {
+  return this.http.get(`${this.api}/${id}/pdf`, { responseType: 'blob' });
+}
 }

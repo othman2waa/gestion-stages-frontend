@@ -61,6 +61,21 @@ export class ConventionListComponent implements OnInit {
     }
   }
 
+  telechargerPdf(id: number): void {
+    this.conventionService.getPdf(id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `convention-${id}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.snackBar.open('PDF téléchargé !', 'Fermer', { duration: 3000 });
+      },
+      error: () => this.snackBar.open('Erreur lors du téléchargement', 'Fermer', { duration: 3000 })
+    });
+  }
+
   getStatutColor(statut: string): string {
     const colors: any = {
       'BROUILLON': 'gray', 'SOUMISE': 'orange',
