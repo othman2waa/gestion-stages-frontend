@@ -9,7 +9,7 @@ import { EncadrantListComponent } from '../encadrants/encadrant-list/encadrant-l
 import { ConventionListComponent } from '../conventions/convention-list/convention-list.component';
 import { EvaluationListComponent } from '../evaluations/evaluation-list/evaluation-list.component';
 import { OnboardingComponent } from '../onboarding/onboarding.component';
-
+import { StagiaireDashboardComponent } from '../stagiaire-dashboard/stagiaire-dashboard.component';
 const routes: Routes = [
   {
     path: '',
@@ -24,7 +24,7 @@ const routes: Routes = [
       { path: 'evaluations', component: EvaluationListComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'onboarding', component: OnboardingComponent },
-
+      { path: 'stagiaire-dashboard', component: StagiaireDashboardComponent },
     ]
   }
 ];

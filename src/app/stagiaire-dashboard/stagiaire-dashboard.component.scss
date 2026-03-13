@@ -1,0 +1,123 @@
+.dashboard-container {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  color: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+
+  .avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: bold; color: white;
+    flex-shrink: 0;
+  }
+
+  .header-info {
+    flex: 1;
+    h2 { margin: 0; font-size: 22px; }
+    p  { margin: 4px 0 0; opacity: 0.85; }
+  }
+}
+
+.timeline-card {
+  margin-bottom: 24px;
+
+  .main-progress { height: 8px; border-radius: 4px; margin-bottom: 8px; }
+
+  .progression-label { text-align: right; font-size: 13px; color: #666; margin-bottom: 16px; }
+
+  .timeline {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 14px; left: 0; right: 0;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 0;
+    }
+  }
+
+  .step {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; position: relative; z-index: 1; flex: 1;
+
+    .step-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      display: flex; align-items: center; justify-content: center;
+      mat-icon { font-size: 18px; color: #999; }
+    }
+
+    .step-label { font-size: 11px; color: #999; text-align: center; }
+
+    &.done .step-dot { background: #3b82f6; mat-icon { color: white; } }
+    &.done .step-label { color: #3b82f6; font-weight: 500; }
+    &.active .step-dot { background: #1e40af; box-shadow: 0 0 0 4px rgba(59,130,246,0.3); mat-icon { color: white; } }
+    &.active .step-label { color: #1e40af; font-weight: 700; }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.info-card {
+  mat-icon[mat-card-avatar] { font-size: 32px; color: #3b82f6; }
+
+  .info-row {
+    display: flex; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    &:last-child { border-bottom: none; }
+    .label { color: #666; font-size: 13px; }
+    .value { font-weight: 500; font-size: 13px; text-align: right; max-width: 60%; }
+  }
+
+  .encadrant-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #1e40af; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: bold;
+    margin: 8px auto 16px;
+  }
+
+  .pdf-btn { width: 100%; margin-top: 12px; }
+}
+
+.empty-state {
+  text-align: center; padding: 40px; color: #999;
+  mat-icon { font-size: 48px; display: block; margin-bottom: 8px; }
+}
+
+// Statut badges
+.statut-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.status-gray   { background: #f0f0f0; color: #666; }
+.status-blue   { background: #dbeafe; color: #1e40af; }
+.status-green  { background: #dcfce7; color: #166534; }
+.status-orange { background: #fef3c7; color: #92400e; }
+.status-red    { background: #fee2e2; color: #991b1b; }
+.status-purple { background: #ede9fe; color: #5b21b6; }
+.status-teal   { background: #ccfbf1; color: #134e4a; }

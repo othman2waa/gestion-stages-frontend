@@ -26,6 +26,7 @@ export class SidebarComponent {
     { label: 'Conventions', icon: 'description', route: '/conventions', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Évaluations', icon: 'star_rate', route: '/evaluations', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'] },
     { label: 'Reporting', icon: 'bar_chart', route: '/reporting', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+    { label: 'Mon Espace', icon: 'dashboard', route: '/stagiaire-dashboard', roles: ['STAGIAIRE'] },
 
   ];
 

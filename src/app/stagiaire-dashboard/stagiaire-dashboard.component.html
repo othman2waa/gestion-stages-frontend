@@ -1,0 +1,110 @@
+<div class="dashboard-container">
+
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Chargement de votre espace...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading && dashboard">
+
+    <!-- En-tête -->
+    <div class="dashboard-header">
+      <div class="avatar">{{ dashboard.stagiairePrenom?.charAt(0) }}{{ dashboard.stagiaireNom?.charAt(0) }}</div>
+      <div class="header-info">
+        <h2>Bonjour, {{ dashboard.stagiairePrenom }} {{ dashboard.stagiaireNom }} 👋</h2>
+        <p>{{ dashboard.stagiaireFiliere }} — {{ dashboard.stagiaireNiveau }}</p>
+      </div>
+      <span class="statut-badge" [class]="getStatutClass(dashboard.stageStatut)">
+        {{ dashboard.stageStatut?.replace('_', ' ') }}
+      </span>
+    </div>
+
+    <!-- Timeline progression -->
+    <mat-card class="timeline-card">
+      <mat-card-header><mat-card-title>Progression du stage</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-progress-bar mode="determinate" [value]="dashboard.progression" class="main-progress"></mat-progress-bar>
+        <p class="progression-label">{{ dashboard.progression }}% complété</p>
+        <div class="timeline">
+          <div *ngFor="let step of steps" class="step"
+               [class.done]="isStepDone(step.key)"
+               [class.active]="isStepActive(step.key)">
+            <div class="step-dot">
+              <mat-icon *ngIf="isStepDone(step.key) && !isStepActive(step.key)">check</mat-icon>
+              <mat-icon *ngIf="isStepActive(step.key)">radio_button_checked</mat-icon>
+              <mat-icon *ngIf="!isStepDone(step.key) && !isStepActive(step.key)">radio_button_unchecked</mat-icon>
+            </div>
+            <span class="step-label">{{ step.label }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Grille infos -->
+    <div class="info-grid">
+
+      <!-- Infos stage -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>work</mat-icon>
+          <mat-card-title>Mon Stage</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row"><span class="label">Sujet</span><span class="value">{{ dashboard.stageSujet ?? '—' }}</span></div>
+          <div class="info-row"><span class="label">Type</span><span class="value">{{ dashboard.typeStage ?? '—' }}</span></div>
+          <div class="info-row"><span class="label">Département</span><span class="value">{{ dashboard.departementNom ?? '—' }}</span></div>
+          <div class="info-row"><span class="label">Début</span><span class="value">{{ dashboard.dateDebut | date:'dd/MM/yyyy' }}</span></div>
+          <div class="info-row"><span class="label">Fin</span><span class="value">{{ dashboard.dateFin | date:'dd/MM/yyyy' }}</span></div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Encadrant -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>person</mat-icon>
+          <mat-card-title>Mon Encadrant OCP</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="encadrant-avatar">
+            {{ dashboard.encadrantNom?.charAt(0) ?? '?' }}
+          </div>
+          <div class="info-row"><span class="label">Nom</span><span class="value">{{ dashboard.encadrantNom ?? '—' }}</span></div>
+          <div class="info-row"><span class="label">Email</span><span class="value">{{ dashboard.encadrantEmail ?? '—' }}</span></div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Convention -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>description</mat-icon>
+          <mat-card-title>Ma Convention</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ng-container *ngIf="dashboard.conventionId; else noConvention">
+            <div class="info-row"><span class="label">Numéro</span><span class="value">{{ dashboard.conventionNumero }}</span></div>
+            <div class="info-row"><span class="label">Statut</span>
+              <span class="value statut-badge" [class]="getStatutClass(dashboard.conventionStatut)">{{ dashboard.conventionStatut }}</span>
+            </div>
+            <div class="info-row"><span class="label">Date émission</span><span class="value">{{ dashboard.conventionDateEmission | date:'dd/MM/yyyy' }}</span></div>
+            <button mat-raised-button color="primary" (click)="telechargerConvention()" class="pdf-btn">
+              <mat-icon>picture_as_pdf</mat-icon> Télécharger PDF
+            </button>
+          </ng-container>
+          <ng-template #noConvention>
+            <div class="empty-state">
+              <mat-icon>hourglass_empty</mat-icon>
+              <p>Convention en attente de génération</p>
+            </div>
+          </ng-template>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  </ng-container>
+
+  <div *ngIf="!isLoading && !dashboard" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <p>Aucun stage trouvé pour votre compte.</p>
+  </div>
+
+</div>
