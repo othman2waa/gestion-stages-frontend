@@ -10,6 +10,7 @@ import { ConventionListComponent } from '../conventions/convention-list/conventi
 import { EvaluationListComponent } from '../evaluations/evaluation-list/evaluation-list.component';
 import { OnboardingComponent } from '../onboarding/onboarding.component';
 import { StagiaireDashboardComponent } from '../stagiaire-dashboard/stagiaire-dashboard.component';
+import { SuiviHebdomadaireComponent } from '../suivi-hebdomadaire/suivi-hebdomadaire.component';
 const routes: Routes = [
   {
     path: '',
@@ -25,6 +26,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'onboarding', component: OnboardingComponent },
       { path: 'stagiaire-dashboard', component: StagiaireDashboardComponent },
+      { path: 'suivi-hebdomadaire', component: SuiviHebdomadaireComponent },
     ]
   }
 ];

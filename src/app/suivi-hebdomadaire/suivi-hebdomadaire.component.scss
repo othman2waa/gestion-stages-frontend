@@ -1,0 +1,114 @@
+.suivi-container {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h2 {
+    display: flex; align-items: center; gap: 8px;
+    margin: 0; font-size: 24px; color: #1e40af;
+    mat-icon { font-size: 28px; }
+  }
+  p { margin: 4px 0 0; color: #666; }
+}
+
+.filter-card {
+  margin-bottom: 20px;
+  .filter-field { width: 320px; }
+}
+
+.form-card {
+  margin-bottom: 24px;
+  border-left: 4px solid #3b82f6;
+
+  .suivi-form {
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .full-width { width: 100%; margin-bottom: 8px; }
+  }
+
+  mat-card-actions {
+    padding: 16px;
+    display: flex; gap: 12px;
+  }
+}
+
+.suivis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.suivi-card {
+  .semaine-badge {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #1e40af;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  mat-card-header {
+    display: flex; align-items: flex-start;
+    .card-actions-header {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 4px;
+    }
+  }
+
+  .progression-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: #666; margin-bottom: 6px;
+  }
+
+  .prog-bar { margin-bottom: 16px; border-radius: 4px; }
+
+  .section {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+
+    .section-label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 12px; font-weight: 600; color: #666;
+      margin: 0 0 4px;
+      mat-icon { font-size: 16px; }
+    }
+    p:last-child { margin: 0; font-size: 13px; }
+
+    &.positive { background: #f0fdf4; .section-label { color: #166534; } }
+    &.improve  { background: #fffbeb; .section-label { color: #92400e; } }
+  }
+}
+
+.note-badge {
+  padding: 3px 8px; border-radius: 12px;
+  font-size: 12px; font-weight: 700;
+}
+.note-excellent  { background: #dcfce7; color: #166534; }
+.note-bien       { background: #dbeafe; color: #1e40af; }
+.note-passable   { background: #fef3c7; color: #92400e; }
+.note-insuffisant{ background: #fee2e2; color: #991b1b; }
+
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center; padding: 60px;
+  color: #999;
+  mat-icon { font-size: 56px; display: block; margin-bottom: 12px; }
+  p { margin-bottom: 16px; }
+}
+
+.loading { margin-bottom: 20px; }
