@@ -11,6 +11,8 @@ import { EvaluationListComponent } from '../evaluations/evaluation-list/evaluati
 import { OnboardingComponent } from '../onboarding/onboarding.component';
 import { StagiaireDashboardComponent } from '../stagiaire-dashboard/stagiaire-dashboard.component';
 import { SuiviHebdomadaireComponent } from '../suivi-hebdomadaire/suivi-hebdomadaire.component';
+import { EncadrantDashboardComponent } from '../encadrant-dashboard/encadrant-dashboard.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -27,6 +29,8 @@ const routes: Routes = [
       { path: 'onboarding', component: OnboardingComponent },
       { path: 'stagiaire-dashboard', component: StagiaireDashboardComponent },
       { path: 'suivi-hebdomadaire', component: SuiviHebdomadaireComponent },
+      { path: 'encadrant-dashboard', component: EncadrantDashboardComponent },
+
     ]
   }
 ];

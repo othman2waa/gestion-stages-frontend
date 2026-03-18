@@ -28,6 +28,7 @@ export class SidebarComponent {
     { label: 'Reporting', icon: 'bar_chart', route: '/reporting', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Mon Espace', icon: 'dashboard', route: '/stagiaire-dashboard', roles: ['STAGIAIRE'] },
     { label: 'Suivi hebdo', icon: 'event_note', route: '/suivi-hebdomadaire', roles: ['ENCADRANT', 'ADMIN_RH', 'RESPONSABLE_RH'] },
+    { label: 'Mon Espace', icon: 'dashboard', route: '/encadrant-dashboard', roles: ['ENCADRANT'] },
 
   ];
 

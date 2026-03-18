@@ -1,0 +1,150 @@
+<div class="encadrant-container">
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <ng-container *ngIf="!isLoading && profil">
+
+    <!-- Profil Header -->
+    <div class="profil-header">
+      <div class="avatar-large">{{ getInitials(profil.nom, profil.prenom) }}</div>
+      <div class="profil-info">
+        <h2>{{ profil.prenom }} {{ profil.nom }}</h2>
+        <p><mat-icon>work</mat-icon> {{ profil.fonction ?? 'Encadrant OCP' }}</p>
+        <p><mat-icon>business</mat-icon> {{ profil.departementNom ?? 'Département non assigné' }}</p>
+        <p><mat-icon>email</mat-icon> {{ profil.email }}</p>
+      </div>
+      <div class="profil-stats">
+        <div class="stat-box">
+          <span class="stat-number">{{ profil.nombreStagiaires }}</span>
+          <span class="stat-label">Stagiaires</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number">{{ profil.nombreSuivis }}</span>
+          <span class="stat-label">Suivis créés</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <mat-tab-group animationDuration="200ms" class="main-tabs">
+
+      <!-- Tab 1: Mes Stagiaires -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>group</mat-icon>&nbsp; Mes Stagiaires ({{ profil.nombreStagiaires }})
+        </ng-template>
+
+        <div class="tab-content">
+          <div *ngIf="profil.stagiaires?.length === 0" class="empty-state">
+            <mat-icon>person_off</mat-icon>
+            <p>Aucun stagiaire assigné</p>
+          </div>
+
+          <div class="stagiaires-grid">
+            <mat-card *ngFor="let s of profil.stagiaires"
+                      class="stagiaire-card"
+                      [class.selected]="selectedStagiaire?.stageId === s.stageId"
+                      (click)="selectStagiaire(s)">
+              <mat-card-header>
+                <div mat-card-avatar class="stagiaire-avatar">
+                  {{ getInitials(s.stagiaireNom, s.stagiairePrenom) }}
+                </div>
+                <mat-card-title>{{ s.stagiairePrenom }} {{ s.stagiaireNom }}</mat-card-title>
+                <mat-card-subtitle>{{ s.stagiaireFiliere }} — {{ s.stagiaireNiveau }}</mat-card-subtitle>
+                <span class="statut-badge ml-auto" [class]="getStatutClass(s.statut)">
+                  {{ s.statut?.replace('_', ' ') }}
+                </span>
+              </mat-card-header>
+
+              <mat-card-content>
+                <div class="stage-info">
+                  <div class="info-row"><mat-icon>assignment</mat-icon><span>{{ s.sujet }}</span></div>
+                  <div class="info-row"><mat-icon>category</mat-icon><span>{{ s.typeStage ?? '—' }}</span></div>
+                  <div class="info-row" *ngIf="s.stagiaireEtablissement">
+                    <mat-icon>school</mat-icon><span>{{ s.stagiaireEtablissement }}</span>
+                  </div>
+                  <div class="info-row" *ngIf="s.dateDebut">
+                    <mat-icon>date_range</mat-icon>
+                    <span>{{ s.dateDebut }} → {{ s.dateFin }}</span>
+                  </div>
+                </div>
+
+                <div class="progression-section">
+                  <div class="prog-header">
+                    <span>Progression</span>
+                    <span>{{ s.progression }}%</span>
+                  </div>
+                  <mat-progress-bar mode="determinate" [value]="s.progression"></mat-progress-bar>
+                </div>
+
+                <div class="suivis-count">
+                  <mat-icon>event_note</mat-icon>
+                  <span>{{ s.nombreSuivis }} suivi(s) enregistré(s)</span>
+                  <button mat-stroked-button color="primary" (click)="allerAuSuivi(); $event.stopPropagation()">
+                    + Ajouter suivi
+                  </button>
+                </div>
+              </mat-card-content>
+
+              <!-- Détail expandable -->
+              <mat-card-content *ngIf="selectedStagiaire?.stageId === s.stageId" class="detail-section">
+                <h4>Informations de contact</h4>
+                <div class="info-row"><mat-icon>email</mat-icon><span>{{ s.stagiaireEmail }}</span></div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Tab 2: Mon Profil -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>person</mat-icon>&nbsp; Mon Profil
+        </ng-template>
+
+        <div class="tab-content">
+          <mat-card class="profil-card">
+            <mat-card-content>
+              <div class="profil-detail-grid">
+                <div class="profil-field">
+                  <span class="field-label">Prénom</span>
+                  <span class="field-value">{{ profil.prenom }}</span>
+                </div>
+                <div class="profil-field">
+                  <span class="field-label">Nom</span>
+                  <span class="field-value">{{ profil.nom }}</span>
+                </div>
+                <div class="profil-field">
+                  <span class="field-label">Email</span>
+                  <span class="field-value">{{ profil.email }}</span>
+                </div>
+                <div class="profil-field">
+                  <span class="field-label">Fonction</span>
+                  <span class="field-value">{{ profil.fonction ?? '—' }}</span>
+                </div>
+                <div class="profil-field">
+                  <span class="field-label">Département</span>
+                  <span class="field-value">{{ profil.departementNom ?? '—' }}</span>
+                </div>
+                <div class="profil-field">
+                  <span class="field-label">Stagiaires encadrés</span>
+                  <span class="field-value">{{ profil.nombreStagiaires }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+
+  </ng-container>
+
+  <div *ngIf="!isLoading && !profil" class="empty-state">
+    <mat-icon>error_outline</mat-icon>
+    <p>Profil encadrant introuvable. Contactez l'administrateur.</p>
+  </div>
+
+</div>

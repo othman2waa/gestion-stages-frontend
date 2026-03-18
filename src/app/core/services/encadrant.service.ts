@@ -27,4 +27,9 @@ export class EncadrantService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
+getMonProfil(): Observable<any> {
+  return this.http.get<any>(`${this.api}/mon-profil`);
 }
+  
+}
+
