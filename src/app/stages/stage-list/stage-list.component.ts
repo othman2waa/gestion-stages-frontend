@@ -12,9 +12,15 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatBadgeModule } from '@angular/material/badge';
+import { RouterModule } from '@angular/router';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { StageService } from '../../core/services/stage.service';
 import { StageFormComponent } from '../stage-form/stage-form.component';
-import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-stage-list',
   standalone: true,
@@ -22,7 +28,8 @@ import { RouterModule } from '@angular/router';
     CommonModule, FormsModule, MatTableModule, MatButtonModule,
     MatIconModule, MatInputModule, MatFormFieldModule, MatCardModule,
     MatSnackBarModule, MatDialogModule, MatTooltipModule,
-    MatProgressSpinnerModule, MatChipsModule,RouterModule
+    MatProgressSpinnerModule, MatChipsModule, MatSelectModule,
+    MatPaginatorModule, MatExpansionModule, MatBadgeModule, RouterModule
   ],
   templateUrl: './stage-list.component.html',
   styleUrls: ['./stage-list.component.scss']
@@ -32,20 +39,89 @@ export class StageListComponent implements OnInit {
   isLoading = true;
   displayedColumns = ['sujet', 'stagiaire', 'encadrant', 'type', 'statut', 'dates', 'actions'];
 
+  // Recherche
+  keyword = '';
+  selectedStatut = '';
+  selectedTypeStage = '';
+  private searchSubject = new Subject<void>();
+
+  // Pagination
+  totalElements = 0;
+  pageSize = 10;
+  pageIndex = 0;
+  pageSizeOptions = [5, 10, 20];
+
+  // Filtres actifs
+  get filtresActifs(): number {
+    return [this.keyword, this.selectedStatut, this.selectedTypeStage].filter(v => v).length;
+  }
+
+  readonly statuts = [
+    'EN_ATTENTE', 'DEMANDE_SOUMISE', 'EN_ATTENTE_VALIDATION', 'VALIDEE',
+    'REJETEE', 'CONVENTION_GENEREE', 'CONVENTION_SIGNEE', 'EN_COURS',
+    'EN_ATTENTE_EVALUATION', 'TERMINE', 'ANNULE'
+  ];
+
+  readonly typesStage = ['PFE', 'PFA', 'STAGE_ETE', 'STAGE_OBSERVATION'];
+
   constructor(
     private stageService: StageService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void { this.loadStages(); }
+  ngOnInit(): void {
+    this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.pageIndex = 0;
+      this.loadStages();
+    });
+    this.loadStages();
+  }
 
   loadStages(): void {
     this.isLoading = true;
-    this.stageService.getAll().subscribe({
-      next: (data) => { this.stages = data; this.isLoading = false; },
+    const params: any = {
+      page: this.pageIndex,
+      size: this.pageSize,
+      sortBy: 'createdAt',
+      sortDir: 'desc'
+    };
+    if (this.keyword) params['keyword'] = this.keyword;
+    if (this.selectedStatut) params['statut'] = this.selectedStatut;
+    if (this.selectedTypeStage) params['typeStage'] = this.selectedTypeStage;
+
+    this.stageService.rechercher(params).subscribe({
+      next: (data) => {
+        this.stages = data.content;
+        this.totalElements = data.totalElements;
+        this.isLoading = false;
+      },
       error: () => this.isLoading = false
     });
+  }
+
+  onSearch(): void { this.searchSubject.next(); }
+
+  onFilterChange(): void {
+    this.pageIndex = 0;
+    this.loadStages();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadStages();
+  }
+
+  resetFiltres(): void {
+    this.keyword = '';
+    this.selectedStatut = '';
+    this.selectedTypeStage = '';
+    this.pageIndex = 0;
+    this.loadStages();
   }
 
   openForm(stage?: any): void {
@@ -75,11 +151,15 @@ export class StageListComponent implements OnInit {
     }
   }
 
-  getStatutColor(statut: string): string {
+  getStatutClass(statut: string): string {
     const colors: any = {
-      'EN_ATTENTE': 'orange', 'EN_COURS': 'green',
-      'TERMINE': 'blue', 'ANNULE': 'red'
+      EN_ATTENTE: 'status-gray', DEMANDE_SOUMISE: 'status-blue',
+      EN_ATTENTE_VALIDATION: 'status-orange', VALIDEE: 'status-green',
+      REJETEE: 'status-red', CONVENTION_GENEREE: 'status-purple',
+      CONVENTION_SIGNEE: 'status-teal', EN_COURS: 'status-blue',
+      EN_ATTENTE_EVALUATION: 'status-orange', TERMINE: 'status-green',
+      ANNULE: 'status-red'
     };
-    return colors[statut] ?? 'gray';
+    return colors[statut] ?? 'status-gray';
   }
 }

@@ -1,64 +1,164 @@
-<div class="list-container">
-  <div class="list-header">
-    <h2>Gestion des Stages</h2>
+<div class="stage-list-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>work</mat-icon> Gestion des Stages</h2>
+      <p>{{ totalElements }} stage(s) trouvé(s)</p>
+    </div>
     <button mat-raised-button color="primary" (click)="openForm()">
-      <mat-icon>add</mat-icon> Nouveau Stage
+      <mat-icon>add</mat-icon> Nouveau stage
     </button>
   </div>
-  <mat-card>
-    <div class="loading" *ngIf="isLoading"><mat-spinner diameter="40"></mat-spinner></div>
-    <table mat-table [dataSource]="stages" *ngIf="!isLoading">
-      <ng-container matColumnDef="sujet">
-        <th mat-header-cell *matHeaderCellDef>Sujet</th>
-        <td mat-cell *matCellDef="let s"><strong>{{ s.sujet }}</strong></td>
-      </ng-container>
-      <ng-container matColumnDef="stagiaire">
-        <th mat-header-cell *matHeaderCellDef>Stagiaire</th>
-        <td mat-cell *matCellDef="let s">{{ s.stagiaireNom ?? '—' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="encadrant">
-        <th mat-header-cell *matHeaderCellDef>Encadrant</th>
-        <td mat-cell *matCellDef="let s">{{ s.encadrantNom ?? '—' }}</td>
-      </ng-container>
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef>Type</th>
-        <td mat-cell *matCellDef="let s">
-          <span class="badge blue">{{ s.typeStage }}</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="statut">
-        <th mat-header-cell *matHeaderCellDef>Statut</th>
-        <td mat-cell *matCellDef="let s">
-          <span class="badge" [class]="getStatutColor(s.statut)">{{ s.statut }}</span>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="dates">
-        <th mat-header-cell *matHeaderCellDef>Période</th>
-        <td mat-cell *matCellDef="let s">
-          {{ s.dateDebut | date:'dd/MM/yyyy' }} → {{ s.dateFin | date:'dd/MM/yyyy' }}
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let s">
-          <button mat-icon-button color="primary" (click)="openForm(s)" matTooltip="Modifier">
-            <mat-icon>edit</mat-icon>
+
+  <!-- Filtres -->
+  <mat-card class="filtres-card">
+    <mat-card-content>
+      <div class="filtres-row">
+
+        <!-- Recherche keyword -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher...</mat-label>
+          <input matInput [(ngModel)]="keyword" (ngModelChange)="onSearch()"
+                 placeholder="Sujet, nom stagiaire...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button *ngIf="keyword" matSuffix mat-icon-button (click)="keyword=''; onFilterChange()">
+            <mat-icon>close</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="delete(s.id)" matTooltip="Supprimer">
-            <mat-icon>delete</mat-icon>
-          </button>
-          <button mat-icon-button color="accent"
-            [routerLink]="['/stages', s.id, 'workflow']"
-            matTooltip="Workflow">
-            <mat-icon>timeline</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell no-data" colspan="7">Aucun stage trouvé</td>
-      </tr>
-    </table>
+        </mat-form-field>
+
+        <!-- Filtre statut -->
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(ngModel)]="selectedStatut" (selectionChange)="onFilterChange()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let s of statuts" [value]="s">{{ s.replace('_', ' ') }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Filtre type -->
+        <mat-form-field appearance="outline">
+          <mat-label>Type de stage</mat-label>
+          <mat-select [(ngModel)]="selectedTypeStage" (selectionChange)="onFilterChange()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let t of typesStage" [value]="t">{{ t.replace('_', ' ') }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Reset -->
+        <button mat-stroked-button color="warn" (click)="resetFiltres()"
+                *ngIf="filtresActifs > 0" class="reset-btn">
+          <mat-icon>filter_alt_off</mat-icon>
+          Réinitialiser ({{ filtresActifs }})
+        </button>
+
+      </div>
+    </mat-card-content>
   </mat-card>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <!-- Table -->
+  <mat-card *ngIf="!isLoading" class="table-card">
+    <mat-card-content>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="stages" class="stages-table">
+
+          <ng-container matColumnDef="sujet">
+            <th mat-header-cell *matHeaderCellDef>Sujet</th>
+            <td mat-cell *matCellDef="let s">
+              <div class="sujet-cell">
+                <span class="sujet-text">{{ s.sujet }}</span>
+                <span class="type-badge">{{ s.typeStage?.replace('_',' ') }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="stagiaire">
+            <th mat-header-cell *matHeaderCellDef>Stagiaire</th>
+            <td mat-cell *matCellDef="let s">
+              <div class="person-cell">
+                <div class="mini-avatar">{{ s.stagiairePrenom?.charAt(0) }}{{ s.stagiaireNom?.charAt(0) }}</div>
+                <div>
+                  <div class="person-name">{{ s.stagiairePrenom }} {{ s.stagiaireNom }}</div>
+                  <div class="person-sub">{{ s.stagiaireFiliere }}</div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="encadrant">
+            <th mat-header-cell *matHeaderCellDef>Encadrant</th>
+            <td mat-cell *matCellDef="let s">
+              <span *ngIf="s.encadrantNom">{{ s.encadrantPrenom }} {{ s.encadrantNom }}</span>
+              <span *ngIf="!s.encadrantNom" class="text-muted">—</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let s">{{ s.typeStage?.replace('_',' ') ?? '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let s">
+              <span class="statut-badge" [class]="getStatutClass(s.statut)">
+                {{ s.statut?.replace('_',' ') }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="dates">
+            <th mat-header-cell *matHeaderCellDef>Période</th>
+            <td mat-cell *matCellDef="let s">
+              <span *ngIf="s.dateDebut">{{ s.dateDebut | date:'dd/MM/yy' }} → {{ s.dateFin | date:'dd/MM/yy' }}</span>
+              <span *ngIf="!s.dateDebut" class="text-muted">—</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let s">
+              <button mat-icon-button [routerLink]="['/stages', s.id]" matTooltip="Détail">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button (click)="openForm(s)" matTooltip="Modifier">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="delete(s.id)" matTooltip="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="stage-row"></tr>
+
+        </table>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="stages.length === 0" class="empty-state">
+        <mat-icon>search_off</mat-icon>
+        <p>Aucun stage trouvé avec ces critères</p>
+        <button mat-stroked-button (click)="resetFiltres()">Réinitialiser les filtres</button>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalElements"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+
+    </mat-card-content>
+  </mat-card>
+
 </div>

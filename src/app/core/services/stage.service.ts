@@ -34,4 +34,7 @@ export class StageService {
   getMesStages(): Observable<any[]> {
   return this.http.get<any[]>(`${this.api}/mes-stages`);
 }
+rechercher(params: any): Observable<any> {
+  return this.http.get<any>(`${this.api}/rechercher`, { params });
+}
 }
