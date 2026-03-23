@@ -1,0 +1,99 @@
+<div class="rapport-container">
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p>Chargement...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h2><mat-icon>upload_file</mat-icon> Mon Rapport de Stage</h2>
+        <p *ngIf="dashboard?.stageSujet">Stage : {{ dashboard.stageSujet }}</p>
+      </div>
+    </div>
+
+    <!-- Pas de stage -->
+    <mat-card *ngIf="!dashboard?.stageId" class="empty-card">
+      <mat-card-content class="empty-state">
+        <mat-icon>work_off</mat-icon>
+        <p>Aucun stage associé à votre compte</p>
+      </mat-card-content>
+    </mat-card>
+
+    <ng-container *ngIf="dashboard?.stageId">
+
+      <!-- Rapport existant -->
+      <mat-card *ngIf="rapport" class="rapport-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="pdf-icon">picture_as_pdf</mat-icon>
+          <mat-card-title>{{ rapport.nomFichier }}</mat-card-title>
+          <mat-card-subtitle>
+            Uploadé le {{ rapport.uploadedAt | date:'dd/MM/yyyy à HH:mm' }}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="rapport-meta">
+            <div class="meta-item">
+              <mat-icon>storage</mat-icon>
+              <span>{{ formatSize(rapport.taille) }}</span>
+            </div>
+            <div class="meta-item">
+              <mat-icon>description</mat-icon>
+              <span>{{ rapport.typeContenu }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="download()">
+            <mat-icon>download</mat-icon> Télécharger
+          </button>
+          <button mat-stroked-button color="warn" (click)="supprimer()">
+            <mat-icon>delete</mat-icon> Supprimer
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Upload zone -->
+      <mat-card class="upload-card">
+        <mat-card-header>
+          <mat-card-title>{{ rapport ? 'Remplacer le rapport' : 'Uploader votre rapport' }}</mat-card-title>
+          <mat-card-subtitle>Format PDF uniquement, taille max 10 MB</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+
+          <!-- Drop zone -->
+          <div class="drop-zone" (click)="fileInput.click()"
+               [class.has-file]="selectedFile">
+            <mat-icon>{{ selectedFile ? 'check_circle' : 'cloud_upload' }}</mat-icon>
+            <p *ngIf="!selectedFile">Cliquez pour sélectionner un fichier PDF</p>
+            <p *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</p>
+            <span *ngIf="selectedFile" class="file-size">{{ formatSize(selectedFile.size) }}</span>
+            <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden>
+          </div>
+
+          <!-- Progress -->
+          <mat-progress-bar *ngIf="isUploading" mode="indeterminate" class="upload-progress">
+          </mat-progress-bar>
+
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary"
+                  [disabled]="!selectedFile || isUploading"
+                  (click)="upload()">
+            <mat-icon>upload</mat-icon>
+            {{ isUploading ? 'Upload en cours...' : 'Envoyer le rapport' }}
+          </button>
+          <button mat-button *ngIf="selectedFile" (click)="selectedFile = null">
+            Annuler
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+    </ng-container>
+
+  </ng-container>
+
+</div>

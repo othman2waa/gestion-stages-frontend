@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { StageService } from '../../core/services/stage.service';
 import { EncadrantService } from '../../core/services/encadrant.service';
@@ -21,7 +22,7 @@ import { EncadrantService } from '../../core/services/encadrant.service';
     CommonModule, ReactiveFormsModule, MatDialogModule,
     MatFormFieldModule, MatInputModule, MatButtonModule,
     MatIconModule, MatSelectModule, MatDatepickerModule,
-    MatNativeDateModule, MatProgressSpinnerModule
+    MatNativeDateModule, MatProgressSpinnerModule, MatCardModule
   ],
   templateUrl: './evaluation-form.component.html',
   styleUrls: ['./evaluation-form.component.scss']
@@ -32,6 +33,7 @@ export class EvaluationFormComponent implements OnInit {
   isEdit = false;
   stages: any[] = [];
   encadrants: any[] = [];
+  selectedStage: any = null;
   typesEval = ['MI_PARCOURS', 'FINALE', 'TECHNIQUE', 'COMPORTEMENT'];
 
   constructor(
@@ -45,16 +47,30 @@ export class EvaluationFormComponent implements OnInit {
     this.form = this.fb.group({
       stageId: ['', Validators.required],
       encadrantId: ['', Validators.required],
-      note: ['', [Validators.min(0), Validators.max(20)]],
+      note: ['', [Validators.required, Validators.min(0), Validators.max(20)]],
       commentaire: [''],
       typeEvaluation: ['', Validators.required],
-      dateEval: ['']
+      dateEval: [new Date(), Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.stageService.getAll().subscribe(d => this.stages = d);
+     this.stageService.getAll().subscribe(d => this.stages = d);
+     this.encadrantService.getAll().subscribe(d => {
+     this.encadrants = d;
+    console.log('Encadrants:', d);
+    });    ;
     this.encadrantService.getAll().subscribe(d => this.encadrants = d);
+
+    // Quand on change le stage, on met à jour les infos
+    this.form.get('stageId')?.valueChanges.subscribe(stageId => {
+      this.selectedStage = this.stages.find(s => s.id === stageId) ?? null;
+      // Pré-remplir l'encadrant automatiquement
+      if (this.selectedStage?.encadrantId) {
+        this.form.patchValue({ encadrantId: this.selectedStage.encadrantId }, { emitEvent: false });
+      }
+    });
+
     if (this.data) {
       this.isEdit = true;
       this.form.patchValue({
@@ -62,15 +78,25 @@ export class EvaluationFormComponent implements OnInit {
         stageId: this.data.stageId,
         encadrantId: this.data.encadrantId
       });
+      this.selectedStage = { 
+        stagiaireNom: this.data.stagiaireNom,
+        sujet: this.data.stageSujet 
+      };
     }
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
     this.isLoading = true;
+    const payload = {
+      ...this.form.value,
+      dateEval: this.form.value.dateEval instanceof Date
+        ? this.form.value.dateEval.toISOString().split('T')[0]
+        : this.form.value.dateEval
+    };
     const request = this.isEdit
-      ? this.evaluationService.update(this.data.id, this.form.value)
-      : this.evaluationService.create(this.form.value);
+      ? this.evaluationService.update(this.data.id, payload)
+      : this.evaluationService.create(payload);
     request.subscribe({
       next: () => { this.isLoading = false; this.dialogRef.close(true); },
       error: () => { this.isLoading = false; }

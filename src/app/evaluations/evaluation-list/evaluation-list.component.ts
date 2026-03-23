@@ -8,6 +8,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.component';
 
@@ -17,7 +18,7 @@ import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.comp
   imports: [
     CommonModule, MatTableModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
-    MatTooltipModule, MatProgressSpinnerModule
+    MatTooltipModule, MatProgressSpinnerModule, MatChipsModule
   ],
   templateUrl: './evaluation-list.component.html',
   styleUrls: ['./evaluation-list.component.scss']
@@ -26,6 +27,7 @@ export class EvaluationListComponent implements OnInit {
   evaluations: any[] = [];
   isLoading = true;
   displayedColumns = ['stage', 'encadrant', 'note', 'type', 'dateEval', 'actions'];
+  userRole = '';
 
   constructor(
     private evaluationService: EvaluationService,
@@ -33,11 +35,25 @@ export class EvaluationListComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void { this.loadEvaluations(); }
+  ngOnInit(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.userRole = currentUser.role ?? '';
+    this.loadEvaluations();
+  }
+
+  get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
+  get isStagiaire(): boolean { return this.userRole === 'STAGIAIRE'; }
+  get isAdmin(): boolean { return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole); }
 
   loadEvaluations(): void {
     this.isLoading = true;
-    this.evaluationService.getAll().subscribe({
+    const obs = this.isStagiaire
+      ? this.evaluationService.getMesEvaluations()
+      : this.isEncadrant
+        ? this.evaluationService.getMesEvaluationsEncadrant()
+        : this.evaluationService.getAll();
+
+    obs.subscribe({
       next: (data) => { this.evaluations = data; this.isLoading = false; },
       error: () => this.isLoading = false
     });
@@ -45,7 +61,7 @@ export class EvaluationListComponent implements OnInit {
 
   openForm(evaluation?: any): void {
     const dialogRef = this.dialog.open(EvaluationFormComponent, {
-      width: '600px', data: evaluation || null
+      width: '650px', data: evaluation || null
     });
     dialogRef.afterClosed().subscribe(result => { if (result) this.loadEvaluations(); });
   }
@@ -61,9 +77,10 @@ export class EvaluationListComponent implements OnInit {
     }
   }
 
-  getNoteColor(note: number): string {
-    if (note >= 14) return 'green';
-    if (note >= 10) return 'orange';
-    return 'red';
+  getNoteClass(note: number): string {
+    if (note >= 16) return 'note-excellent';
+    if (note >= 12) return 'note-bien';
+    if (note >= 10) return 'note-passable';
+    return 'note-insuffisant';
   }
 }

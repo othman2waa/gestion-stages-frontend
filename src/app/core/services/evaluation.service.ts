@@ -27,4 +27,11 @@ export class EvaluationService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
+  getMesEvaluations(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.api}/mes-evaluations`);
+}
+
+getMesEvaluationsEncadrant(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.api}/encadrant/mes-evaluations`);
+}
 }
