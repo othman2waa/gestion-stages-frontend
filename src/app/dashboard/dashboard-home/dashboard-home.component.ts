@@ -23,31 +23,35 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   statutChart: any;
   typeChart: any;
   deptChart: any;
+  userRole = '';
   private apiBase = 'http://localhost:8080/api/reporting';
 
   constructor(private http: HttpClient) {}
 
+  get isAdmin(): boolean {
+    return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole);
+  }
+
   ngOnInit(): void {
-    this.http.get(`${this.apiBase}/dashboard`)
-      .subscribe(data => this.stats = data);
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.userRole = currentUser.role ?? '';
+    if (this.isAdmin) {
+      this.http.get(`${this.apiBase}/dashboard`)
+        .subscribe(data => this.stats = data);
+    }
   }
 
   ngAfterViewInit(): void {
-    this.loadCharts();
+    if (this.isAdmin) this.loadCharts();
   }
 
   loadCharts(): void {
-    // Statuts
     this.http.get<any>(`${this.apiBase}/dashboard`).subscribe(data => {
       this.createStatutChart(data);
     });
-
-    // Par type
     this.http.get<any>(`${this.apiBase}/stages-par-type`).subscribe(res => {
       this.createTypeChart(res.data || []);
     });
-
-    // Par département
     this.http.get<any>(`${this.apiBase}/stages-par-departement`).subscribe(res => {
       this.createDeptChart(res.data || []);
     });
@@ -73,9 +77,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: { position: 'bottom' }
-        },
+        plugins: { legend: { position: 'bottom' } },
         cutout: '65%'
       }
     });

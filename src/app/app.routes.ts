@@ -7,6 +7,11 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
   {
+    path: 'stagiaire',
+    canActivate: [authGuard],
+    loadChildren: () => import('./stagiaire-portal/stagiaire-portal.module').then(m => m.StagiairePortalModule)
+  },
+  {
     path: '',
     canActivate: [authGuard],
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)

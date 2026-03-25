@@ -34,8 +34,7 @@ export class EvaluationFormComponent implements OnInit {
   stages: any[] = [];
   encadrants: any[] = [];
   selectedStage: any = null;
-  typesEval = ['MI_PARCOURS', 'FINALE', 'TECHNIQUE', 'COMPORTEMENT'];
-
+typesEval = ['MI_PARCOURS', 'FIN_STAGE'];
   constructor(
     private fb: FormBuilder,
     private evaluationService: EvaluationService,

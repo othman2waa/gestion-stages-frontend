@@ -1,0 +1,60 @@
+<div class="evaluations-container">
+
+  <div class="page-header">
+    <h2><mat-icon>star</mat-icon> Mes Évaluations</h2>
+    <p>Vos évaluations par votre encadrant OCP</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Moyenne -->
+    <mat-card *ngIf="evaluations.length > 0" class="moyenne-card">
+      <mat-card-content>
+        <div class="moyenne-content">
+          <div class="moyenne-circle" [class]="getNoteClass(moyenne)">
+            {{ moyenne.toFixed(1) }}<span>/20</span>
+          </div>
+          <div class="moyenne-info">
+            <h3>Moyenne générale</h3>
+            <p>{{ evaluations.length }} évaluation(s) au total</p>
+            <span class="note-label" [class]="getNoteClass(moyenne)">{{ getNoteLabel(moyenne) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Liste évaluations -->
+    <div class="eval-grid">
+      <mat-card *ngFor="let e of evaluations" class="eval-card">
+        <mat-card-header>
+          <div mat-card-avatar class="eval-avatar" [class]="getNoteClass(e.note)">
+            {{ e.note }}
+          </div>
+          <mat-card-title>{{ e.stageSujet }}</mat-card-title>
+          <mat-card-subtitle>{{ e.encadrantNom }} — {{ e.dateEval | date:'dd/MM/yyyy' }}</mat-card-subtitle>
+          <div class="type-chip">{{ e.typeEvaluation?.replace('_', ' ') }}</div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="note-bar">
+            <mat-progress-bar mode="determinate" [value]="(e.note/20)*100" class="note-progress"></mat-progress-bar>
+            <span class="note-value" [class]="getNoteClass(e.note)">{{ e.note }}/20 — {{ getNoteLabel(e.note) }}</span>
+          </div>
+          <p *ngIf="e.commentaire" class="commentaire">
+            <mat-icon>format_quote</mat-icon>
+            {{ e.commentaire }}
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div *ngIf="evaluations.length === 0" class="empty-state">
+      <mat-icon>star_border</mat-icon>
+      <p>Aucune évaluation pour le moment</p>
+    </div>
+
+  </ng-container>
+</div>

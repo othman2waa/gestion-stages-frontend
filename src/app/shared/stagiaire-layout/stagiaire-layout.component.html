@@ -1,0 +1,72 @@
+<div class="stagiaire-shell">
+
+  <!-- Top Navbar OCP -->
+  <nav class="ocp-navbar">
+    <div class="navbar-left">
+      <div class="ocp-logo">
+        <span class="logo-ocp">OCP</span>
+        <div class="logo-divider"></div>
+        <span class="logo-text">Espace Stagiaire</span>
+      </div>
+    </div>
+
+    <!-- Navigation links -->
+    <div class="navbar-center">
+      <a *ngFor="let item of navItems"
+         [routerLink]="item.route"
+         class="nav-link"
+         [class.active]="isActive(item.route)">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    </div>
+
+    <!-- User menu -->
+    <div class="navbar-right">
+      <div class="user-menu" [matMenuTriggerFor]="userMenu">
+        <div class="user-avatar">{{ getInitials() }}</div>
+        <div class="user-info" *ngIf="stagiaire">
+          <span class="user-name">{{ stagiaire.stagiairePrenom }} {{ stagiaire.stagiaireNom }}</span>
+          <span class="user-role">Stagiaire</span>
+        </div>
+        <mat-icon>expand_more</mat-icon>
+      </div>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item [routerLink]="'/stagiaire/accueil'">
+          <mat-icon>home</mat-icon> Accueil
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon color="warn">logout</mat-icon>
+          <span style="color:#e53e3e">Déconnexion</span>
+        </button>
+      </mat-menu>
+    </div>
+  </nav>
+
+  <!-- OCP Green bar -->
+  <div class="ocp-green-bar">
+    <div class="green-bar-content" *ngIf="stagiaire">
+      <div class="welcome-text">
+        <mat-icon>waving_hand</mat-icon>
+        Bienvenue, <strong>{{ stagiaire.stagiairePrenom }} {{ stagiaire.stagiaireNom }}</strong>
+        — {{ stagiaire.stagiaireFiliere }} · {{ stagiaire.stagiaireNiveau }}
+      </div>
+      <div class="stage-badge" *ngIf="stagiaire.stageStatut">
+        <mat-icon>circle</mat-icon>
+        {{ stagiaire.stageStatut?.replace('_', ' ') }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <main class="stagiaire-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="ocp-footer">
+    <span>OCP Group — Gestion des Stages © 2026</span>
+  </footer>
+
+</div>
