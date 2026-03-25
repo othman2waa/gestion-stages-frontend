@@ -13,6 +13,7 @@ import { StagiaireDashboardComponent } from '../stagiaire-dashboard/stagiaire-da
 import { SuiviHebdomadaireComponent } from '../suivi-hebdomadaire/suivi-hebdomadaire.component';
 import { EncadrantDashboardComponent } from '../encadrant-dashboard/encadrant-dashboard.component';
 import { RapportStageComponent } from '../rapport-stage/rapport-stage.component';
+import { CandidaturesAdminComponent } from '../candidatures-admin/candidatures-admin.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,7 @@ const routes: Routes = [
       { path: 'suivi-hebdomadaire', component: SuiviHebdomadaireComponent },
       { path: 'encadrant-dashboard', component: EncadrantDashboardComponent },
       { path: 'rapport-stage', component: RapportStageComponent },
+      { path: 'candidatures', component: CandidaturesAdminComponent },
 
     ]
   }

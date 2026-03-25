@@ -1,0 +1,109 @@
+.candidatures-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px;
+  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 24px; color: #1e40af;
+    mat-icon { font-size: 28px; } }
+  p { margin: 4px 0 0; color: #666; }
+  .header-stats { display: flex; gap: 12px;
+    .stat-chip { display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+      border-radius: 20px; font-size: 13px; font-weight: 600;
+      mat-icon { font-size: 16px; }
+      &.attente { background: #fef3c7; color: #92400e; }
+      &.acceptee { background: #dcfce7; color: #166534; }
+      &.refusee { background: #fee2e2; color: #991b1b; }
+    }
+  }
+}
+
+.main-layout {
+  display: grid; grid-template-columns: 380px 1fr; gap: 24px;
+}
+
+.candidatures-list {
+  .tab-content { padding: 8px 0; max-height: 600px; overflow-y: auto; }
+  .candidature-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 8px; cursor: pointer;
+    transition: background 0.15s; margin-bottom: 4px;
+    &:hover { background: #f8fafc; }
+    &.selected { background: #dbeafe; border-left: 3px solid #2563eb; }
+    .item-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #2563eb; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 14px; flex-shrink: 0;
+      &.green { background: #00843D; }
+      &.red { background: #dc2626; }
+    }
+    .item-info { flex: 1; display: flex; flex-direction: column;
+      .item-name { font-weight: 600; font-size: 14px; }
+      .item-sub { font-size: 12px; color: #666; }
+      .item-date { font-size: 11px; color: #999; }
+    }
+    .cv-icon { color: #F47920; font-size: 18px; }
+  }
+  .empty-tab { text-align: center; padding: 40px; color: #999;
+    mat-icon { font-size: 40px; display: block; margin-bottom: 8px; } }
+}
+
+.detail-card {
+  .detail-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 16px;
+  }
+  .ml-auto { margin-left: auto; }
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0;
+    .detail-field { background: #f8fafc; border-radius: 6px; padding: 10px 12px;
+      .label { display: block; font-size: 11px; color: #666; margin-bottom: 3px; }
+      span:last-child { font-size: 14px; font-weight: 500; }
+    }
+  }
+  .message-section { background: #fffbeb; border-radius: 8px; padding: 12px 16px; margin: 12px 0;
+    .label { font-size: 12px; color: #92400e; font-weight: 600; display: block; margin-bottom: 6px; }
+    .message-text { margin: 0; font-size: 13px; color: #555; font-style: italic; }
+  }
+  .cv-section { margin: 12px 0; }
+  .actions-section { margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 16px;
+    .action-buttons { display: flex; gap: 12px; }
+  }
+  .traiter-form {
+    background: #f8fafc; border-radius: 8px; padding: 16px; margin-top: 12px;
+    h4 { margin: 0 0 16px; }
+    .full-width { width: 100%; margin-bottom: 8px; }
+    .traiter-actions { display: flex; gap: 12px; margin-top: 8px; }
+  }
+  .traite-info {
+    display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap;
+    background: #f0f9ff; border-radius: 8px; padding: 12px 16px; margin-top: 16px;
+    font-size: 13px; color: #555;
+    mat-icon { color: #2563eb; font-size: 18px; }
+    p { margin: 4px 0 0; width: 100%; color: #666; font-style: italic; }
+  }
+}
+
+.statut-badge {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
+  mat-icon { font-size: 14px; }
+  &.statut-attente { background: #fef3c7; color: #92400e; }
+  &.statut-acceptee { background: #dcfce7; color: #166534; }
+  &.statut-refusee { background: #fee2e2; color: #991b1b; }
+}
+
+.btn-accepter { background: #00843D !important; color: white !important; }
+.btn-refuser { background: #dc2626 !important; color: white !important; }
+
+.no-selection {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; color: #999; padding: 60px;
+  mat-icon { font-size: 56px; margin-bottom: 12px; }
+}

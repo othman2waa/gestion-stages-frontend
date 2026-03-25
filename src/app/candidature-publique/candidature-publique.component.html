@@ -1,0 +1,158 @@
+<div class="candidature-page">
+
+  <!-- Header OCP -->
+  <header class="ocp-header">
+    <div class="header-content">
+      <div class="ocp-brand">
+        <span class="brand-ocp">OCP</span>
+        <span class="brand-text">Gestion des Stages</span>
+      </div>
+      <div class="header-tagline">Rejoignez l'aventure OCP</div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1>Déposez votre candidature de stage</h1>
+      <p>Rejoignez l'un des leaders mondiaux de l'industrie des phosphates</p>
+      <div class="hero-stats">
+        <div class="stat"><span>500+</span><label>Stagiaires/an</label></div>
+        <div class="stat"><span>30+</span><label>Départements</label></div>
+        <div class="stat"><span>100%</span><label>Encadrement</label></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-section" *ngIf="step === 'form'">
+    <div class="form-container">
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person_add</mat-icon>
+            Informations de candidature
+          </mat-card-title>
+          <mat-card-subtitle>Tous les champs marqués * sont obligatoires</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="form">
+
+            <!-- Identité -->
+            <div class="section-title"><mat-icon>badge</mat-icon> Identité</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Prénom *</mat-label>
+                <input matInput formControlName="prenom">
+                <mat-error>Prénom requis</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Nom *</mat-label>
+                <input matInput formControlName="nom">
+                <mat-error>Nom requis</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Email *</mat-label>
+                <input matInput type="email" formControlName="email">
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error>Email invalide</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Téléphone *</mat-label>
+                <input matInput formControlName="telephone">
+                <mat-icon matSuffix>phone</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <!-- Formation -->
+            <div class="section-title"><mat-icon>school</mat-icon> Formation</div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Établissement *</mat-label>
+                <input matInput formControlName="etablissement">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Filière *</mat-label>
+                <input matInput formControlName="filiere">
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Niveau *</mat-label>
+                <mat-select formControlName="niveau">
+                  <mat-option *ngFor="let n of niveaux" [value]="n">{{ n }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Département souhaité</mat-label>
+                <mat-select formControlName="departementSouhaite">
+                  <mat-option *ngFor="let d of departements" [value]="d">{{ d }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <!-- Stage -->
+            <div class="section-title"><mat-icon>work</mat-icon> Stage</div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Sujet de stage souhaité</mat-label>
+              <input matInput formControlName="sujetSouhaite">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Message / Motivation</mat-label>
+              <textarea matInput formControlName="message" rows="4"
+                        placeholder="Décrivez votre motivation et vos objectifs..."></textarea>
+            </mat-form-field>
+
+            <!-- CV Upload -->
+            <div class="section-title"><mat-icon>attach_file</mat-icon> CV</div>
+            <div class="cv-upload" (click)="cvInput.click()" [class.has-file]="selectedCv">
+              <mat-icon>{{ selectedCv ? 'check_circle' : 'cloud_upload' }}</mat-icon>
+              <div>
+                <p *ngIf="!selectedCv">Cliquez pour joindre votre CV (PDF, max 5MB)</p>
+                <p *ngIf="selectedCv" class="file-name">{{ selectedCv.name }}</p>
+              </div>
+              <input #cvInput type="file" accept=".pdf" (change)="onCvSelected($event)" hidden>
+            </div>
+
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+          <button mat-raised-button color="primary" class="submit-btn"
+                  (click)="soumettre()" [disabled]="form.invalid || isLoading">
+            <mat-icon>send</mat-icon>
+            {{ isLoading ? 'Envoi en cours...' : 'Soumettre ma candidature' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Succès -->
+  <div class="success-section" *ngIf="step === 'success'">
+    <mat-card class="success-card">
+      <mat-card-content>
+        <div class="success-icon">✅</div>
+        <h2>Candidature soumise avec succès !</h2>
+        <p>Votre référence : <strong class="reference">{{ reference }}</strong></p>
+        <p>Notre équipe RH analysera votre dossier et vous contactera par email sous 48h.</p>
+        <div class="success-steps">
+          <div class="step-item done"><mat-icon>check_circle</mat-icon><span>Candidature reçue</span></div>
+          <div class="step-item"><mat-icon>hourglass_empty</mat-icon><span>Analyse RH</span></div>
+          <div class="step-item"><mat-icon>email</mat-icon><span>Réponse par email</span></div>
+        </div>
+        <button mat-stroked-button (click)="recommencer()">Nouvelle candidature</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Footer -->
+  <footer class="ocp-footer">
+    <p>© 2026 OCP Group — Tous droits réservés</p>
+  </footer>
+
+</div>

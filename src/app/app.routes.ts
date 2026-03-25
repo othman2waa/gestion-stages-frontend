@@ -7,6 +7,11 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
   {
+    path: 'candidature',  // ← PAS de canActivate ici
+    loadComponent: () => import('./candidature-publique/candidature-publique.component')
+      .then(m => m.CandidaturePubliqueComponent)
+  },
+  {
     path: 'stagiaire',
     canActivate: [authGuard],
     loadChildren: () => import('./stagiaire-portal/stagiaire-portal.module').then(m => m.StagiairePortalModule)

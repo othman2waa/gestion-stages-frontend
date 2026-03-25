@@ -30,7 +30,7 @@ export class SidebarComponent {
     { label: 'Suivi hebdo', icon: 'event_note', route: '/suivi-hebdomadaire', roles: ['ENCADRANT', 'ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Mon Espace', icon: 'dashboard', route: '/encadrant-dashboard', roles: ['ENCADRANT'] },
     { label: 'Mon Rapport', icon: 'upload_file', route: '/rapport-stage', roles: ['STAGIAIRE'] },
-
+    { label: 'Candidatures', icon: 'inbox', route: '/candidatures', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
   ];
 
   constructor(

@@ -1,0 +1,195 @@
+<div class="candidatures-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>inbox</mat-icon> Gestion des Candidatures</h2>
+      <p>{{ candidatures.length }} candidature(s) au total</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-chip attente">
+        <mat-icon>hourglass_empty</mat-icon>
+        {{ enAttente.length }} en attente
+      </div>
+      <div class="stat-chip acceptee">
+        <mat-icon>check_circle</mat-icon>
+        {{ acceptees.length }} acceptées
+      </div>
+      <div class="stat-chip refusee">
+        <mat-icon>cancel</mat-icon>
+        {{ refusees.length }} refusées
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading"><mat-progress-bar mode="indeterminate"></mat-progress-bar></div>
+
+  <div class="main-layout" *ngIf="!isLoading">
+
+    <!-- Liste -->
+    <div class="candidatures-list">
+      <mat-tab-group>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>hourglass_empty</mat-icon>&nbsp;
+            En attente ({{ enAttente.length }})
+          </ng-template>
+          <div class="tab-content">
+            <div *ngFor="let c of enAttente" class="candidature-item"
+                 [class.selected]="selectedCandidature?.id === c.id"
+                 (click)="selectCandidature(c)">
+              <div class="item-avatar">{{ c.prenom?.charAt(0) }}{{ c.nom?.charAt(0) }}</div>
+              <div class="item-info">
+                <span class="item-name">{{ c.prenom }} {{ c.nom }}</span>
+                <span class="item-sub">{{ c.filiere }} — {{ c.niveau }}</span>
+                <span class="item-date">{{ c.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <mat-icon *ngIf="c.hasCv" class="cv-icon" matTooltip="CV joint">attach_file</mat-icon>
+            </div>
+            <div *ngIf="enAttente.length === 0" class="empty-tab">
+              <mat-icon>inbox</mat-icon><p>Aucune candidature en attente</p>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>check_circle</mat-icon>&nbsp;
+            Acceptées ({{ acceptees.length }})
+          </ng-template>
+          <div class="tab-content">
+            <div *ngFor="let c of acceptees" class="candidature-item acceptee"
+                 [class.selected]="selectedCandidature?.id === c.id"
+                 (click)="selectCandidature(c)">
+              <div class="item-avatar green">{{ c.prenom?.charAt(0) }}{{ c.nom?.charAt(0) }}</div>
+              <div class="item-info">
+                <span class="item-name">{{ c.prenom }} {{ c.nom }}</span>
+                <span class="item-sub">{{ c.filiere }} — {{ c.niveau }}</span>
+                <span class="item-date">Traité le {{ c.traiteAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>cancel</mat-icon>&nbsp;
+            Refusées ({{ refusees.length }})
+          </ng-template>
+          <div class="tab-content">
+            <div *ngFor="let c of refusees" class="candidature-item refusee"
+                 [class.selected]="selectedCandidature?.id === c.id"
+                 (click)="selectCandidature(c)">
+              <div class="item-avatar red">{{ c.prenom?.charAt(0) }}{{ c.nom?.charAt(0) }}</div>
+              <div class="item-info">
+                <span class="item-name">{{ c.prenom }} {{ c.nom }}</span>
+                <span class="item-sub">{{ c.filiere }} — {{ c.niveau }}</span>
+                <span class="item-date">Traité le {{ c.traiteAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+    </div>
+
+    <!-- Détail -->
+    <div class="candidature-detail" *ngIf="selectedCandidature">
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <div mat-card-avatar class="detail-avatar">
+            {{ selectedCandidature.prenom?.charAt(0) }}{{ selectedCandidature.nom?.charAt(0) }}
+          </div>
+          <mat-card-title>{{ selectedCandidature.prenom }} {{ selectedCandidature.nom }}</mat-card-title>
+          <mat-card-subtitle>{{ selectedCandidature.email }}</mat-card-subtitle>
+          <span class="statut-badge ml-auto" [class]="getStatutClass(selectedCandidature.statut)">
+            <mat-icon>{{ getStatutIcon(selectedCandidature.statut) }}</mat-icon>
+            {{ selectedCandidature.statut?.replace('_', ' ') }}
+          </span>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="detail-grid">
+            <div class="detail-field"><span class="label">Téléphone</span><span>{{ selectedCandidature.telephone }}</span></div>
+            <div class="detail-field"><span class="label">Établissement</span><span>{{ selectedCandidature.etablissement }}</span></div>
+            <div class="detail-field"><span class="label">Filière</span><span>{{ selectedCandidature.filiere }}</span></div>
+            <div class="detail-field"><span class="label">Niveau</span><span>{{ selectedCandidature.niveau }}</span></div>
+            <div class="detail-field"><span class="label">Département souhaité</span><span>{{ selectedCandidature.departementSouhaite ?? '—' }}</span></div>
+            <div class="detail-field"><span class="label">Sujet souhaité</span><span>{{ selectedCandidature.sujetSouhaite ?? '—' }}</span></div>
+          </div>
+
+          <div *ngIf="selectedCandidature.message" class="message-section">
+            <p class="label">Message de motivation</p>
+            <p class="message-text">{{ selectedCandidature.message }}</p>
+          </div>
+
+          <div *ngIf="selectedCandidature.hasCv" class="cv-section">
+            <button mat-stroked-button (click)="voirCv(selectedCandidature.id)">
+              <mat-icon>picture_as_pdf</mat-icon> Voir le CV
+            </button>
+          </div>
+
+          <!-- Formulaire traitement -->
+          <div *ngIf="selectedCandidature.statut === 'EN_ATTENTE'" class="actions-section">
+            <div class="action-buttons" *ngIf="!showTraiterForm">
+              <button mat-raised-button class="btn-accepter" (click)="ouvrirTraitement('ACCEPTEE')">
+                <mat-icon>check_circle</mat-icon> Accepter
+              </button>
+              <button mat-raised-button class="btn-refuser" (click)="ouvrirTraitement('REFUSEE')">
+                <mat-icon>cancel</mat-icon> Refuser
+              </button>
+            </div>
+
+            <div *ngIf="showTraiterForm" class="traiter-form">
+              <h4>{{ traiterForm.value.statut === 'ACCEPTEE' ? '✅ Accepter la candidature' : '❌ Refuser la candidature' }}</h4>
+
+              <mat-form-field appearance="outline" class="full-width" *ngIf="traiterForm.value.statut === 'ACCEPTEE'">
+                <mat-label>Assigner un encadrant</mat-label>
+                <mat-select [formControl]="$any(traiterForm.get('encadrantId'))">
+                  <mat-option [value]="null">Non assigné</mat-option>
+                  <mat-option *ngFor="let e of encadrants" [value]="e.id">
+                    {{ e.prenom }} {{ e.nom }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Commentaire RH</mat-label>
+                <textarea matInput [formControl]="$any(traiterForm.get('commentaireRh'))"
+                          rows="3" placeholder="Commentaire envoyé au candidat..."></textarea>
+              </mat-form-field>
+
+              <div class="traiter-actions">
+                <button mat-raised-button
+                        [class]="traiterForm.value.statut === 'ACCEPTEE' ? 'btn-accepter' : 'btn-refuser'"
+                        (click)="traiter()">
+                  <mat-icon>{{ traiterForm.value.statut === 'ACCEPTEE' ? 'check_circle' : 'cancel' }}</mat-icon>
+                  Confirmer
+                </button>
+                <button mat-button (click)="showTraiterForm = false">Annuler</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Résultat si déjà traité -->
+          <div *ngIf="selectedCandidature.statut !== 'EN_ATTENTE'" class="traite-info">
+            <mat-icon>info</mat-icon>
+            Traité par <strong>{{ selectedCandidature.traitePar }}</strong>
+            le {{ selectedCandidature.traiteAt | date:'dd/MM/yyyy' }}
+            <p *ngIf="selectedCandidature.commentaireRh">
+              <em>« {{ selectedCandidature.commentaireRh }} »</em>
+            </p>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="no-selection" *ngIf="!selectedCandidature">
+      <mat-icon>touch_app</mat-icon>
+      <p>Sélectionnez une candidature pour voir les détails</p>
+    </div>
+
+  </div>
+</div>
