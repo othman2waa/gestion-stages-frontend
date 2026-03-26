@@ -1,0 +1,132 @@
+<div class="comptes-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2><mat-icon>manage_accounts</mat-icon> Gestion des Comptes</h2>
+      <p>{{ stagiaires.length }} stagiaire(s) avec compte</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-chip actif"><mat-icon>check_circle</mat-icon> {{ totalActifs }} actifs</div>
+      <div class="stat-chip inactif"><mat-icon>block</mat-icon> {{ totalInactifs }} inactifs</div>
+    </div>
+  </div>
+
+  <!-- Password Banner -->
+  <div class="password-banner" *ngIf="resetPasswordResult">
+    <mat-icon>key</mat-icon>
+    <span>Nouveau mot de passe de <strong>{{ resetPasswordResult.stagiaire.prenom }}</strong> :</span>
+    <code>{{ resetPasswordResult.password }}</code>
+    <span class="banner-note">Email envoyé ✓</span>
+    <button mat-icon-button (click)="closePasswordResult()"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
+           placeholder="Rechercher par nom, email, username...">
+    <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards-list" *ngIf="!isLoading">
+    <div *ngFor="let s of filteredStagiaires" class="stagiaire-card">
+      <div class="card-left">
+        <div class="avatar" [class.inactive]="!s.actif">
+          {{ s.prenom?.charAt(0) }}{{ s.nom?.charAt(0) }}
+        </div>
+        <div class="card-info">
+          <span class="card-name">{{ s.prenom }} {{ s.nom }}</span>
+          <span class="card-email">{{ s.email }}</span>
+          <span class="card-username"><mat-icon>person</mat-icon>{{ s.username }}</span>
+        </div>
+      </div>
+      <div class="card-right">
+        <div class="card-meta">
+          <span class="meta-badge">{{ s.filiere }} — {{ s.niveau }}</span>
+          <span class="statut-badge" [class.actif]="s.actif" [class.inactif]="!s.actif">
+            {{ s.actif ? '● Actif' : '● Inactif' }}
+          </span>
+        </div>
+        <div class="card-actions">
+          <button mat-icon-button matTooltip="Voir profil" class="btn-view"
+                  (click)="selectStagiaire(s)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button
+                  [matTooltip]="s.actif ? 'Désactiver' : 'Activer'"
+                  [class.btn-warn]="s.actif" [class.btn-success]="!s.actif"
+                  (click)="toggleActif(s)">
+            <mat-icon>{{ s.actif ? 'block' : 'check_circle' }}</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Reset mot de passe" class="btn-info"
+                  (click)="resetPassword(s)">
+            <mat-icon>lock_reset</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredStagiaires.length === 0" class="empty-state">
+      <mat-icon>person_search</mat-icon>
+      <p>Aucun compte trouvé</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Dialog détail -->
+<ng-template #detailDialog>
+  <div class="dialog-header">
+    <div class="detail-avatar">
+      {{ selectedStagiaire?.prenom?.charAt(0) }}{{ selectedStagiaire?.nom?.charAt(0) }}
+    </div>
+    <div class="detail-title">
+      <h3>{{ selectedStagiaire?.prenom }} {{ selectedStagiaire?.nom }}</h3>
+      <span class="statut-badge" [class.actif]="selectedStagiaire?.actif" [class.inactif]="!selectedStagiaire?.actif">
+        {{ selectedStagiaire?.actif ? '● Actif' : '● Inactif' }}
+      </span>
+    </div>
+    <button mat-icon-button mat-dialog-close class="close-btn"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="detail-section">
+      <p class="section-title">Informations personnelles</p>
+      <div class="info-row"><mat-icon>email</mat-icon><span>{{ selectedStagiaire?.email }}</span></div>
+      <div class="info-row"><mat-icon>phone</mat-icon><span>{{ selectedStagiaire?.telephone ?? '—' }}</span></div>
+      <div class="info-row"><mat-icon>badge</mat-icon><span>{{ selectedStagiaire?.cin ?? '—' }}</span></div>
+    </div>
+    <div class="detail-section">
+      <p class="section-title">Formation</p>
+      <div class="info-row"><mat-icon>school</mat-icon><span>{{ selectedStagiaire?.filiere ?? '—' }}</span></div>
+      <div class="info-row"><mat-icon>stairs</mat-icon><span>{{ selectedStagiaire?.niveau ?? '—' }}</span></div>
+      <div class="info-row"><mat-icon>account_balance</mat-icon><span>{{ selectedStagiaire?.etablissementNom ?? '—' }}</span></div>
+    </div>
+    <div class="detail-section">
+      <p class="section-title">Compte</p>
+      <div class="info-row"><mat-icon>person</mat-icon><span>{{ selectedStagiaire?.username }}</span></div>
+      <div class="info-row"><mat-icon>calendar_today</mat-icon><span>Créé le {{ selectedStagiaire?.createdAt | date:'dd/MM/yyyy' }}</span></div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button
+            [class]="selectedStagiaire?.actif ? 'btn-desactiver' : 'btn-activer'"
+            (click)="toggleActif(selectedStagiaire)">
+      <mat-icon>{{ selectedStagiaire?.actif ? 'block' : 'check_circle' }}</mat-icon>
+      {{ selectedStagiaire?.actif ? 'Désactiver' : 'Activer' }}
+    </button>
+    <button mat-stroked-button class="btn-reset" (click)="resetPassword(selectedStagiaire)">
+      <mat-icon>lock_reset</mat-icon> Reset password
+    </button>
+    <button mat-button mat-dialog-close>Fermer</button>
+  </mat-dialog-actions>
+</ng-template>

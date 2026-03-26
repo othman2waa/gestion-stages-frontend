@@ -14,6 +14,7 @@ import { SuiviHebdomadaireComponent } from '../suivi-hebdomadaire/suivi-hebdomad
 import { EncadrantDashboardComponent } from '../encadrant-dashboard/encadrant-dashboard.component';
 import { RapportStageComponent } from '../rapport-stage/rapport-stage.component';
 import { CandidaturesAdminComponent } from '../candidatures-admin/candidatures-admin.component';
+import { GestionComptesComponent } from '../gestion-comptes/gestion-comptes.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,7 @@ const routes: Routes = [
       { path: 'stagiaire-dashboard', component: StagiaireDashboardComponent },
       { path: 'suivi-hebdomadaire', component: SuiviHebdomadaireComponent },
       { path: 'encadrant-dashboard', component: EncadrantDashboardComponent },
+      { path: 'gestion-comptes', component: GestionComptesComponent },
       { path: 'rapport-stage', component: RapportStageComponent },
       { path: 'candidatures', component: CandidaturesAdminComponent },
 
