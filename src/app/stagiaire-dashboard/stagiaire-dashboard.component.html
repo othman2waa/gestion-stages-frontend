@@ -8,15 +8,49 @@
   <ng-container *ngIf="!isLoading && dashboard">
 
     <!-- En-tête -->
-    <div class="dashboard-header">
-      <div class="avatar">{{ dashboard.stagiairePrenom?.charAt(0) }}{{ dashboard.stagiaireNom?.charAt(0) }}</div>
-      <div class="header-info">
-        <h2>Bonjour, {{ dashboard.stagiairePrenom }} {{ dashboard.stagiaireNom }} 👋</h2>
-        <p>{{ dashboard.stagiaireFiliere }} — {{ dashboard.stagiaireNiveau }}</p>
+    <!-- Remplace le dashboard-header par : -->
+<div class="dashboard-header">
+  <div class="header-stage-info" *ngIf="dashboard.stageId">
+    <div class="stage-title">
+      <mat-icon>work</mat-icon>
+      <div>
+        <h3>{{ dashboard.stageSujet ?? 'Stage en cours' }}</h3>
+        <p>{{ dashboard.typeStage }} · {{ dashboard.departementNom ?? 'OCP' }}</p>
       </div>
-      <span class="statut-badge" [class]="getStatutClass(dashboard.stageStatut)">
-        {{ dashboard.stageStatut?.replace('_', ' ') }}
-      </span>
+    </div>
+    <div class="header-dates" *ngIf="dashboard.dateDebut">
+      <mat-icon>date_range</mat-icon>
+      <span>{{ dashboard.dateDebut | date:'dd/MM/yyyy' }} → {{ dashboard.dateFin | date:'dd/MM/yyyy' }}</span>
+    </div>
+  </div>
+  <div class="no-stage" *ngIf="!dashboard.stageId">
+    <mat-icon>hourglass_empty</mat-icon>
+    <span>Aucun stage assigné pour le moment</span>
+  </div>
+</div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid" *ngIf="dashboard.stageId">
+      <div class="kpi-card blue">
+        <mat-icon>event_note</mat-icon>
+        <span class="kpi-value">{{ suivis.length }}</span>
+        <span class="kpi-label">Suivis reçus</span>
+      </div>
+      <div class="kpi-card green">
+        <mat-icon>star</mat-icon>
+        <span class="kpi-value">{{ evaluations.length }}</span>
+        <span class="kpi-label">Évaluations</span>
+      </div>
+      <div class="kpi-card orange">
+        <mat-icon>grade</mat-icon>
+        <span class="kpi-value">{{ moyenneNote > 0 ? (moyenneNote | number:'1.1-1') : '—' }}</span>
+        <span class="kpi-label">Moyenne /20</span>
+      </div>
+      <div class="kpi-card purple">
+        <mat-icon>trending_up</mat-icon>
+        <span class="kpi-value">{{ dashboard.progression }}%</span>
+        <span class="kpi-label">Progression</span>
+      </div>
     </div>
 
     <!-- Timeline progression -->
@@ -40,66 +74,198 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- Grille infos -->
-    <div class="info-grid">
+    <!-- Tabs -->
+    <mat-tab-group animationDuration="200ms" class="main-tabs">
 
-      <!-- Infos stage -->
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-icon mat-card-avatar>work</mat-icon>
-          <mat-card-title>Mon Stage</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="info-row"><span class="label">Sujet</span><span class="value">{{ dashboard.stageSujet ?? '—' }}</span></div>
-          <div class="info-row"><span class="label">Type</span><span class="value">{{ dashboard.typeStage ?? '—' }}</span></div>
-          <div class="info-row"><span class="label">Département</span><span class="value">{{ dashboard.departementNom ?? '—' }}</span></div>
-          <div class="info-row"><span class="label">Début</span><span class="value">{{ dashboard.dateDebut | date:'dd/MM/yyyy' }}</span></div>
-          <div class="info-row"><span class="label">Fin</span><span class="value">{{ dashboard.dateFin | date:'dd/MM/yyyy' }}</span></div>
-        </mat-card-content>
-      </mat-card>
+      <!-- Tab Infos -->
+      <mat-tab>
+        <ng-template mat-tab-label><mat-icon>info</mat-icon>&nbsp; Mon Stage</ng-template>
+        <div class="tab-content">
+          <div class="info-grid">
+            <mat-card class="info-card">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>work</mat-icon>
+                <mat-card-title>Stage</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="info-row"><span class="label">Sujet</span><span class="value">{{ dashboard.stageSujet ?? '—' }}</span></div>
+                <div class="info-row"><span class="label">Type</span><span class="value">{{ dashboard.typeStage ?? '—' }}</span></div>
+                <div class="info-row"><span class="label">Département</span><span class="value">{{ dashboard.departementNom ?? '—' }}</span></div>
+                <div class="info-row"><span class="label">Début</span><span class="value">{{ dashboard.dateDebut | date:'dd/MM/yyyy' }}</span></div>
+                <div class="info-row"><span class="label">Fin</span><span class="value">{{ dashboard.dateFin | date:'dd/MM/yyyy' }}</span></div>
+              </mat-card-content>
+            </mat-card>
 
-      <!-- Encadrant -->
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-icon mat-card-avatar>person</mat-icon>
-          <mat-card-title>Mon Encadrant OCP</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="encadrant-avatar">
-            {{ dashboard.encadrantNom?.charAt(0) ?? '?' }}
+            <mat-card class="info-card">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>person</mat-icon>
+                <mat-card-title>Encadrant OCP</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="encadrant-avatar">{{ dashboard.encadrantNom?.charAt(0) ?? '?' }}</div>
+                <div class="info-row"><span class="label">Nom</span><span class="value">{{ dashboard.encadrantNom ?? '—' }}</span></div>
+                <div class="info-row"><span class="label">Email</span><span class="value">{{ dashboard.encadrantEmail ?? '—' }}</span></div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="info-card">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>description</mat-icon>
+                <mat-card-title>Convention</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <ng-container *ngIf="dashboard.conventionId; else noConvention">
+                  <div class="info-row"><span class="label">Numéro</span><span class="value">{{ dashboard.conventionNumero }}</span></div>
+                  <div class="info-row"><span class="label">Statut</span>
+                    <span class="value statut-badge" [class]="getStatutClass(dashboard.conventionStatut)">{{ dashboard.conventionStatut }}</span>
+                  </div>
+                  <div class="info-row"><span class="label">Date</span><span class="value">{{ dashboard.conventionDateEmission | date:'dd/MM/yyyy' }}</span></div>
+                  <button mat-raised-button color="primary" (click)="telechargerConvention()" class="pdf-btn">
+                    <mat-icon>picture_as_pdf</mat-icon> Télécharger PDF
+                  </button>
+                </ng-container>
+                <ng-template #noConvention>
+                  <div class="empty-state"><mat-icon>hourglass_empty</mat-icon><p>Convention en attente</p></div>
+                </ng-template>
+              </mat-card-content>
+            </mat-card>
           </div>
-          <div class="info-row"><span class="label">Nom</span><span class="value">{{ dashboard.encadrantNom ?? '—' }}</span></div>
-          <div class="info-row"><span class="label">Email</span><span class="value">{{ dashboard.encadrantEmail ?? '—' }}</span></div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </mat-tab>
 
-      <!-- Convention -->
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-icon mat-card-avatar>description</mat-icon>
-          <mat-card-title>Ma Convention</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <ng-container *ngIf="dashboard.conventionId; else noConvention">
-            <div class="info-row"><span class="label">Numéro</span><span class="value">{{ dashboard.conventionNumero }}</span></div>
-            <div class="info-row"><span class="label">Statut</span>
-              <span class="value statut-badge" [class]="getStatutClass(dashboard.conventionStatut)">{{ dashboard.conventionStatut }}</span>
-            </div>
-            <div class="info-row"><span class="label">Date émission</span><span class="value">{{ dashboard.conventionDateEmission | date:'dd/MM/yyyy' }}</span></div>
-            <button mat-raised-button color="primary" (click)="telechargerConvention()" class="pdf-btn">
-              <mat-icon>picture_as_pdf</mat-icon> Télécharger PDF
-            </button>
-          </ng-container>
-          <ng-template #noConvention>
-            <div class="empty-state">
-              <mat-icon>hourglass_empty</mat-icon>
-              <p>Convention en attente de génération</p>
-            </div>
-          </ng-template>
-        </mat-card-content>
-      </mat-card>
+      <!-- Tab Suivis -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>event_note</mat-icon>&nbsp; Suivis ({{ suivis.length }})
+        </ng-template>
+        <div class="tab-content">
+          <div *ngIf="suivis.length === 0" class="empty-tab">
+            <mat-icon>event_busy</mat-icon>
+            <p>Aucun suivi enregistré par votre encadrant</p>
+          </div>
+          <div class="suivis-grid">
+            <mat-card *ngFor="let s of suivis" class="suivi-card">
+              <mat-card-header>
+                <div mat-card-avatar class="semaine-badge">S{{ s.semaineNumero }}</div>
+                <mat-card-title>Semaine {{ s.semaineNumero }}</mat-card-title>
+                <mat-card-subtitle>{{ s.dateSuivi | date:'dd/MM/yyyy' }}</mat-card-subtitle>
+                <span *ngIf="s.note" class="note-badge" [class]="getNoteClass(s.note)">{{ s.note }}/20</span>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="prog-row">
+                  <span>Progression</span><span>{{ s.progression }}%</span>
+                </div>
+                <mat-progress-bar mode="determinate" [value]="s.progression"></mat-progress-bar>
+                <div *ngIf="s.commentaire" class="suivi-section">
+                  <mat-icon>comment</mat-icon><p>{{ s.commentaire }}</p>
+                </div>
+                <div *ngIf="s.pointsPositifs" class="suivi-section positive">
+                  <mat-icon>thumb_up</mat-icon><p>{{ s.pointsPositifs }}</p>
+                </div>
+                <div *ngIf="s.axesAmelioration" class="suivi-section improve">
+                  <mat-icon>trending_up</mat-icon><p>{{ s.axesAmelioration }}</p>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
 
+      <!-- Tab Évaluations -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>star</mat-icon>&nbsp; Évaluations ({{ evaluations.length }})
+        </ng-template>
+        <div class="tab-content">
+
+          <!-- Moyenne -->
+          <mat-card *ngIf="evaluations.length > 0" class="moyenne-card">
+            <mat-card-content>
+              <div class="moyenne-content">
+                <div class="moyenne-circle" [class]="getNoteClass(moyenneNote)">
+                  {{ moyenneNote | number:'1.1-1' }}<span>/20</span>
+                </div>
+                <div>
+                  <h3>Moyenne générale</h3>
+                  <p>{{ evaluations.length }} évaluation(s)</p>
+                  <span class="note-label" [class]="getNoteClass(moyenneNote)">{{ getNoteLabel(moyenneNote) }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <div *ngIf="evaluations.length === 0" class="empty-tab">
+            <mat-icon>star_border</mat-icon>
+            <p>Aucune évaluation pour le moment</p>
+          </div>
+
+          <div class="evals-grid">
+            <mat-card *ngFor="let e of evaluations" class="eval-card">
+              <mat-card-header>
+                <div mat-card-avatar class="eval-avatar" [class]="getNoteClass(e.note)">{{ e.note }}</div>
+                <mat-card-title>{{ e.typeEvaluation?.replace('_', ' ') }}</mat-card-title>
+                <mat-card-subtitle>{{ e.encadrantNom }} — {{ e.dateEval | date:'dd/MM/yyyy' }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="note-bar">
+                  <mat-progress-bar mode="determinate" [value]="(e.note/20)*100"></mat-progress-bar>
+                  <span [class]="getNoteClass(e.note)">{{ e.note }}/20 — {{ getNoteLabel(e.note) }}</span>
+                </div>
+                <p *ngIf="e.commentaire" class="eval-comment">
+                  <mat-icon>format_quote</mat-icon> {{ e.commentaire }}
+                </p>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+<!-- Tab Rapport -->
+<mat-tab>
+  <ng-template mat-tab-label>
+    <mat-icon>upload_file</mat-icon>&nbsp; Mon Rapport
+  </ng-template>
+  <div class="tab-content">
+
+    <div *ngIf="rapport" class="rapport-existant">
+      <div class="rapport-info">
+        <mat-icon class="pdf-icon">picture_as_pdf</mat-icon>
+        <div>
+          <h4>{{ rapport.nomFichier }}</h4>
+          <p>Uploadé le {{ rapport.uploadedAt | date:'dd/MM/yyyy à HH:mm' }} · {{ formatSize(rapport.taille) }}</p>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="downloadRapport()">
+        <mat-icon>download</mat-icon> Télécharger
+      </button>
     </div>
+
+    <div class="upload-section">
+      <h4>{{ rapport ? 'Remplacer le rapport' : 'Déposer votre rapport de stage' }}</h4>
+      <p class="upload-hint">Format PDF uniquement · Taille max 10 MB</p>
+      <div class="drop-zone" (click)="rapportInput.click()" [class.has-file]="selectedRapportFile">
+        <mat-icon>{{ selectedRapportFile ? 'check_circle' : 'cloud_upload' }}</mat-icon>
+        <p *ngIf="!selectedRapportFile">Cliquez pour sélectionner votre rapport PDF</p>
+        <p *ngIf="selectedRapportFile" class="file-selected">{{ selectedRapportFile.name }}</p>
+        <input #rapportInput type="file" accept=".pdf" (change)="onRapportSelected($event)" hidden>
+      </div>
+      <mat-progress-bar *ngIf="isUploading" mode="indeterminate" class="upload-progress"></mat-progress-bar>
+      <div class="upload-actions">
+        <button mat-raised-button color="primary"
+                [disabled]="!selectedRapportFile || isUploading"
+                (click)="uploadRapport()">
+          <mat-icon>upload</mat-icon>
+          {{ isUploading ? 'Envoi en cours...' : 'Envoyer le rapport' }}
+        </button>
+        <button mat-button *ngIf="selectedRapportFile" (click)="selectedRapportFile = null">
+          Annuler
+        </button>
+      </div>
+    </div>
+
+  </div>
+</mat-tab>
+    </mat-tab-group>
+
   </ng-container>
 
   <div *ngIf="!isLoading && !dashboard" class="empty-state">

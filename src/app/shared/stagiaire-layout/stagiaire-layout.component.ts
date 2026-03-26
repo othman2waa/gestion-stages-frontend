@@ -24,8 +24,6 @@ export class StagiaireLayoutComponent implements OnInit {
 
   navItems = [
     { label: 'Accueil', icon: 'home', route: '/stagiaire/accueil' },
-    { label: 'Mon Stage', icon: 'work', route: '/stagiaire/mon-stage' },
-    { label: 'Mon Rapport', icon: 'upload_file', route: '/stagiaire/rapport' },
     { label: 'Mes Évaluations', icon: 'star', route: '/stagiaire/evaluations' },
   ];
 

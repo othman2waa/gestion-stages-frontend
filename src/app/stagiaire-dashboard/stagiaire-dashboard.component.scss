@@ -4,115 +4,194 @@
   margin: 0 auto;
 }
 
-.loading-state {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-}
-
+.loading-state { text-align: center; padding: 40px; color: #666; }
 .dashboard-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: linear-gradient(135deg, #1e40af, #3b82f6);
-  color: white;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 4px solid #00843D;
 
-  .avatar {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: bold; color: white;
-    flex-shrink: 0;
-  }
+  .header-stage-info {
+    display: flex; justify-content: space-between; align-items: center;
 
-  .header-info {
-    flex: 1;
-    h2 { margin: 0; font-size: 22px; }
-    p  { margin: 4px 0 0; opacity: 0.85; }
-  }
-}
+    .stage-title {
+      display: flex; align-items: center; gap: 12px;
+      mat-icon { font-size: 32px; color: #00843D; }
+      h3 { margin: 0; font-size: 18px; color: #1e293b; }
+      p  { margin: 4px 0 0; color: #64748b; font-size: 13px; }
+    }
 
-.timeline-card {
-  margin-bottom: 24px;
-
-  .main-progress { height: 8px; border-radius: 4px; margin-bottom: 8px; }
-
-  .progression-label { text-align: right; font-size: 13px; color: #666; margin-bottom: 16px; }
-
-  .timeline {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    &::before {
-      content: '';
-      position: absolute;
-      top: 14px; left: 0; right: 0;
-      height: 2px;
-      background: #e0e0e0;
-      z-index: 0;
+    .header-dates {
+      display: flex; align-items: center; gap: 6px;
+      background: #f0fdf4; color: #166534;
+      padding: 8px 14px; border-radius: 8px; font-size: 13px;
+      mat-icon { font-size: 16px; }
     }
   }
 
+  .no-stage {
+    display: flex; align-items: center; gap: 8px;
+    color: #94a3b8; font-size: 14px;
+    mat-icon { color: #F47920; }
+  }
+}
+
+// KPI Cards
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
+  .kpi-card {
+    border-radius: 12px; padding: 20px; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; color: white;
+    mat-icon { font-size: 28px; opacity: 0.9; }
+    .kpi-value { font-size: 28px; font-weight: 800; }
+    .kpi-label { font-size: 12px; opacity: 0.85; }
+    &.blue   { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    &.green  { background: linear-gradient(135deg, #059669, #10b981); }
+    &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
+    &.purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+  }
+}
+
+// Timeline
+.timeline-card {
+  margin-bottom: 20px;
+  .main-progress { height: 8px; border-radius: 4px; margin-bottom: 8px; }
+  .progression-label { text-align: right; font-size: 13px; color: #666; margin-bottom: 16px; }
+  .timeline {
+    display: flex; justify-content: space-between; position: relative;
+    &::before { content: ''; position: absolute; top: 14px; left: 0; right: 0;
+      height: 2px; background: #e0e0e0; z-index: 0; }
+  }
   .step {
     display: flex; flex-direction: column; align-items: center;
     gap: 6px; position: relative; z-index: 1; flex: 1;
-
-    .step-dot {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: #e0e0e0;
+    .step-dot { width: 32px; height: 32px; border-radius: 50%; background: #e0e0e0;
       display: flex; align-items: center; justify-content: center;
-      mat-icon { font-size: 18px; color: #999; }
-    }
-
+      mat-icon { font-size: 18px; color: #999; } }
     .step-label { font-size: 11px; color: #999; text-align: center; }
-
     &.done .step-dot { background: #3b82f6; mat-icon { color: white; } }
     &.done .step-label { color: #3b82f6; font-weight: 500; }
-    &.active .step-dot { background: #1e40af; box-shadow: 0 0 0 4px rgba(59,130,246,0.3); mat-icon { color: white; } }
+    &.active .step-dot { background: #1e40af; box-shadow: 0 0 0 4px rgba(59,130,246,0.3);
+      mat-icon { color: white; } }
     &.active .step-label { color: #1e40af; font-weight: 700; }
   }
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
+// Tabs
+.main-tabs { background: white; border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.tab-content { padding: 20px; }
 
+// Info grid
+.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 .info-card {
   mat-icon[mat-card-avatar] { font-size: 32px; color: #3b82f6; }
-
-  .info-row {
-    display: flex; justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
-    &:last-child { border-bottom: none; }
+  .info-row { display: flex; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0; &:last-child { border-bottom: none; }
     .label { color: #666; font-size: 13px; }
     .value { font-weight: 500; font-size: 13px; text-align: right; max-width: 60%; }
   }
-
-  .encadrant-avatar {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: #1e40af; color: white;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; font-weight: bold;
-    margin: 8px auto 16px;
-  }
-
+  .encadrant-avatar { width: 56px; height: 56px; border-radius: 50%; background: #1e40af;
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: bold; margin: 8px auto 16px; }
   .pdf-btn { width: 100%; margin-top: 12px; }
 }
 
-.empty-state {
-  text-align: center; padding: 40px; color: #999;
-  mat-icon { font-size: 48px; display: block; margin-bottom: 8px; }
+// Suivis
+.suivis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.suivi-card {
+  .semaine-badge { width: 40px; height: 40px; border-radius: 50%; background: #1e40af;
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 13px; }
+  .prog-row { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px; }
+  .suivi-section { display: flex; align-items: flex-start; gap: 6px; margin-top: 8px;
+    background: #f8fafc; border-radius: 6px; padding: 8px 10px;
+    mat-icon { font-size: 16px; color: #666; flex-shrink: 0; }
+    p { margin: 0; font-size: 12px; color: #555; }
+    &.positive { background: #f0fdf4; mat-icon { color: #16a34a; } }
+    &.improve  { background: #fffbeb; mat-icon { color: #d97706; } }
+  }
 }
 
-// Statut badges
+// Evaluations
+.moyenne-card {
+  margin-bottom: 20px; border-left: 4px solid #3b82f6;
+  .moyenne-content { display: flex; align-items: center; gap: 24px;
+    .moyenne-circle { width: 80px; height: 80px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      font-size: 24px; font-weight: bold; color: white;
+      span { font-size: 12px; opacity: 0.8; }
+    }
+    h3 { margin: 0; } p { margin: 4px 0; color: #666; font-size: 13px; }
+    .note-label { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  }
+}
+
+.evals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.eval-card {
+  .eval-avatar { width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 16px; color: white; }
+  .note-bar { margin: 12px 0 6px;
+    mat-progress-bar { border-radius: 4px; margin-bottom: 6px; }
+    span { font-size: 13px; font-weight: 600; }
+  }
+  .eval-comment { display: flex; align-items: flex-start; gap: 6px;
+    background: #f8fafc; border-radius: 6px; padding: 8px 10px; margin: 0;
+    font-size: 13px; color: #555; font-style: italic;
+    mat-icon { font-size: 16px; color: #3b82f6; flex-shrink: 0; }
+  }
+}
+
+
+// Rapport
+.rapport-existant {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #f0fdf4; border: 1px solid #86efac;
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;
+  .rapport-info { display: flex; align-items: center; gap: 16px;
+    .pdf-icon { font-size: 44px; color: #dc2626; }
+    h4 { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: #1e293b; }
+    p  { margin: 0; font-size: 13px; color: #64748b; }
+  }
+}
+
+.upload-section {
+  background: white; border-radius: 12px; padding: 24px;
+  border: 1px solid #e2e8f0;
+  h4 { margin: 0 0 4px; font-size: 16px; font-weight: 600; color: #1e293b; }
+  .upload-hint { color: #94a3b8; font-size: 13px; margin: 0 0 20px; }
+
+  .drop-zone {
+    border: 2px dashed #cbd5e1; border-radius: 12px;
+    padding: 48px 24px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: #f8fafc;
+    mat-icon { font-size: 52px; color: #cbd5e1; display: block; margin: 0 auto 12px; }
+    p { margin: 0; color: #94a3b8; font-size: 14px; }
+    .file-selected { color: #00843D; font-weight: 600; font-size: 15px; }
+    &:hover { border-color: #00843D; background: #f0fdf4;
+      mat-icon { color: #00843D; } }
+    &.has-file { border-color: #00843D; background: #f0fdf4;
+      mat-icon { color: #00843D; } }
+  }
+
+  .upload-progress { margin-top: 16px; border-radius: 4px; }
+  .upload-actions { display: flex; gap: 12px; margin-top: 20px;
+    button:first-child { background: #00843D; color: white; }
+  }
+}
+
+
+// Notes colors
+.note-excellent { background: #dcfce7; color: #166534; }
+.note-bien      { background: #dbeafe; color: #1e40af; }
+.note-passable  { background: #fef3c7; color: #92400e; }
+.note-insuffisant { background: #fee2e2; color: #991b1b; }
+
+.note-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+
 .statut-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
 .status-gray   { background: #f0f0f0; color: #666; }
 .status-blue   { background: #dbeafe; color: #1e40af; }
@@ -121,3 +200,8 @@
 .status-red    { background: #fee2e2; color: #991b1b; }
 .status-purple { background: #ede9fe; color: #5b21b6; }
 .status-teal   { background: #ccfbf1; color: #134e4a; }
+
+.empty-state { text-align: center; padding: 40px; color: #999;
+  mat-icon { font-size: 48px; display: block; margin-bottom: 8px; } }
+.empty-tab { text-align: center; padding: 40px; color: #999;
+  mat-icon { font-size: 48px; display: block; margin-bottom: 8px; } }

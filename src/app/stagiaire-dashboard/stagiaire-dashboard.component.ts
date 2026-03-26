@@ -7,22 +7,33 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { StagiaireDashboardService } from '../core/services/stagiaire-dashboard.service';
 import { ConventionService } from '../core/services/convention.service';
+import { SuiviService } from '../core/services/suivi.service';
+import { EvaluationService } from '../core/services/evaluation.service';
+import { RapportService } from '../core/services/rapport.service';
 
 @Component({
   selector: 'app-stagiaire-dashboard',
   standalone: true,
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
-    MatProgressBarModule, MatChipsModule, MatTooltipModule, MatSnackBarModule
+    MatProgressBarModule, MatChipsModule, MatTooltipModule,
+    MatSnackBarModule, MatTabsModule
   ],
   templateUrl: './stagiaire-dashboard.component.html',
   styleUrls: ['./stagiaire-dashboard.component.scss']
 })
 export class StagiaireDashboardComponent implements OnInit {
   dashboard: any = null;
+  suivis: any[] = [];
+  evaluations: any[] = [];
+  rapport: any = null;
+  selectedRapportFile: File | null = null;
+  isUploading = false;
   isLoading = true;
+  moyenneNote = 0;
 
   readonly steps = [
     { key: 'EN_ATTENTE',            label: 'Candidature' },
@@ -51,14 +62,98 @@ export class StagiaireDashboardComponent implements OnInit {
   constructor(
     private dashService: StagiaireDashboardService,
     private conventionService: ConventionService,
+    private suiviService: SuiviService,
+    private evaluationService: EvaluationService,
+    private rapportService: RapportService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.dashService.getMonDashboard().subscribe({
-      next: (data) => { this.dashboard = data; this.isLoading = false; },
+      next: (data) => {
+        this.dashboard = data;
+        this.isLoading = false;
+        if (data.stageId) {
+          this.loadSuivis(data.stageId);
+          this.loadEvaluations();
+          this.loadRapport(data.stageId);
+        }
+      },
       error: () => { this.isLoading = false; }
     });
+  }
+
+  loadSuivis(stageId: number): void {
+    this.suiviService.getByStage(stageId).subscribe({
+      next: (data) => this.suivis = data,
+      error: () => {}
+    });
+  }
+
+  loadEvaluations(): void {
+    this.evaluationService.getMesEvaluations().subscribe({
+      next: (data) => {
+        this.evaluations = data;
+        if (data.length > 0)
+          this.moyenneNote = data.reduce((sum: number, e: any) => sum + e.note, 0) / data.length;
+      },
+      error: () => {}
+    });
+  }
+
+  loadRapport(stageId: number): void {
+    this.rapportService.getMeta(stageId).subscribe({
+      next: (data) => this.rapport = data,
+      error: () => this.rapport = null
+    });
+  }
+
+  onRapportSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      this.snackBar.open('Seuls les PDF sont acceptés', 'Fermer', { duration: 3000 });
+      return;
+    }
+    this.selectedRapportFile = file;
+  }
+
+  uploadRapport(): void {
+    if (!this.selectedRapportFile || !this.dashboard?.stageId) return;
+    this.isUploading = true;
+    this.rapportService.upload(this.dashboard.stageId, this.selectedRapportFile).subscribe({
+      next: (data) => {
+        this.rapport = data;
+        this.selectedRapportFile = null;
+        this.isUploading = false;
+        this.snackBar.open('✅ Rapport uploadé avec succès', 'Fermer', { duration: 3000 });
+      },
+      error: () => {
+        this.isUploading = false;
+        this.snackBar.open('Erreur upload', 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
+  downloadRapport(): void {
+    if (!this.dashboard?.stageId) return;
+    this.rapportService.download(this.dashboard.stageId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.rapport?.nomFichier ?? 'rapport.pdf';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => this.snackBar.open('Erreur téléchargement', 'Fermer', { duration: 3000 })
+    });
+  }
+
+  formatSize(bytes: number): string {
+    if (!bytes) return '—';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
   getStatutClass(statut: string): string {
@@ -74,6 +169,20 @@ export class StagiaireDashboardComponent implements OnInit {
 
   isStepActive(stepKey: string): boolean {
     return this.dashboard?.stageStatut === stepKey;
+  }
+
+  getNoteClass(note: number): string {
+    if (note >= 16) return 'note-excellent';
+    if (note >= 12) return 'note-bien';
+    if (note >= 10) return 'note-passable';
+    return 'note-insuffisant';
+  }
+
+  getNoteLabel(note: number): string {
+    if (note >= 16) return 'Excellent';
+    if (note >= 12) return 'Bien';
+    if (note >= 10) return 'Passable';
+    return 'Insuffisant';
   }
 
   telechargerConvention(): void {
