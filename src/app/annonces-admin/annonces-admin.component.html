@@ -1,0 +1,213 @@
+<p>annonces-admin works!</p>
+<div class="annonces-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>campaign</mat-icon> Gestion des Annonces</h2>
+      <p>{{ annonces.length }} annonce(s) publiées</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon> Nouvelle annonce
+    </button>
+  </div>
+
+  <div *ngIf="isLoading"><mat-progress-bar mode="indeterminate"></mat-progress-bar></div>
+
+  <!-- Grid annonces -->
+  <div class="annonces-grid" *ngIf="!isLoading">
+    <mat-card *ngFor="let a of annonces" class="annonce-card" [class.inactive]="!a.actif">
+      <mat-card-header>
+        <mat-card-title>{{ a.titre }}</mat-card-title>
+        <mat-card-subtitle>
+          <span class="tag">{{ a.departement }}</span>
+          <span class="tag">{{ a.typeStage }}</span>
+          <span class="tag">{{ a.niveauRequis }}</span>
+        </mat-card-subtitle>
+        <span class="actif-badge ml-auto" [class.actif]="a.actif" [class.inactif]="!a.actif">
+          {{ a.actif ? '● Publiée' : '● Fermée' }}
+        </span>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="description">{{ a.description }}</p>
+        <div class="competences">
+          <mat-icon>build</mat-icon>
+          <span>{{ a.competencesRequises }}</span>
+        </div>
+        <div class="annonce-meta">
+          <span><mat-icon>people</mat-icon> {{ a.nombrePostes }} poste(s)</span>
+          <span *ngIf="a.dateLimite"><mat-icon>event</mat-icon> {{ a.dateLimite | date:'dd/MM/yyyy' }}</span>
+          <span class="candidatures-count" (click)="voirCandidatures(a)">
+            <mat-icon>inbox</mat-icon> {{ a.nombreCandidatures }} candidature(s)
+          </span>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-stroked-button (click)="voirCandidatures(a)" color="primary">
+          <mat-icon>people</mat-icon> Candidatures
+        </button>
+        <button mat-icon-button (click)="openForm(a)" matTooltip="Modifier">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="toggle(a)"
+                [matTooltip]="a.actif ? 'Fermer' : 'Ouvrir'">
+          <mat-icon>{{ a.actif ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="delete(a.id)" matTooltip="Supprimer">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <div *ngIf="annonces.length === 0" class="empty-state">
+      <mat-icon>campaign</mat-icon>
+      <p>Aucune annonce créée</p>
+      <button mat-raised-button color="primary" (click)="openForm()">Créer la première annonce</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog formulaire annonce -->
+<ng-template #annonceDialog>
+  <div class="dialog-header">
+    <mat-icon>campaign</mat-icon>
+    <h3>{{ editingId ? 'Modifier l\'annonce' : 'Nouvelle annonce' }}</h3>
+    <button mat-icon-button mat-dialog-close class="close-btn"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="annonce-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Titre du stage *</mat-label>
+        <input matInput formControlName="titre">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description *</mat-label>
+        <textarea matInput formControlName="description" rows="4"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Compétences requises *</mat-label>
+        <textarea matInput formControlName="competencesRequises" rows="3"
+                  placeholder="Java, Spring Boot, Angular, SQL..."></textarea>
+        <mat-hint>Séparées par des virgules — utilisées pour le matching IA</mat-hint>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Département</mat-label>
+          <mat-select formControlName="departement">
+            <mat-option *ngFor="let d of departements" [value]="d">{{ d }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type de stage</mat-label>
+          <mat-select formControlName="typeStage">
+            <mat-option *ngFor="let t of typesStage" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Niveau requis</mat-label>
+          <mat-select formControlName="niveauRequis">
+            <mat-option *ngFor="let n of niveaux" [value]="n">{{ n }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Filière requise</mat-label>
+          <input matInput formControlName="filiereRequise">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre de postes</mat-label>
+          <input matInput type="number" formControlName="nombrePostes" min="1">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date limite</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dateLimite">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">
+      <mat-icon>save</mat-icon> {{ editingId ? 'Modifier' : 'Créer' }}
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- Dialog candidatures avec scores -->
+<ng-template #candidaturesDialog>
+  <div class="dialog-header">
+    <mat-icon>people</mat-icon>
+    <div>
+      <h3>Candidatures — {{ selectedAnnonce?.titre }}</h3>
+      <p>{{ candidaturesByAnnonce.length }} candidature(s) · triées par score IA</p>
+    </div>
+    <button mat-icon-button mat-dialog-close class="close-btn"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <div *ngIf="candidaturesByAnnonce.length === 0" class="empty-state-small">
+      <mat-icon>inbox</mat-icon>
+      <p>Aucune candidature pour cette annonce</p>
+    </div>
+
+    <div class="candidatures-list">
+      <div *ngFor="let c of candidaturesByAnnonce; let i = index"
+           class="candidature-item" [class]="'rank-' + (i < 3 ? i+1 : 'other')">
+
+        <div class="rank-badge">
+          <span *ngIf="i === 0">🥇</span>
+          <span *ngIf="i === 1">🥈</span>
+          <span *ngIf="i === 2">🥉</span>
+          <span *ngIf="i >= 3">#{{ i+1 }}</span>
+        </div>
+
+        <div class="candidat-info">
+          <div class="candidat-avatar">{{ c.prenom?.charAt(0) }}{{ c.nom?.charAt(0) }}</div>
+          <div>
+            <span class="candidat-name">{{ c.prenom }} {{ c.nom }}</span>
+            <span class="candidat-sub">{{ c.filiere }} — {{ c.niveau }} · {{ c.etablissement }}</span>
+          </div>
+        </div>
+
+        <div class="score-section">
+          <div class="score-circle" [class]="getScoreClass(c.scoreMatching ?? 0)">
+            {{ c.scoreMatching ?? 0 }}%
+          </div>
+          <span class="score-label" [class]="getScoreClass(c.scoreMatching ?? 0)">
+            {{ getScoreLabel(c.scoreMatching ?? 0) }}
+          </span>
+          <mat-progress-bar mode="determinate" [value]="c.scoreMatching ?? 0"
+                            class="score-bar"></mat-progress-bar>
+        </div>
+
+        <div class="candidature-actions">
+          <span class="statut-badge" [class]="'statut-' + c.statut?.toLowerCase()">
+            {{ c.statut?.replace('_', ' ') }}
+          </span>
+          <div class="action-btns" *ngIf="c.statut === 'EN_ATTENTE'">
+            <button mat-raised-button class="btn-accepter" (click)="accepter(c)">
+              <mat-icon>check</mat-icon> Accepter
+            </button>
+            <button mat-stroked-button color="warn" (click)="refuser(c)">
+              <mat-icon>close</mat-icon> Refuser
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>

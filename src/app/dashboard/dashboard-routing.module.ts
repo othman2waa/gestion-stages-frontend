@@ -15,6 +15,7 @@ import { EncadrantDashboardComponent } from '../encadrant-dashboard/encadrant-da
 import { RapportStageComponent } from '../rapport-stage/rapport-stage.component';
 import { CandidaturesAdminComponent } from '../candidatures-admin/candidatures-admin.component';
 import { GestionComptesComponent } from '../gestion-comptes/gestion-comptes.component';
+import { AnnoncesAdminComponent } from '../annonces-admin/annonces-admin.component';
 
 const routes: Routes = [
   {
@@ -36,6 +37,7 @@ const routes: Routes = [
       { path: 'gestion-comptes', component: GestionComptesComponent },
       { path: 'rapport-stage', component: RapportStageComponent },
       { path: 'candidatures', component: CandidaturesAdminComponent },
+      { path: 'annonces', component: AnnoncesAdminComponent },
 
     ]
   }

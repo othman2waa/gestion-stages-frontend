@@ -17,6 +17,11 @@ export const routes: Routes = [
     loadChildren: () => import('./stagiaire-portal/stagiaire-portal.module').then(m => m.StagiairePortalModule)
   },
   {
+  path: 'offres',
+  loadComponent: () => import('./annonces-publiques/annonces-publiques.component')
+    .then(m => m.AnnoncesPubliquesComponent)
+},
+  {
     path: '',
     canActivate: [authGuard],
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)

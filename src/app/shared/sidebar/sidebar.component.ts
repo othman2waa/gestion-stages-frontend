@@ -32,6 +32,7 @@ export class SidebarComponent {
     { label: 'Mon Rapport', icon: 'upload_file', route: '/rapport-stage', roles: ['STAGIAIRE'] },
     { label: 'Candidatures', icon: 'inbox', route: '/candidatures', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Comptes', icon: 'manage_accounts', route: '/gestion-comptes', roles: ['ADMIN_RH'] },
+    { label: 'Annonces', icon: 'campaign', route: '/annonces', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
   ];
 
   constructor(
