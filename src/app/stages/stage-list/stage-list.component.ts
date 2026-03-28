@@ -171,4 +171,7 @@ export class StageListComponent implements OnInit {
   exportExcel(): void {
   this.exportService.exportStages(this.stages);
 }
+exportPdf(): void {
+  this.exportService.exportCandidaturesPdf(this.stages);
+}
 }

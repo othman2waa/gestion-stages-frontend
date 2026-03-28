@@ -10,6 +10,9 @@
       <div class="stat-chip actif"><mat-icon>check_circle</mat-icon> {{ totalActifs }} actifs</div>
       <div class="stat-chip inactif"><mat-icon>block</mat-icon> {{ totalInactifs }} inactifs</div>
     </div>
+    <button mat-stroked-button color="warn" (click)="exportPdf()">
+  <mat-icon>picture_as_pdf</mat-icon> Export PDF
+</button>
   </div>
 
   <!-- Password Banner -->

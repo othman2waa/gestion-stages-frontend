@@ -135,4 +135,8 @@ export class CandidaturesAdminComponent implements OnInit {
   this.exportService.exportCandidatures(this.candidatures);
 }
 
+exportPdf(): void {
+  this.exportService.exportCandidaturesPdf(this.candidatures);
+}
+
 }

@@ -1,14 +1,175 @@
 import { Injectable } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Injectable({ providedIn: 'root' })
 export class ExportService {
+
+exportCandidaturesPdf(candidatures: any[]): void {
+  const doc = new jsPDF();
+
+  // Header OCP
+  doc.setFillColor(0, 132, 61);
+  doc.rect(0, 0, 210, 25, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('OCP Group — Rapport des Candidatures', 14, 16);
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, 14, 33);
+  doc.text(`Total : ${candidatures.length} candidature(s)`, 14, 39);
+
+  const accepted = candidatures.filter(c => c.statut === 'ACCEPTEE').length;
+  const refused = candidatures.filter(c => c.statut === 'REFUSEE').length;
+  const pending = candidatures.filter(c => c.statut === 'EN_ATTENTE').length;
+  doc.text(`Acceptées: ${accepted} | Refusées: ${refused} | En attente: ${pending}`, 14, 45);
+
+  autoTable(doc, {
+    startY: 52,
+    head: [['Nom', 'Email', 'Filière', 'Niveau', 'Statut', 'Score', 'Date']],
+    body: candidatures.map(c => [
+      `${c.prenom} ${c.nom}`,
+      c.email,
+      c.filiere ?? '—',
+      c.niveau ?? '—',
+      c.statut,
+      `${c.scoreMatching ?? 0}%`,
+      c.createdAt ? new Date(c.createdAt).toLocaleDateString('fr-FR') : '—'
+    ]),
+    headStyles: { fillColor: [0, 132, 61], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [240, 253, 244] },
+    styles: { fontSize: 9, cellPadding: 3 },
+ columnStyles: {
+  4: { cellWidth: 25 }
+}
+  });
+
+  doc.save(`candidatures_${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
+exportStagesPdf(stages: any[]): void {
+  const doc = new jsPDF('landscape');
+
+  doc.setFillColor(30, 64, 175);
+  doc.rect(0, 0, 297, 25, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('OCP Group — Rapport des Stages', 14, 16);
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} | Total : ${stages.length} stage(s)`, 14, 33);
+
+  autoTable(doc, {
+    startY: 40,
+    head: [['Sujet', 'Stagiaire', 'Encadrant', 'Type', 'Département', 'Statut', 'Début', 'Fin']],
+    body: stages.map(s => [
+      s.sujet,
+      s.stagiaireNom ?? '—',
+      s.encadrantNom ?? '—',
+      s.typeStage ?? '—',
+      s.departementNom ?? '—',
+      s.statut,
+      s.dateDebut ? new Date(s.dateDebut).toLocaleDateString('fr-FR') : '—',
+      s.dateFin ? new Date(s.dateFin).toLocaleDateString('fr-FR') : '—'
+    ]),
+    headStyles: { fillColor: [30, 64, 175], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [239, 246, 255] },
+    styles: { fontSize: 8, cellPadding: 3 }
+  });
+
+  doc.save(`stages_${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
+exportEvaluationsPdf(evaluations: any[]): void {
+  const doc = new jsPDF();
+
+  doc.setFillColor(124, 58, 237);
+  doc.rect(0, 0, 210, 25, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('OCP Group — Rapport des Évaluations', 14, 16);
+
+  const moyenne = evaluations.length > 0
+    ? evaluations.reduce((sum, e) => sum + (e.note ?? 0), 0) / evaluations.length
+    : 0;
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, 14, 33);
+  doc.text(`Total : ${evaluations.length} évaluation(s) | Moyenne : ${moyenne.toFixed(1)}/20`, 14, 39);
+
+  autoTable(doc, {
+    startY: 46,
+    head: [['Stage', 'Stagiaire', 'Encadrant', 'Type', 'Note /20', 'Mention', 'Date']],
+    body: evaluations.map(e => [
+      e.stageSujet ?? '—',
+      e.stagiaireNom ?? '—',
+      e.encadrantNom ?? '—',
+      e.typeEvaluation ?? '—',
+      e.note ?? '—',
+      e.note >= 16 ? 'Excellent' : e.note >= 12 ? 'Bien' : e.note >= 10 ? 'Passable' : 'Insuffisant',
+      e.dateEval ? new Date(e.dateEval).toLocaleDateString('fr-FR') : '—'
+    ]),
+    headStyles: { fillColor: [124, 58, 237], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [245, 243, 255] },
+    styles: { fontSize: 9, cellPadding: 3 }
+  });
+
+  doc.save(`evaluations_${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
+exportStagiairesPdf(stagiaires: any[]): void {
+  const doc = new jsPDF();
+
+  doc.setFillColor(0, 132, 61);
+  doc.rect(0, 0, 210, 25, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('OCP Group — Liste des Stagiaires', 14, 16);
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} | Total : ${stagiaires.length}`, 14, 33);
+
+  autoTable(doc, {
+    startY: 40,
+    head: [['Prénom', 'Nom', 'Email', 'Filière', 'Niveau', 'Établissement', 'Compte']],
+    body: stagiaires.map(s => [
+      s.prenom,
+      s.nom,
+      s.email,
+      s.filiere ?? '—',
+      s.niveau ?? '—',
+      s.etablissementNom ?? '—',
+      s.actif ? 'Actif' : 'Inactif'
+    ]),
+    headStyles: { fillColor: [0, 132, 61], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [240, 253, 244] },
+    styles: { fontSize: 9, cellPadding: 3 }
+  });
+
+  doc.save(`stagiaires_${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
 
   exportExcel(data: any[], fileName: string, sheetName: string = 'Data'): void {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+ 
 
     // Style header
     const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');

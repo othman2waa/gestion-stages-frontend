@@ -112,4 +112,8 @@ export class GestionComptesComponent implements OnInit {
   exportExcel(): void {
   this.exportService.exportStagiaires(this.stagiaires);
 }
+exportPdf(): void {
+  this.exportService.exportCandidaturesPdf(this.stagiaires);
+}
+
 }

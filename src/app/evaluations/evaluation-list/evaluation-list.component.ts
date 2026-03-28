@@ -90,6 +90,9 @@ export class EvaluationListComponent implements OnInit {
   exportExcel(): void {
     this.exportService.exportEvaluations(this.evaluations);
   }
+  exportPdf(): void {
+  this.exportService.exportEvaluationsPdf(this.evaluations);
+}
 
 
 }

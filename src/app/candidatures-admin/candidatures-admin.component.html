@@ -25,6 +25,9 @@
     <button mat-stroked-button (click)="exportExcel()" class="export-btn">
     <mat-icon>download</mat-icon> Export Excel
     </button>
+    <button mat-stroked-button color="warn" (click)="exportPdf()">
+  <mat-icon>picture_as_pdf</mat-icon> Export PDF
+</button>
   </div>
 
   <div *ngIf="isLoading"><mat-progress-bar mode="indeterminate"></mat-progress-bar></div>
