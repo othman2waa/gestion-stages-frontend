@@ -20,6 +20,9 @@ import { RouterModule } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { StageService } from '../../core/services/stage.service';
 import { StageFormComponent } from '../stage-form/stage-form.component';
+import { ExportService } from '../../core/services/export.service';
+
+
 
 @Component({
   selector: 'app-stage-list',
@@ -67,7 +70,9 @@ export class StageListComponent implements OnInit {
   constructor(
     private stageService: StageService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private exportService: ExportService,
+
   ) {}
 
   ngOnInit(): void {
@@ -162,4 +167,8 @@ export class StageListComponent implements OnInit {
     };
     return colors[statut] ?? 'status-gray';
   }
+
+  exportExcel(): void {
+  this.exportService.exportStages(this.stages);
+}
 }

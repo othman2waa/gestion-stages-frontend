@@ -11,6 +11,8 @@
         <mat-icon>hourglass_empty</mat-icon>
         {{ enAttente.length }} en attente
       </div>
+
+
       <div class="stat-chip acceptee">
         <mat-icon>check_circle</mat-icon>
         {{ acceptees.length }} acceptées
@@ -20,6 +22,9 @@
         {{ refusees.length }} refusées
       </div>
     </div>
+    <button mat-stroked-button (click)="exportExcel()" class="export-btn">
+    <mat-icon>download</mat-icon> Export Excel
+    </button>
   </div>
 
   <div *ngIf="isLoading"><mat-progress-bar mode="indeterminate"></mat-progress-bar></div>

@@ -16,6 +16,11 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CandidatureService } from '../core/services/candidature.service';
 import { EncadrantService } from '../core/services/encadrant.service';
+import { ExportService } from '../core/services/export.service';
+
+
+
+
 
 @Component({
   selector: 'app-candidatures-admin',
@@ -47,7 +52,9 @@ export class CandidaturesAdminComponent implements OnInit {
     private candidatureService: CandidatureService,
     private encadrantService: EncadrantService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private exportService: ExportService,
+
   ) {
     this.traiterForm = this.fb.group({
       statut: [''],
@@ -124,4 +131,8 @@ export class CandidaturesAdminComponent implements OnInit {
     };
     return map[statut] ?? 'help';
   }
+  exportExcel(): void {
+  this.exportService.exportCandidatures(this.candidatures);
+}
+
 }

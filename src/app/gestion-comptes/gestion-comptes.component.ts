@@ -13,6 +13,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { StagiaireService } from '../core/services/stagiaire.service';
+import { ExportService } from '../core/services/export.service';
 
 @Component({
   selector: 'app-gestion-comptes',
@@ -42,7 +43,9 @@ export class GestionComptesComponent implements OnInit {
     private stagiaireService: StagiaireService,
     private http: HttpClient,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private exportService: ExportService,
+
   ) {}
 
   ngOnInit(): void {
@@ -104,4 +107,9 @@ export class GestionComptesComponent implements OnInit {
 
   get totalActifs(): number { return this.stagiaires.filter(s => s.actif).length; }
   get totalInactifs(): number { return this.stagiaires.filter(s => !s.actif).length; }
+
+
+  exportExcel(): void {
+  this.exportService.exportStagiaires(this.stagiaires);
+}
 }

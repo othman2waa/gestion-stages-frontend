@@ -4,6 +4,9 @@
     <button mat-raised-button color="primary" (click)="openForm()">
       <mat-icon>add</mat-icon> Nouvelle Évaluation
     </button>
+    <button mat-stroked-button (click)="exportExcel()">
+  <mat-icon>download</mat-icon> Export Excel
+</button>
   </div>
   <mat-card>
     <div class="loading" *ngIf="isLoading"><mat-spinner diameter="40"></mat-spinner></div>

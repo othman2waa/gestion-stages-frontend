@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.component';
+import { ExportService } from '../../core/services/export.service';
 
 @Component({
   selector: 'app-evaluation-list',
@@ -32,7 +33,9 @@ export class EvaluationListComponent implements OnInit {
   constructor(
     private evaluationService: EvaluationService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private exportService: ExportService,
+
   ) {}
 
   ngOnInit(): void {
@@ -83,4 +86,10 @@ export class EvaluationListComponent implements OnInit {
     if (note >= 10) return 'note-passable';
     return 'note-insuffisant';
   }
+
+  exportExcel(): void {
+    this.exportService.exportEvaluations(this.evaluations);
+  }
+
+
 }
