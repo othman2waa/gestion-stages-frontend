@@ -1,74 +1,193 @@
-<div class="dashboard">
-  <h2 class="page-title">Tableau de Bord</h2>
+<div class="dashboard-container">
 
-  <!-- KPI Cards -->
-  <div class="stats-grid">
-    <mat-card class="stat-card blue">
-      <mat-icon>school</mat-icon>
-      <div class="stat-info">
-        <span class="stat-number">{{ stats?.totalStagiaires ?? 0 }}</span>
-        <span class="stat-label">Stagiaires</span>
-      </div>
-    </mat-card>
-    <mat-card class="stat-card green">
-      <mat-icon>work</mat-icon>
-      <div class="stat-info">
-        <span class="stat-number">{{ stats?.totalStages ?? 0 }}</span>
-        <span class="stat-label">Stages</span>
-      </div>
-    </mat-card>
-    <mat-card class="stat-card orange">
-      <mat-icon>description</mat-icon>
-      <div class="stat-info">
-        <span class="stat-number">{{ stats?.totalConventions ?? 0 }}</span>
-        <span class="stat-label">Conventions</span>
-      </div>
-    </mat-card>
-    <mat-card class="stat-card purple">
-      <mat-icon>star_rate</mat-icon>
-      <div class="stat-info">
-        <span class="stat-number">{{ stats?.totalEvaluations ?? 0 }}</span>
-        <span class="stat-label">Évaluations</span>
-      </div>
-    </mat-card>
+  <div *ngIf="!isAdmin" class="not-admin">
+    <mat-icon>lock</mat-icon>
+    <p>Accès réservé aux administrateurs RH</p>
   </div>
 
-  <!-- Charts Row -->
-  <div class="charts-grid">
-    <!-- Donut statuts -->
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>Statut des Stages</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-wrapper">
-          <canvas #statutChart></canvas>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <ng-container *ngIf="isAdmin">
 
-    <!-- Bar types -->
-    <mat-card class="chart-card">
-      <mat-card-header>
-        <mat-card-title>Stages par Type</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-wrapper">
-          <canvas #typeChart></canvas>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <div *ngIf="isLoading" class="loading">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
 
-    <!-- Horizontal bar départements -->
-    <mat-card class="chart-card chart-wide">
-      <mat-card-header>
-        <mat-card-title>Stages par Département</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="chart-wrapper">
-          <canvas #deptChart></canvas>
+    <ng-container *ngIf="!isLoading && stats">
+
+      <!-- Header -->
+      <div class="dashboard-header">
+        <h2><mat-icon>analytics</mat-icon> Tableau de Bord RH</h2>
+        <p>Vue d'ensemble de la gestion des stages OCP</p>
+      </div>
+
+      <!-- KPI Row 1 -->
+      <div class="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-icon"><mat-icon>school</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalStagiaires }}</span>
+            <span class="kpi-label">Stagiaires</span>
+          </div>
         </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+        <div class="kpi-card green">
+          <div class="kpi-icon"><mat-icon>work</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalStages }}</span>
+            <span class="kpi-label">Stages</span>
+          </div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-icon"><mat-icon>description</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalConventions }}</span>
+            <span class="kpi-label">Conventions</span>
+          </div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-icon"><mat-icon>star</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalEvaluations }}</span>
+            <span class="kpi-label">Évaluations</span>
+          </div>
+        </div>
+        <div class="kpi-card teal">
+          <div class="kpi-icon"><mat-icon>inbox</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalCandidatures }}</span>
+            <span class="kpi-label">Candidatures</span>
+          </div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-icon"><mat-icon>campaign</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalAnnonces }}</span>
+            <span class="kpi-label">Annonces</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats rapides -->
+      <div class="quick-stats">
+        <div class="quick-stat">
+          <mat-icon>trending_up</mat-icon>
+          <div>
+            <span class="qs-value">{{ stats.stagesEnCours }}</span>
+            <span class="qs-label">Stages en cours</span>
+          </div>
+        </div>
+        <div class="quick-stat">
+          <mat-icon>check_circle</mat-icon>
+          <div>
+            <span class="qs-value">{{ stats.tauxAcceptation }}%</span>
+            <span class="qs-label">Taux d'acceptation</span>
+          </div>
+        </div>
+        <div class="quick-stat">
+          <mat-icon>grade</mat-icon>
+          <div>
+            <span class="qs-value">{{ stats.moyenneEvaluations | number:'1.1-1' }}/20</span>
+            <span class="qs-label">Moyenne évaluations</span>
+          </div>
+        </div>
+        <div class="quick-stat">
+          <mat-icon>psychology</mat-icon>
+          <div>
+            <span class="qs-value">{{ stats.scoreMoyenMatching }}%</span>
+            <span class="qs-label">Score moyen matching</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title><mat-icon>donut_large</mat-icon> Statuts des stages</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas #statutChart></canvas>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title><mat-icon>people</mat-icon> Candidatures</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas #candidaturesChart></canvas>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title><mat-icon>bar_chart</mat-icon> Stages par type</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas #typeChart></canvas>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title><mat-icon>business</mat-icon> Stages par département</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <canvas #deptChart></canvas>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+
+      <!-- Statuts détaillés -->
+      <mat-card class="statuts-card">
+        <mat-card-header>
+          <mat-card-title><mat-icon>list_alt</mat-icon> Détail des statuts</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="statuts-grid">
+            <div class="statut-item">
+              <div class="statut-bar" style="background:#f59e0b">
+                <span>En attente</span>
+                <span>{{ stats.stagesEnAttente }}</span>
+              </div>
+              <mat-progress-bar mode="determinate"
+                [value]="stats.totalStages > 0 ? (stats.stagesEnAttente / stats.totalStages) * 100 : 0"
+                style="--mdc-linear-progress-active-indicator-color: #f59e0b">
+              </mat-progress-bar>
+            </div>
+            <div class="statut-item">
+              <div class="statut-bar" style="background:#3b82f6">
+                <span>En cours</span>
+                <span>{{ stats.stagesEnCours }}</span>
+              </div>
+              <mat-progress-bar mode="determinate"
+                [value]="stats.totalStages > 0 ? (stats.stagesEnCours / stats.totalStages) * 100 : 0">
+              </mat-progress-bar>
+            </div>
+            <div class="statut-item">
+              <div class="statut-bar" style="background:#10b981">
+                <span>Terminés</span>
+                <span>{{ stats.stagesTermines }}</span>
+              </div>
+              <mat-progress-bar mode="determinate"
+                [value]="stats.totalStages > 0 ? (stats.stagesTermines / stats.totalStages) * 100 : 0"
+                style="--mdc-linear-progress-active-indicator-color: #10b981">
+              </mat-progress-bar>
+            </div>
+            <div class="statut-item">
+              <div class="statut-bar" style="background:#ef4444">
+                <span>Annulés</span>
+                <span>{{ stats.stagesAnnules }}</span>
+              </div>
+              <mat-progress-bar mode="determinate"
+                [value]="stats.totalStages > 0 ? (stats.stagesAnnules / stats.totalStages) * 100 : 0"
+                style="--mdc-linear-progress-active-indicator-color: #ef4444">
+              </mat-progress-bar>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </ng-container>
+  </ng-container>
 </div>
