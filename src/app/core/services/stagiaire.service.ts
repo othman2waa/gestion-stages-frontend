@@ -31,4 +31,7 @@ export class StagiaireService {
   search(keyword: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/search?keyword=${keyword}`);
   }
+  getMesStagiaires(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.api}/mes-stagiaires`);
+}
 }

@@ -37,4 +37,8 @@ export class StageService {
 rechercher(params: any): Observable<any> {
   return this.http.get<any>(`${this.api}/rechercher`, { params });
 }
+getByEncadrant(encadrantId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${this.api}/encadrant/${encadrantId}`);
+}
+
 }

@@ -59,17 +59,24 @@ export class StagiaireListComponent implements OnInit {
 
   ngOnInit(): void { this.loadStagiaires(); }
 
-  loadStagiaires(): void {
-    this.isLoading = true;
-    this.stagiaireService.getAll().subscribe({
-      next: (data) => {
-        this.stagiaires = data;
-        this.filteredStagiaires = data;
-        this.isLoading = false;
-      },
-      error: () => this.isLoading = false
-    });
-  }
+loadStagiaires(): void {
+  this.isLoading = true;
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const role = currentUser.role ?? '';
+  
+  const obs = role === 'ENCADRANT' 
+    ? this.stagiaireService.getMesStagiaires()
+    : this.stagiaireService.getAll();
+
+  obs.subscribe({
+    next: (data) => {
+      this.stagiaires = data;
+      this.filteredStagiaires = data;
+      this.isLoading = false;
+    },
+    error: () => this.isLoading = false
+  });
+}
 
   onSearch(): void {
     this.applyFilters();
