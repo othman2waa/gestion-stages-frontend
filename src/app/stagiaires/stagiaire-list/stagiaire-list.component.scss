@@ -1,64 +1,125 @@
-.list-container {
-  .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
+.stagiaires-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-    h2 { font-size: 1.5rem; font-weight: 700; color: #1a237e; margin: 0; }
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 24px; color: #1e40af;
+    mat-icon { font-size: 28px; } }
+  p { margin: 4px 0 0; color: #666; font-size: 13px; }
+  .header-actions { display: flex; gap: 10px; }
+}
+
+.kpi-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
+  .kpi-item {
+    border-radius: 12px; padding: 16px 20px; display: flex; align-items: center;
+    gap: 14px; color: white;
+    mat-icon { font-size: 28px; opacity: 0.9; }
+    .kpi-val { display: block; font-size: 24px; font-weight: 800; }
+    .kpi-lbl { font-size: 12px; opacity: 0.85; }
+    &.blue   { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    &.green  { background: linear-gradient(135deg, #059669, #10b981); }
+    &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
+    &.purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
   }
 }
 
-.search-bar {
-  padding: 16px 16px 0;
-  .search-field { width: 300px; }
+.filtres-bar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  .search-input {
+    flex: 1; min-width: 250px; display: flex; align-items: center; gap: 8px;
+    background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    mat-icon { color: #94a3b8; }
+    input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; }
+  }
+  .filter-field { min-width: 150px; }
 }
 
-.loading {
-  display: flex;
-  justify-content: center;
-  padding: 40px;
+.stagiaires-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
 }
 
-.name-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.stagiaire-card {
+  background: white; border-radius: 16px; border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; overflow: hidden;
+  &:hover { border-color: #bfdbfe; box-shadow: 0 6px 20px rgba(37,99,235,0.1); transform: translateY(-1px); }
 
-  .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #1565c0, #0288d1);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.8rem;
-    flex-shrink: 0;
+  .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 16px 12px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    .avatar-section { display: flex; align-items: center; gap: 12px;
+      .avatar { width: 44px; height: 44px; border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #7c3aed); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 15px; }
+      .name { display: block; font-weight: 700; font-size: 14px; color: #1e293b; }
+      .email { display: block; font-size: 11px; color: #64748b; }
+    }
+  }
+
+  .card-body {
+    padding: 12px 16px;
+    .info-item { display: flex; align-items: center; gap: 8px; padding: 4px 0;
+      font-size: 13px; color: #475569;
+      mat-icon { font-size: 15px; color: #3b82f6; flex-shrink: 0; }
+    }
+  }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-top: 1px solid #f1f5f9;
+    .compte-badge { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600;
+      mat-icon { font-size: 14px; }
+      &.has-compte { color: #16a34a; }
+      &.no-compte { color: #94a3b8; }
+    }
+    .card-actions { display: flex; gap: 2px;
+      button mat-icon { font-size: 18px; }
+    }
   }
 }
 
-.badge {
-  background: #e3f2fd;
-  color: #1565c0;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
+.niveau-badge {
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  &.n2 { background: #fef3c7; color: #92400e; }
+  &.n3 { background: #dbeafe; color: #1e40af; }
+  &.n4 { background: #ede9fe; color: #5b21b6; }
+  &.n5 { background: #dcfce7; color: #166534; }
+  &.n6 { background: #fce7f3; color: #9d174d; }
 }
 
-.no-data {
-  text-align: center;
-  padding: 40px !important;
-  color: #999;
+// Dialog
+.detail-dialog-header {
+  background: linear-gradient(135deg, #1e40af, #7c3aed);
+  padding: 20px 24px; display: flex; align-items: center; gap: 14px;
+  margin: -24px -24px 0;
+  .detail-avatar { width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; flex-shrink: 0; }
+  .detail-title { flex: 1;
+    h3 { margin: 0; color: white; font-size: 17px; }
+    span { color: rgba(255,255,255,0.8); font-size: 13px; }
+  }
+  button { color: rgba(255,255,255,0.8); }
 }
 
-table { width: 100%; }
-
-th.mat-header-cell {
-  font-weight: 700;
-  color: #333;
-  background: #f5f7fa;
+.detail-sections { padding-top: 8px; }
+.detail-section {
+  padding: 12px 0; border-bottom: 1px solid #f1f5f9;
+  &:last-child { border-bottom: none; }
+  .section-title { font-size: 11px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px; }
+  .detail-row { display: flex; align-items: center; gap: 10px; padding: 5px 0;
+    font-size: 13px; color: #374151;
+    mat-icon { font-size: 16px; color: #6366f1; flex-shrink: 0; }
+  }
 }
+
+.empty-state { grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8;
+  mat-icon { font-size: 56px; display: block; margin-bottom: 12px; }
+  p { margin-bottom: 16px; } }
