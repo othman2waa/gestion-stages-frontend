@@ -7,13 +7,13 @@
   <form [formGroup]="form" class="form-grid">
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Sujet</mat-label>
+      <mat-label>Sujet *</mat-label>
       <input matInput formControlName="sujet">
       <mat-error *ngIf="form.get('sujet')?.hasError('required')">Requis</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Stagiaire</mat-label>
+      <mat-label>Stagiaire *</mat-label>
       <mat-select formControlName="stagiaireId">
         <mat-option *ngFor="let s of stagiaires" [value]="s.id">
           {{ s.nom }} {{ s.prenom }}
@@ -24,14 +24,26 @@
     <mat-form-field appearance="outline">
       <mat-label>Encadrant</mat-label>
       <mat-select formControlName="encadrantId">
+        <mat-option [value]="null">— Aucun —</mat-option>
         <mat-option *ngFor="let e of encadrants" [value]="e.id">
           {{ e.nom }} {{ e.prenom }}
         </mat-option>
       </mat-select>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Département OCP</mat-label>
+      <mat-select formControlName="departementId">
+        <mat-option [value]="null">— Aucun département —</mat-option>
+        <mat-option *ngFor="let d of departements" [value]="d.id">
+          {{ d.code }} — {{ d.nom }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>business</mat-icon>
+    </mat-form-field>
+
     <mat-form-field appearance="outline">
-      <mat-label>Type de Stage</mat-label>
+      <mat-label>Type de Stage *</mat-label>
       <mat-select formControlName="typeStage">
         <mat-option *ngFor="let t of typeStages" [value]="t">{{ t }}</mat-option>
       </mat-select>

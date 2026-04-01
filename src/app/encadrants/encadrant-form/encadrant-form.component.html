@@ -2,29 +2,51 @@
   <mat-icon>{{ isEdit ? 'edit' : 'add' }}</mat-icon>
   {{ isEdit ? 'Modifier Encadrant' : 'Nouvel Encadrant' }}
 </h2>
+
 <mat-dialog-content>
   <form [formGroup]="form" class="form-grid">
     <mat-form-field appearance="outline">
-      <mat-label>Nom</mat-label>
+      <mat-label>Nom *</mat-label>
       <input matInput formControlName="nom">
+      <mat-error *ngIf="form.get('nom')?.hasError('required')">Requis</mat-error>
     </mat-form-field>
+
     <mat-form-field appearance="outline">
-      <mat-label>Prénom</mat-label>
+      <mat-label>Prénom *</mat-label>
       <input matInput formControlName="prenom">
+      <mat-error *ngIf="form.get('prenom')?.hasError('required')">Requis</mat-error>
     </mat-form-field>
+
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email</mat-label>
+      <mat-label>Email *</mat-label>
       <input matInput formControlName="email" type="email">
+      <mat-error *ngIf="form.get('email')?.hasError('required')">Requis</mat-error>
+      <mat-error *ngIf="form.get('email')?.hasError('email')">Email invalide</mat-error>
     </mat-form-field>
+
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Fonction</mat-label>
-      <input matInput formControlName="fonction">
+      <input matInput formControlName="fonction" placeholder="Ingénieur, Manager...">
+      <mat-icon matPrefix>work</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Département OCP</mat-label>
+      <mat-select formControlName="departementId">
+        <mat-option [value]="null">— Aucun département —</mat-option>
+        <mat-option *ngFor="let d of departements" [value]="d.id">
+          {{ d.code }} — {{ d.nom }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>business</mat-icon>
     </mat-form-field>
   </form>
 </mat-dialog-content>
+
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Annuler</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || isLoading">
+  <button mat-raised-button color="primary"
+          (click)="onSubmit()" [disabled]="form.invalid || isLoading">
     <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
     <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
   </button>

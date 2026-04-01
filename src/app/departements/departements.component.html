@@ -1,0 +1,305 @@
+<div class="dept-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>business</mat-icon> Gestion des Départements</h2>
+      <p>{{ departements.length }} département(s) enregistré(s)</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon> Nouveau département
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card blue">
+      <mat-icon>business</mat-icon>
+      <div><span class="kpi-val">{{ departements.length }}</span><span class="kpi-lbl">Départements</span></div>
+    </div>
+    <div class="kpi-card green">
+      <mat-icon>supervisor_account</mat-icon>
+      <div><span class="kpi-val">{{ totalEncadrants }}</span><span class="kpi-lbl">Encadrants</span></div>
+    </div>
+    <div class="kpi-card orange">
+      <mat-icon>work</mat-icon>
+      <div><span class="kpi-val">{{ totalStages }}</span><span class="kpi-lbl">Stages</span></div>
+    </div>
+    <div class="kpi-card purple">
+      <mat-icon>trending_up</mat-icon>
+      <div><span class="kpi-val">{{ totalEnCours }}</span><span class="kpi-lbl">En cours</span></div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
+           placeholder="Rechercher par nom, code, responsable...">
+    <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- Cards Grid -->
+  <div class="dept-grid" *ngIf="!isLoading">
+    <div *ngFor="let d of filteredDepartements" class="dept-card" [class.inactive]="!d.actif">
+
+      <div class="card-top">
+        <div class="dept-avatar">{{ getInitials(d.nom) }}</div>
+        <div class="dept-info">
+          <h4>{{ d.nom }}</h4>
+          <span class="code-badge">{{ d.code }}</span>
+        </div>
+        <span class="actif-badge" [class.actif]="d.actif" [class.inactif]="!d.actif">
+          {{ d.actif ? '● Actif' : '● Inactif' }}
+        </span>
+      </div>
+
+      <div class="card-stats">
+        <div class="stat">
+          <mat-icon>supervisor_account</mat-icon>
+          <span class="stat-val">{{ d.nombreEncadrants }}</span>
+          <span class="stat-lbl">Encadrants</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <mat-icon>work</mat-icon>
+          <span class="stat-val">{{ d.nombreStages }}</span>
+          <span class="stat-lbl">Stages</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <mat-icon>trending_up</mat-icon>
+          <span class="stat-val green">{{ d.nombreStagesEnCours }}</span>
+          <span class="stat-lbl">En cours</span>
+        </div>
+      </div>
+
+      <div class="card-details">
+        <div class="detail-row" *ngIf="d.responsable">
+          <mat-icon>person</mat-icon><span>{{ d.responsable }}</span>
+        </div>
+        <div class="detail-row" *ngIf="d.localisation">
+          <mat-icon>location_on</mat-icon><span>{{ d.localisation }}</span>
+        </div>
+        <div class="detail-row" *ngIf="d.email">
+          <mat-icon>email</mat-icon><span>{{ d.email }}</span>
+        </div>
+        <div class="detail-row" *ngIf="d.description">
+          <mat-icon>info</mat-icon>
+          <span class="description-text">{{ d.description }}</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button mat-stroked-button (click)="voirDetail(d)">
+          <mat-icon>visibility</mat-icon> Détail
+        </button>
+        <div class="card-actions">
+          <button mat-icon-button matTooltip="Modifier" (click)="openForm(d)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button [matTooltip]="d.actif ? 'Désactiver' : 'Activer'"
+                  (click)="toggle(d)">
+            <mat-icon>{{ d.actif ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Supprimer" (click)="delete(d.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-stroked-button color="primary" (click)="loadMembres(d)">
+          <mat-icon>people</mat-icon> Membres
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredDepartements.length === 0" class="empty-state">
+      <mat-icon>business</mat-icon>
+      <p>Aucun département trouvé</p>
+      <button mat-raised-button color="primary" (click)="openForm()">
+        Créer le premier département
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog formulaire -->
+<ng-template #formDialog>
+  <div class="form-header">
+    <mat-icon>business</mat-icon>
+    <h3>{{ editingId ? 'Modifier le département' : 'Nouveau département' }}</h3>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" class="dept-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Code *</mat-label>
+          <input matInput formControlName="code" placeholder="EX: INFO, FIN, RH">
+          <mat-hint>Max 20 caractères</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Nom *</mat-label>
+          <input matInput formControlName="nom" placeholder="Informatique...">
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Responsable</mat-label>
+        <input matInput formControlName="responsable" placeholder="Nom du responsable">
+        <mat-icon matPrefix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="3"
+                  placeholder="Description du département..."></textarea>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email">
+          <mat-icon matPrefix>email</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Téléphone</mat-label>
+          <input matInput formControlName="telephone">
+          <mat-icon matPrefix>phone</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Localisation</mat-label>
+        <input matInput formControlName="localisation" placeholder="Bâtiment A, 2ème étage...">
+        <mat-icon matPrefix>location_on</mat-icon>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">
+      <mat-icon>save</mat-icon> {{ editingId ? 'Modifier' : 'Créer' }}
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- Dialog détail -->
+<ng-template #detailDialog>
+  <div class="detail-header">
+    <div class="detail-avatar">{{ getInitials(selectedDept?.nom) }}</div>
+    <div class="detail-title">
+      <h3>{{ selectedDept?.nom }}</h3>
+      <span class="code-badge">{{ selectedDept?.code }}</span>
+    </div>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <!-- Stats -->
+    <div class="detail-stats">
+      <div class="d-stat">
+        <span class="d-stat-val">{{ selectedDept?.nombreEncadrants }}</span>
+        <span class="d-stat-lbl">Encadrants</span>
+      </div>
+      <div class="d-stat">
+        <span class="d-stat-val">{{ selectedDept?.nombreStages }}</span>
+        <span class="d-stat-lbl">Stages total</span>
+      </div>
+      <div class="d-stat green">
+        <span class="d-stat-val">{{ selectedDept?.nombreStagesEnCours }}</span>
+        <span class="d-stat-lbl">En cours</span>
+      </div>
+    </div>
+
+    <div class="detail-sections">
+      <div class="detail-section">
+        <p class="section-title">Informations</p>
+        <div class="detail-row" *ngIf="selectedDept?.responsable">
+          <mat-icon>person</mat-icon><span>{{ selectedDept?.responsable }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedDept?.email">
+          <mat-icon>email</mat-icon><span>{{ selectedDept?.email }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedDept?.telephone">
+          <mat-icon>phone</mat-icon><span>{{ selectedDept?.telephone }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedDept?.localisation">
+          <mat-icon>location_on</mat-icon><span>{{ selectedDept?.localisation }}</span>
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedDept?.description">
+        <p class="section-title">Description</p>
+        <p class="description-text">{{ selectedDept?.description }}</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Fermer</button>
+    <button mat-raised-button color="primary"
+            (click)="openForm(selectedDept); dialog.closeAll()">
+      <mat-icon>edit</mat-icon> Modifier
+    </button>
+  </mat-dialog-actions>
+  <ng-template #membresDialog>
+  <div class="form-header" style="background: linear-gradient(135deg, #059669, #10b981)">
+    <mat-icon>people</mat-icon>
+    <h3>{{ selectedDept?.nom }}</h3>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+
+  <mat-dialog-content>
+    <mat-progress-bar *ngIf="loadingMembers" mode="indeterminate"></mat-progress-bar>
+
+    <!-- Encadrants -->
+    <div class="membres-section">
+      <p class="membres-title">
+        <mat-icon>supervisor_account</mat-icon>
+        Encadrants ({{ encadrantsByDept.length }})
+      </p>
+      <div *ngIf="encadrantsByDept.length === 0" class="empty-membres">
+        Aucun encadrant dans ce département
+      </div>
+      <div *ngFor="let e of encadrantsByDept" class="membre-item">
+        <div class="membre-avatar blue">{{ e.prenom?.charAt(0) }}{{ e.nom?.charAt(0) }}</div>
+        <div class="membre-info">
+          <span class="membre-name">{{ e.prenom }} {{ e.nom }}</span>
+          <span class="membre-sub">{{ e.fonction ?? 'Encadrant' }} · {{ e.email }}</span>
+        </div>
+        <span class="membre-badge blue">{{ e.nombreStagiaires ?? 0 }} stagiaire(s)</span>
+      </div>
+    </div>
+
+    <!-- Stagiaires -->
+    <div class="membres-section">
+      <p class="membres-title">
+        <mat-icon>school</mat-icon>
+        Stagiaires ({{ stagiairesByDept.length }})
+      </p>
+      <div *ngIf="stagiairesByDept.length === 0" class="empty-membres">
+        Aucun stagiaire dans ce département
+      </div>
+      <div *ngFor="let s of stagiairesByDept" class="membre-item">
+        <div class="membre-avatar green">{{ s.prenom?.charAt(0) }}{{ s.nom?.charAt(0) }}</div>
+        <div class="membre-info">
+          <span class="membre-name">{{ s.prenom }} {{ s.nom }}</span>
+          <span class="membre-sub">{{ s.filiere }} — {{ s.niveau }} · {{ s.email }}</span>
+        </div>
+        <span class="membre-badge green" *ngIf="s.actif">Compte actif</span>
+        <span class="membre-badge gray" *ngIf="!s.actif">Sans compte</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Fermer</button>
+  </mat-dialog-actions>
+</ng-template>
+</ng-template>

@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { StageService } from '../../core/services/stage.service';
 import { StagiaireService } from '../../core/services/stagiaire.service';
 import { EncadrantService } from '../../core/services/encadrant.service';
+import { DepartementService } from '../../core/services/departement.service';
 
 @Component({
   selector: 'app-stage-form',
@@ -32,6 +33,7 @@ export class StageFormComponent implements OnInit {
   isEdit = false;
   stagiaires: any[] = [];
   encadrants: any[] = [];
+  departements: any[] = [];
 
   typeStages = ['PFE', 'PFA', 'STAGE_ETE', 'STAGE_OBSERVATION'];
   statuts = ['EN_ATTENTE', 'EN_COURS', 'TERMINE', 'ANNULE'];
@@ -41,12 +43,14 @@ export class StageFormComponent implements OnInit {
     private stageService: StageService,
     private stagiaireService: StagiaireService,
     private encadrantService: EncadrantService,
+    private deptService: DepartementService,
     private dialogRef: MatDialogRef<StageFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.form = this.fb.group({
       stagiaireId: ['', Validators.required],
       encadrantId: [''],
+      departementId: [null],
       sujet: ['', Validators.required],
       typeStage: ['', Validators.required],
       statut: ['EN_ATTENTE'],
@@ -58,12 +62,14 @@ export class StageFormComponent implements OnInit {
   ngOnInit(): void {
     this.stagiaireService.getAll().subscribe(d => this.stagiaires = d);
     this.encadrantService.getAll().subscribe(d => this.encadrants = d);
+    this.deptService.getActifs().subscribe(d => this.departements = d);
     if (this.data) {
       this.isEdit = true;
       this.form.patchValue({
         ...this.data,
         stagiaireId: this.data.stagiaireId,
-        encadrantId: this.data.encadrantId
+        encadrantId: this.data.encadrantId,
+        departementId: this.data.departementId ?? null
       });
     }
   }
