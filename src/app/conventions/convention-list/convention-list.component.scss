@@ -1,0 +1,102 @@
+.conventions-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 24px; color: #1e40af;
+    mat-icon { font-size: 28px; } }
+  p { margin: 4px 0 0; color: #666; font-size: 13px; }
+}
+
+.kpi-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; max-width: 600px;
+  .kpi-card { border-radius: 14px; padding: 16px 20px; display: flex; align-items: center;
+    gap: 14px; color: white;
+    mat-icon { font-size: 28px; opacity: 0.9; }
+    .kpi-val { display: block; font-size: 24px; font-weight: 800; }
+    .kpi-lbl { font-size: 12px; opacity: 0.85; }
+    &.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    &.green { background: linear-gradient(135deg, #059669, #10b981); }
+    &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
+  }
+}
+
+.filtres-bar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  .search-input { flex: 1; min-width: 250px; display: flex; align-items: center; gap: 8px;
+    background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    mat-icon { color: #94a3b8; }
+    input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; }
+  }
+  .filter-field { min-width: 160px; }
+}
+
+.conventions-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;
+}
+
+.convention-card {
+  background: white; border-radius: 16px; border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; overflow: hidden;
+  &:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-1px); }
+  &.border-status-green { border-color: #86efac; }
+  &.border-status-orange { border-color: #fde68a; }
+  &.border-status-blue { border-color: #bfdbfe; }
+
+  .card-top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px; background: #f8fafc; border-bottom: 1px solid #f1f5f9;
+    .numero-section { display: flex; align-items: center; gap: 10px;
+      .conv-icon { font-size: 28px; color: #3b82f6; }
+      .numero { display: block; font-weight: 700; font-size: 15px; color: #1e293b; }
+      .date { display: block; font-size: 11px; color: #64748b; }
+    }
+    .statut-section { display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+      .statut-icon { font-size: 20px; color: #64748b; }
+    }
+  }
+
+  .card-body { padding: 12px 16px;
+    .info-row { display: flex; align-items: center; gap: 8px; padding: 4px 0;
+      font-size: 13px; color: #475569;
+      mat-icon { font-size: 15px; color: #3b82f6; flex-shrink: 0; }
+      span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+    }
+  }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-top: 1px solid #f1f5f9;
+    button:first-child { font-size: 12px; }
+    .card-actions { display: flex; gap: 2px; }
+  }
+}
+
+.statut-badge { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.status-gray   { background: #f0f0f0; color: #666; }
+.status-blue   { background: #dbeafe; color: #1e40af; }
+.status-green  { background: #dcfce7; color: #166534; }
+.status-orange { background: #fef3c7; color: #92400e; }
+
+.detail-header {
+  background: linear-gradient(135deg, #059669, #10b981);
+  padding: 20px 24px; display: flex; align-items: center; gap: 14px;
+  margin: -24px -24px 0;
+  mat-icon { font-size: 32px; color: white; }
+  h3 { margin: 0 0 6px; color: white; font-size: 17px; }
+  div { flex: 1; }
+  button { color: rgba(255,255,255,0.8); }
+}
+
+.detail-sections { padding-top: 8px; }
+.detail-section {
+  padding: 12px 0; border-bottom: 1px solid #f1f5f9; &:last-child { border-bottom: none; }
+  .section-title { font-size: 11px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px; }
+  .detail-row { display: flex; align-items: center; gap: 10px; padding: 5px 0;
+    font-size: 13px; color: #374151;
+    mat-icon { font-size: 16px; color: #059669; flex-shrink: 0; }
+  }
+}
+
+.empty-state { grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8;
+  mat-icon { font-size: 56px; display: block; margin-bottom: 12px; } }

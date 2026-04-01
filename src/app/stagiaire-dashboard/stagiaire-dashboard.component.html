@@ -133,43 +133,95 @@
         </div>
       </mat-tab>
 
-      <!-- Tab Suivis -->
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon>event_note</mat-icon>&nbsp; Suivis ({{ suivis.length }})
-        </ng-template>
-        <div class="tab-content">
-          <div *ngIf="suivis.length === 0" class="empty-tab">
-            <mat-icon>event_busy</mat-icon>
-            <p>Aucun suivi enregistré par votre encadrant</p>
+     <!-- Tab Suivis -->
+<mat-tab>
+  <ng-template mat-tab-label>
+    <mat-icon>event_note</mat-icon>&nbsp; Suivis ({{ suivis.length }})
+  </ng-template>
+  <div class="tab-content">
+    <div *ngIf="suivis.length === 0" class="empty-tab">
+      <mat-icon>event_busy</mat-icon>
+      <p>Aucun suivi enregistré par votre encadrant</p>
+    </div>
+    <div class="suivis-grid">
+      <mat-card *ngFor="let s of suivis" class="suivi-card">
+        <mat-card-header>
+          <div mat-card-avatar class="semaine-badge">S{{ s.semaineNumero }}</div>
+          <mat-card-title>Semaine {{ s.semaineNumero }}</mat-card-title>
+          <mat-card-subtitle>{{ s.dateSuivi | date:'dd/MM/yyyy' }}</mat-card-subtitle>
+          <span *ngIf="s.note" class="note-badge" [class]="getNoteClass(s.note)">
+            {{ s.note }}/20
+          </span>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Progression -->
+          <div class="prog-row">
+            <span>Progression</span><span>{{ s.progression }}%</span>
           </div>
-          <div class="suivis-grid">
-            <mat-card *ngFor="let s of suivis" class="suivi-card">
-              <mat-card-header>
-                <div mat-card-avatar class="semaine-badge">S{{ s.semaineNumero }}</div>
-                <mat-card-title>Semaine {{ s.semaineNumero }}</mat-card-title>
-                <mat-card-subtitle>{{ s.dateSuivi | date:'dd/MM/yyyy' }}</mat-card-subtitle>
-                <span *ngIf="s.note" class="note-badge" [class]="getNoteClass(s.note)">{{ s.note }}/20</span>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="prog-row">
-                  <span>Progression</span><span>{{ s.progression }}%</span>
-                </div>
-                <mat-progress-bar mode="determinate" [value]="s.progression"></mat-progress-bar>
-                <div *ngIf="s.commentaire" class="suivi-section">
-                  <mat-icon>comment</mat-icon><p>{{ s.commentaire }}</p>
-                </div>
-                <div *ngIf="s.pointsPositifs" class="suivi-section positive">
-                  <mat-icon>thumb_up</mat-icon><p>{{ s.pointsPositifs }}</p>
-                </div>
-                <div *ngIf="s.axesAmelioration" class="suivi-section improve">
-                  <mat-icon>trending_up</mat-icon><p>{{ s.axesAmelioration }}</p>
-                </div>
-              </mat-card-content>
-            </mat-card>
+          <mat-progress-bar mode="determinate" [value]="s.progression"></mat-progress-bar>
+
+          <!-- Présence visuelle -->
+          <div class="presence-widget" *ngIf="s.joursPresents !== null && s.joursPresents !== undefined">
+            <p class="widget-title"><mat-icon>how_to_reg</mat-icon> Présence semaine</p>
+            <div class="days-row">
+              <div *ngFor="let day of getDays()" class="day-cell"
+                   [class.present]="day.num <= s.joursPresents"
+                   [class.absent]="day.num > s.joursPresents">
+                <span class="day-label">{{ day.label }}</span>
+                <mat-icon>{{ day.num <= s.joursPresents ? 'check_circle' : 'cancel' }}</mat-icon>
+              </div>
+            </div>
+            <p class="presence-summary">
+              <span class="present-count">{{ s.joursPresents }} présent(s)</span>
+              <span class="absent-count" *ngIf="s.joursAbsences > 0">
+                · {{ s.joursAbsences }} absent(s)
+                <em *ngIf="s.motifAbsence"> — {{ s.motifAbsence }}</em>
+              </span>
+            </p>
           </div>
-        </div>
-      </mat-tab>
+
+          <!-- Tâches -->
+          <div class="taches-widget" *ngIf="s.tachesAssignees">
+            <div class="widget-title-row">
+              <p class="widget-title"><mat-icon>task_alt</mat-icon> Tâches assignées</p>
+              <span class="taux-chip" *ngIf="s.tauxCompletionTaches !== null">
+                {{ s.tauxCompletionTaches }}% complété
+              </span>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="s.tauxCompletionTaches ?? 0"
+                              class="taches-bar"></mat-progress-bar>
+            <div class="taches-cols">
+              <div class="tache-col assigned">
+                <p class="col-title">📋 Assignées</p>
+                <div *ngFor="let t of getTaches(s.tachesAssignees)" class="tache-item">
+                  <mat-icon>radio_button_unchecked</mat-icon><span>{{ t }}</span>
+                </div>
+              </div>
+              <div class="tache-col completed" *ngIf="s.tachesCompletees">
+                <p class="col-title">✅ Complétées</p>
+                <div *ngFor="let t of getTaches(s.tachesCompletees)" class="tache-item done">
+                  <mat-icon>check_circle</mat-icon><span>{{ t }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Commentaires -->
+          <div *ngIf="s.commentaire" class="suivi-section">
+            <mat-icon>comment</mat-icon><p>{{ s.commentaire }}</p>
+          </div>
+          <div *ngIf="s.pointsPositifs" class="suivi-section positive">
+            <mat-icon>thumb_up</mat-icon><p>{{ s.pointsPositifs }}</p>
+          </div>
+          <div *ngIf="s.axesAmelioration" class="suivi-section improve">
+            <mat-icon>trending_up</mat-icon><p>{{ s.axesAmelioration }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</mat-tab>
 
       <!-- Tab Évaluations -->
       <mat-tab>

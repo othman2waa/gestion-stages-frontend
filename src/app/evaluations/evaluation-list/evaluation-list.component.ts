@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.component';
 import { ExportService } from '../../core/services/export.service';
@@ -17,25 +18,43 @@ import { ExportService } from '../../core/services/export.service';
   selector: 'app-evaluation-list',
   standalone: true,
   imports: [
-    CommonModule, MatTableModule, MatButtonModule, MatIconModule,
+    CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
-    MatTooltipModule, MatProgressSpinnerModule, MatChipsModule
+    MatTooltipModule, MatProgressBarModule, MatChipsModule, MatSelectModule
   ],
   templateUrl: './evaluation-list.component.html',
   styleUrls: ['./evaluation-list.component.scss']
 })
 export class EvaluationListComponent implements OnInit {
+  @ViewChild('detailDialog') detailDialog!: TemplateRef<any>;
+
   evaluations: any[] = [];
+  filteredEvaluations: any[] = [];
   isLoading = true;
-  displayedColumns = ['stage', 'encadrant', 'note', 'type', 'dateEval', 'actions'];
+  searchKeyword = '';
+  selectedType = '';
+  selectedEvaluation: any = null;
   userRole = '';
+
+  readonly types = ['FIN_STAGE', 'MI_PARCOURS'];
+
+  get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
+  get isStagiaire(): boolean { return this.userRole === 'STAGIAIRE'; }
+  get isAdmin(): boolean { return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole); }
+
+  get moyenneGenerale(): number {
+    if (!this.evaluations.length) return 0;
+    return this.evaluations.reduce((s, e) => s + (e.note ?? 0), 0) / this.evaluations.length;
+  }
+  get nombreExcellent(): number { return this.evaluations.filter(e => e.note >= 16).length; }
+  get nombreBien(): number { return this.evaluations.filter(e => e.note >= 12 && e.note < 16).length; }
+  get nombreInsuffisant(): number { return this.evaluations.filter(e => e.note < 10).length; }
 
   constructor(
     private evaluationService: EvaluationService,
-    private dialog: MatDialog,
+    public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private exportService: ExportService,
-
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -44,10 +63,6 @@ export class EvaluationListComponent implements OnInit {
     this.loadEvaluations();
   }
 
-  get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
-  get isStagiaire(): boolean { return this.userRole === 'STAGIAIRE'; }
-  get isAdmin(): boolean { return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole); }
-
   loadEvaluations(): void {
     this.isLoading = true;
     const obs = this.isStagiaire
@@ -55,11 +70,39 @@ export class EvaluationListComponent implements OnInit {
       : this.isEncadrant
         ? this.evaluationService.getMesEvaluationsEncadrant()
         : this.evaluationService.getAll();
-
     obs.subscribe({
-      next: (data) => { this.evaluations = data; this.isLoading = false; },
+      next: (data) => { this.evaluations = data; this.applyFilters(); this.isLoading = false; },
       error: () => this.isLoading = false
     });
+  }
+
+  applyFilters(): void {
+    let result = this.evaluations;
+    if (this.searchKeyword.trim()) {
+      const kw = this.searchKeyword.toLowerCase();
+      result = result.filter(e =>
+        e.stageSujet?.toLowerCase().includes(kw) ||
+        e.encadrantNom?.toLowerCase().includes(kw) ||
+        e.stagiaireNom?.toLowerCase().includes(kw)
+      );
+    }
+    if (this.selectedType) {
+      result = result.filter(e => e.typeEvaluation === this.selectedType);
+    }
+    this.filteredEvaluations = result;
+  }
+
+  onSearch(): void { this.applyFilters(); }
+  onFilterChange(): void { this.applyFilters(); }
+
+  resetFiltres(): void {
+    this.searchKeyword = ''; this.selectedType = '';
+    this.filteredEvaluations = this.evaluations;
+  }
+
+  voirDetail(e: any): void {
+    this.selectedEvaluation = e;
+    this.dialog.open(this.detailDialog, { width: '520px' });
   }
 
   openForm(evaluation?: any): void {
@@ -72,10 +115,7 @@ export class EvaluationListComponent implements OnInit {
   delete(id: number): void {
     if (confirm('Confirmer la suppression ?')) {
       this.evaluationService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Évaluation supprimée', 'Fermer', { duration: 3000 });
-          this.loadEvaluations();
-        }
+        next: () => { this.snackBar.open('Évaluation supprimée', 'Fermer', { duration: 3000 }); this.loadEvaluations(); }
       });
     }
   }
@@ -87,12 +127,13 @@ export class EvaluationListComponent implements OnInit {
     return 'note-insuffisant';
   }
 
-  exportExcel(): void {
-    this.exportService.exportEvaluations(this.evaluations);
+  getNoteLabel(note: number): string {
+    if (note >= 16) return 'Excellent';
+    if (note >= 12) return 'Bien';
+    if (note >= 10) return 'Passable';
+    return 'Insuffisant';
   }
-  exportPdf(): void {
-  this.exportService.exportEvaluationsPdf(this.evaluations);
-}
 
-
+  exportExcel(): void { this.exportService.exportEvaluations(this.evaluations); }
+  exportPdf(): void { this.exportService.exportEvaluationsPdf(this.evaluations); }
 }

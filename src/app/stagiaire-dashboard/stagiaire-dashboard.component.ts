@@ -199,4 +199,20 @@ export class StagiaireDashboardComponent implements OnInit {
       error: () => this.snackBar.open('Erreur téléchargement PDF', 'Fermer', { duration: 3000 })
     });
   }
+
+    getDays(): { num: number; label: string }[] {
+      return [
+        { num: 1, label: 'Lun' },
+        { num: 2, label: 'Mar' },
+        { num: 3, label: 'Mer' },
+        { num: 4, label: 'Jeu' },
+        { num: 5, label: 'Ven' }
+      ];
+    }
+
+    getTaches(text: string): string[] {
+      if (!text) return [];
+      return text.split('\n').map(t => t.replace(/^[-*•]\s*/, '').trim()).filter(t => t);
+    }
+
 }
