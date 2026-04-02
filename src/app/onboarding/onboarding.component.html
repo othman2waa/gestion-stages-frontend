@@ -1,117 +1,122 @@
 <div class="onboarding-container">
-  <div class="onboarding-header">
-    <mat-icon class="header-icon">smart_toy</mat-icon>
+
+  <!-- Header -->
+  <div class="page-header">
     <div>
-      <h2>Onboarding IA — Lecture de CV</h2>
-      <p>Uploadez un CV PDF pour créer automatiquement un compte stagiaire</p>
+      <h2><mat-icon>checklist</mat-icon> Onboarding Stagiaires</h2>
+      <p>Suivi de l'intégration et digitalisation du processus d'accueil</p>
     </div>
   </div>
 
-  <!-- STEP 1: Upload -->
-  <mat-card class="step-card" *ngIf="step === 'upload'">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>upload_file</mat-icon> Étape 1 — Upload du CV
-      </mat-card-title>
-    </mat-card-header>
+  <!-- Sélection stagiaire -->
+  <mat-card class="select-card">
     <mat-card-content>
-      <div class="drop-zone" (click)="fileInput.click()">
-        <mat-icon class="upload-icon">picture_as_pdf</mat-icon>
-        <p *ngIf="!selectedFile">Cliquez pour sélectionner un CV (PDF)</p>
-        <p *ngIf="selectedFile" class="file-name">
-          <mat-icon>check_circle</mat-icon> {{ selectedFile.name }}
-        </p>
-        <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden>
-      </div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary"
-        [disabled]="!selectedFile || isLoading"
-        (click)="analyserCV()">
-        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-        <mat-icon *ngIf="!isLoading">psychology</mat-icon>
-        {{ isLoading ? 'Analyse en cours...' : 'Analyser avec IA' }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
-
-  <!-- STEP 2: Review -->
-  <mat-card class="step-card" *ngIf="step === 'review'">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>fact_check</mat-icon> Étape 2 — Vérification des informations
-      </mat-card-title>
-      <mat-card-subtitle>Vérifiez et corrigez si nécessaire avant de créer le compte</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="info-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Nom</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.nom">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Prénom</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.prenom">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.email" type="email">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Téléphone</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.telephone">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Filière</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.filiere">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Niveau</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.niveau">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Établissement</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.etablissement">
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Département suggéré</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.departementSuggere">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Sujet de stage suggéré</mat-label>
-          <input matInput [(ngModel)]="infosExtraites.sujetStage">
+      <div class="select-row">
+        <mat-icon>person_search</mat-icon>
+        <mat-form-field appearance="outline" class="select-field">
+          <mat-label>Sélectionner un stagiaire</mat-label>
+          <mat-select [(ngModel)]="selectedStagiaireId" (selectionChange)="onStagiaireChange($event.value)">
+            <mat-option *ngFor="let s of stagiaires" [value]="s.id">
+              {{ s.prenom }} {{ s.nom }} — {{ s.filiere ?? '' }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
     </mat-card-content>
-    <mat-card-actions>
-      <button mat-button (click)="recommencer()">
-        <mat-icon>arrow_back</mat-icon> Retour
-      </button>
-      <button mat-raised-button color="primary"
-        [disabled]="isLoading"
-        (click)="confirmerEtCreer()">
-        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-        <mat-icon *ngIf="!isLoading">person_add</mat-icon>
-        {{ isLoading ? 'Création...' : 'Créer le compte' }}
-      </button>
-    </mat-card-actions>
   </mat-card>
 
-  <!-- STEP 3: Success -->
-  <mat-card class="step-card success-card" *ngIf="step === 'success'">
+  <!-- Stats globales -->
+  <div class="stats-row" *ngIf="stats">
+    <div class="stat-card blue">
+      <mat-icon>checklist</mat-icon>
+      <div><span class="stat-val">{{ stats.total }}</span><span class="stat-lbl">Total étapes</span></div>
+    </div>
+    <div class="stat-card green">
+      <mat-icon>check_circle</mat-icon>
+      <div><span class="stat-val">{{ stats.completed }}</span><span class="stat-lbl">Complétées</span></div>
+    </div>
+    <div class="stat-card orange">
+      <mat-icon>pending</mat-icon>
+      <div><span class="stat-val">{{ stats.remaining }}</span><span class="stat-lbl">Restantes</span></div>
+    </div>
+    <div class="stat-card purple">
+      <mat-icon>trending_up</mat-icon>
+      <div><span class="stat-val">{{ stats.progression }}%</span><span class="stat-lbl">Progression</span></div>
+    </div>
+  </div>
+
+  <!-- Barre progression globale -->
+  <mat-card class="progress-card" *ngIf="stats">
     <mat-card-content>
-      <div class="success-content">
-        <mat-icon class="success-icon">check_circle</mat-icon>
-        <h3>Compte créé avec succès !</h3>
-        <p>Un email avec les identifiants de connexion a été envoyé au stagiaire.</p>
-        <div class="credentials-box">
-          <p><strong>👤 Username :</strong> {{ resultatCreation?.username }}</p>
-          <p><strong>📧 Email envoyé à :</strong> {{ infosExtraites?.email }}</p>
+      <div class="progress-header">
+        <div class="stagiaire-info" *ngIf="selectedStagiaire">
+          <div class="s-avatar">{{ selectedStagiaire.prenom?.charAt(0) }}{{ selectedStagiaire.nom?.charAt(0) }}</div>
+          <div>
+            <span class="s-name">{{ selectedStagiaire.prenom }} {{ selectedStagiaire.nom }}</span>
+            <span class="s-sub">{{ selectedStagiaire.filiere }} — {{ selectedStagiaire.niveau }}</span>
+          </div>
         </div>
-        <button mat-raised-button color="primary" (click)="recommencer()">
-          <mat-icon>add</mat-icon> Nouvel onboarding
-        </button>
+        <div class="progress-pct" [class.complete]="stats.progression === 100">
+          {{ stats.progression }}%
+          <span *ngIf="stats.progression === 100">🎉 Intégration complète !</span>
+        </div>
       </div>
+      <mat-progress-bar mode="determinate" [value]="stats.progression"
+                        [class.complete-bar]="stats.progression === 100"></mat-progress-bar>
     </mat-card-content>
   </mat-card>
+
+  <!-- Checklist par catégorie -->
+  <div class="categories-grid" *ngIf="checklist.length > 0">
+    <mat-card *ngFor="let cat of categories" class="cat-card" [class]="'cat-' + cat.color">
+
+      <mat-card-header>
+        <div mat-card-avatar class="cat-avatar" [class]="'bg-' + cat.color">
+          <mat-icon>{{ cat.icon }}</mat-icon>
+        </div>
+        <mat-card-title>{{ cat.label }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ getCompletedByCategorie(cat.key) }}/{{ getByCategorie(cat.key).length }} complétées
+        </mat-card-subtitle>
+        <mat-progress-bar mode="determinate"
+          [value]="getByCategorie(cat.key).length > 0 ?
+            (getCompletedByCategorie(cat.key) / getByCategorie(cat.key).length) * 100 : 0"
+          class="cat-progress">
+        </mat-progress-bar>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div *ngFor="let item of getByCategorie(cat.key)" class="checklist-item"
+             [class.completed]="item.completed">
+          <button mat-icon-button (click)="toggleItem(item)"
+                  [matTooltip]="item.completed ? 'Marquer incomplète' : 'Marquer complète'">
+            <mat-icon [class.done-icon]="item.completed">
+              {{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}
+            </mat-icon>
+          </button>
+          <div class="item-content">
+            <span class="item-label" [class.done-text]="item.completed">{{ item.etape }}</span>
+            <span class="item-desc" *ngIf="item.description">{{ item.description }}</span>
+            <span class="item-meta" *ngIf="item.completed && item.completedBy">
+              <mat-icon>person</mat-icon>{{ item.completedBy }}
+              · {{ item.completedAt | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+          <mat-icon class="done-check" *ngIf="item.completed">verified</mat-icon>
+        </div>
+
+        <div *ngIf="getByCategorie(cat.key).length === 0" class="empty-cat">
+          Aucune étape dans cette catégorie
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!selectedStagiaireId">
+    <mat-icon>person_search</mat-icon>
+    <h3>Sélectionnez un stagiaire</h3>
+    <p>Choisissez un stagiaire pour voir et gérer sa checklist d'intégration</p>
+  </div>
+
 </div>

@@ -256,3 +256,88 @@
     }
   }
 }
+
+// Welcome banner
+.welcome-banner {
+  background: linear-gradient(135deg, #00843D, #005a2b);
+  border-radius: 16px; padding: 24px; margin-bottom: 24px;
+  .welcome-left { display: flex; align-items: center; gap: 20px;
+    .welcome-avatar { width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 800; flex-shrink: 0; }
+    h2 { margin: 0 0 6px; color: white; font-size: 20px; }
+    p { margin: 0; color: rgba(255,255,255,0.85); font-size: 14px; }
+  }
+}
+
+// Onboarding checklist
+.onboarding-section {
+  background: white; border-radius: 12px; padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;
+  .section-title { display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: #1e293b; margin: 0 0 16px;
+    mat-icon { color: #00843D; }
+  }
+  .onboarding-progress {
+    margin-bottom: 16px;
+    .prog-info { display: flex; justify-content: space-between; font-size: 13px;
+      color: #64748b; margin-bottom: 6px;
+      .prog-pct { font-weight: 700; color: #00843D; }
+    }
+    mat-progress-bar { border-radius: 4px; --mdc-linear-progress-active-indicator-color: #00843D; }
+    .complete-msg { text-align: center; color: #00843D; font-weight: 600;
+      font-size: 14px; margin: 10px 0 0; }
+  }
+  .checklist-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;
+    .checklist-cat { border: 1px solid #f1f5f9; border-radius: 10px; overflow: hidden;
+      .cat-header { display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+        font-size: 13px; font-weight: 700;
+        mat-icon { font-size: 18px; }
+        .cat-count { margin-left: auto; font-size: 11px; opacity: 0.8; }
+        &.cat-blue   { background: #dbeafe; color: #1e40af; mat-icon { color: #2563eb; } }
+        &.cat-purple { background: #ede9fe; color: #5b21b6; mat-icon { color: #7c3aed; } }
+        &.cat-green  { background: #dcfce7; color: #166534; mat-icon { color: #16a34a; } }
+        &.cat-orange { background: #fef3c7; color: #92400e; mat-icon { color: #d97706; } }
+        &.cat-teal   { background: #ccfbf1; color: #134e4a; mat-icon { color: #14b8a6; } }
+      }
+      .checklist-item-view { display: flex; align-items: flex-start; gap: 8px;
+        padding: 8px 12px; border-bottom: 1px solid #f8fafc;
+        mat-icon { font-size: 18px; color: #cbd5e1; flex-shrink: 0; margin-top: 2px; }
+        .item-name { display: block; font-size: 13px; font-weight: 500; color: #374151; }
+        .item-desc { display: block; font-size: 11px; color: #94a3b8; margin-top: 2px; }
+        .item-done { display: block; font-size: 10px; color: #10b981; margin-top: 3px; }
+        &.done mat-icon { color: #10b981; }
+        &.done .item-name { color: #94a3b8; text-decoration: line-through; }
+      }
+    }
+  }
+}
+
+// Guide grid
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+  .guide-card {
+    .guide-avatar { width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      mat-icon { color: white; font-size: 22px; }
+      &.blue   { background: #3b82f6; }
+      &.green  { background: #10b981; }
+      &.orange { background: #f59e0b; }
+      &.purple { background: #7c3aed; }
+      &.teal   { background: #14b8a6; }
+      &.gold   { background: #F47920; }
+    }
+    .guide-item { display: flex; align-items: center; gap: 8px; padding: 6px 0;
+      font-size: 13px; color: #374151; border-bottom: 1px solid #f8fafc;
+      &:last-child { border-bottom: none; }
+      mat-icon { font-size: 16px; color: #00843D; flex-shrink: 0; }
+    }
+    &.highlight { border: 2px solid #F47920; }
+    .stats-mini { display: flex; justify-content: space-around; padding: 8px 0;
+      .stat-mini { text-align: center;
+        .stat-mini-val { display: block; font-size: 28px; font-weight: 800; color: #00843D; }
+        .stat-mini-lbl { font-size: 12px; color: #64748b; }
+      }
+    }
+  }
+}

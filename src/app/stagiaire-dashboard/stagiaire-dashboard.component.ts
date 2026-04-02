@@ -13,6 +13,7 @@ import { ConventionService } from '../core/services/convention.service';
 import { SuiviService } from '../core/services/suivi.service';
 import { EvaluationService } from '../core/services/evaluation.service';
 import { RapportService } from '../core/services/rapport.service';
+import { OnboardingChecklistService } from '../core/services/onboarding-checklist.service';
 
 @Component({
   selector: 'app-stagiaire-dashboard',
@@ -34,6 +35,20 @@ export class StagiaireDashboardComponent implements OnInit {
   isUploading = false;
   isLoading = true;
   moyenneNote = 0;
+checklist: any[] = [];
+
+get checklistCompleted(): number { return this.checklist.filter(c => c.completed).length; }
+get checklistProgression(): number {
+  return this.checklist.length > 0 ? Math.round(this.checklistCompleted * 100 / this.checklist.length) : 0;
+}
+
+readonly checklistCategories = [
+  { key: 'ADMINISTRATIF', label: 'Administratif', icon: 'folder', color: 'blue' },
+  { key: 'INFORMATIQUE', label: 'Informatique', icon: 'computer', color: 'purple' },
+  { key: 'INTEGRATION', label: 'Intégration', icon: 'people', color: 'green' },
+  { key: 'MATERIEL', label: 'Matériel', icon: 'inventory', color: 'orange' },
+  { key: 'FORMATION', label: 'Formation', icon: 'school', color: 'teal' }
+];
 
   readonly steps = [
     { key: 'EN_ATTENTE',            label: 'Candidature' },
@@ -65,7 +80,9 @@ export class StagiaireDashboardComponent implements OnInit {
     private suiviService: SuiviService,
     private evaluationService: EvaluationService,
     private rapportService: RapportService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private checklistService: OnboardingChecklistService,
+
   ) {}
 
   ngOnInit(): void {
@@ -77,6 +94,7 @@ export class StagiaireDashboardComponent implements OnInit {
           this.loadSuivis(data.stageId);
           this.loadEvaluations();
           this.loadRapport(data.stageId);
+          this.loadChecklist();
         }
       },
       error: () => { this.isLoading = false; }
@@ -214,5 +232,15 @@ export class StagiaireDashboardComponent implements OnInit {
       if (!text) return [];
       return text.split('\n').map(t => t.replace(/^[-*•]\s*/, '').trim()).filter(t => t);
     }
+
+    loadChecklist(): void {
+  this.checklistService.getMonChecklist().subscribe({
+    next: (data: any[]) => this.checklist = data,
+    error: () => {}
+  });
+}
+getChecklistByCategorie(cat: string): any[] {
+  return this.checklist.filter(c => c.categorie === cat);
+}
 
 }

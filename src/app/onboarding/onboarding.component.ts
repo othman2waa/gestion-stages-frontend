@@ -1,84 +1,110 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
-import { OnboardingService } from '../core/services/onboarding.service';
+import { MatSelectModule } from '@angular/material/select';
+import { OnboardingChecklistService } from '../core/services/onboarding-checklist.service';
+import { StagiaireService } from '../core/services/stagiaire.service';
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatCardModule, MatButtonModule,
-    MatIconModule, MatInputModule, MatFormFieldModule,
-    MatProgressSpinnerModule, MatSnackBarModule, MatStepperModule, MatChipsModule
+    CommonModule, FormsModule, MatCardModule, MatIconModule,
+    MatButtonModule, MatProgressBarModule, MatTooltipModule,
+    MatSnackBarModule, MatChipsModule, MatSelectModule
   ],
   templateUrl: './onboarding.component.html',
   styleUrls: ['./onboarding.component.scss']
 })
-export class OnboardingComponent {
-  step: 'upload' | 'review' | 'success' = 'upload';
+export class OnboardingComponent implements OnInit {
+  stagiaires: any[] = [];
+  selectedStagiaireId: number | null = null;
+  checklist: any[] = [];
+  stats: any = null;
   isLoading = false;
-  selectedFile: File | null = null;
-  infosExtraites: any = null;
-  resultatCreation: any = null;
+  userRole = '';
+
+  readonly categories = [
+    { key: 'ADMINISTRATIF', label: 'Administratif', icon: 'folder', color: 'blue' },
+    { key: 'INFORMATIQUE', label: 'Informatique', icon: 'computer', color: 'purple' },
+    { key: 'INTEGRATION', label: 'Intégration', icon: 'people', color: 'green' },
+    { key: 'MATERIEL', label: 'Matériel', icon: 'inventory', color: 'orange' },
+    { key: 'FORMATION', label: 'Formation', icon: 'school', color: 'teal' }
+  ];
 
   constructor(
-    private onboardingService: OnboardingService,
+    private checklistService: OnboardingChecklistService,
+    private stagiaireService: StagiaireService,
     private snackBar: MatSnackBar
   ) {}
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      this.selectedFile = file;
-    } else {
-      this.snackBar.open('Veuillez sélectionner un fichier PDF', 'Fermer', { duration: 3000 });
+  ngOnInit(): void {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.userRole = currentUser.role ?? '';
+    this.stagiaireService.getAll().subscribe({
+      next: (data) => this.stagiaires = data,
+      error: () => {}
+    });
+  }
+
+  onStagiaireChange(id: number): void {
+    this.selectedStagiaireId = id;
+    this.loadChecklist(id);
+    this.loadStats(id);
+  }
+
+  loadChecklist(stagiaireId: number): void {
+  this.isLoading = true;
+  this.checklistService.getChecklist(stagiaireId).subscribe({
+    next: (data: any[]) => { this.checklist = data; this.isLoading = false; },
+    error: () => this.isLoading = false
+  });
+}
+
+  loadStats(stagiaireId: number): void {
+  this.checklistService.getStats(stagiaireId).subscribe({
+    next: (data: any) => this.stats = data,
+    error: () => {}
+  });
+}
+
+toggleItem(item: any): void {
+  this.checklistService.completer(item.id).subscribe({
+    next: (updated: any) => {
+      item.completed = updated.completed;
+      item.completedAt = updated.completedAt;
+      item.completedBy = updated.completedBy;
+      const msg = item.completed ? '✅ Étape complétée' : '↩️ Étape incomplète';
+      this.snackBar.open(msg, 'Fermer', { duration: 2000 });
+      if (this.selectedStagiaireId) this.loadStats(this.selectedStagiaireId);
     }
+  });
+}
+
+  getByCategorie(cat: string): any[] {
+    return this.checklist.filter(c => c.categorie === cat);
   }
 
-  analyserCV(): void {
-    if (!this.selectedFile) return;
-    this.isLoading = true;
-    this.onboardingService.analyserCV(this.selectedFile).subscribe({
-      next: (data) => {
-        this.infosExtraites = data;
-        this.step = 'review';
-        this.isLoading = false;
-      },
-      error: (e) => {
-        this.snackBar.open('Erreur lors de l\'analyse: ' + (e.error?.error || e.message), 'Fermer', { duration: 5000 });
-        this.isLoading = false;
-      }
-    });
+  getCompletedByCategorie(cat: string): number {
+    return this.getByCategorie(cat).filter(c => c.completed).length;
   }
 
-  confirmerEtCreer(): void {
-    this.isLoading = true;
-    this.onboardingService.creerCompte(this.infosExtraites).subscribe({
-      next: (data) => {
-        this.resultatCreation = data;
-        this.step = 'success';
-        this.isLoading = false;
-      },
-      error: (e) => {
-        this.snackBar.open('Erreur: ' + (e.error?.error || e.message), 'Fermer', { duration: 5000 });
-        this.isLoading = false;
-      }
-    });
+  getCatColor(key: string): string {
+    return this.categories.find(c => c.key === key)?.color ?? 'blue';
   }
 
-  recommencer(): void {
-    this.step = 'upload';
-    this.selectedFile = null;
-    this.infosExtraites = null;
-    this.resultatCreation = null;
+  getCatIcon(key: string): string {
+    return this.categories.find(c => c.key === key)?.icon ?? 'check';
+  }
+
+  get selectedStagiaire(): any {
+    return this.stagiaires.find(s => s.id === this.selectedStagiaireId);
   }
 }

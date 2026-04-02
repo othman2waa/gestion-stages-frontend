@@ -1,108 +1,108 @@
-.onboarding-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+.onboarding-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 24px; color: #1e40af;
+    mat-icon { font-size: 28px; } }
+  p { margin: 4px 0 0; color: #666; font-size: 13px; }
 }
 
-.onboarding-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-
-  .header-icon {
-    font-size: 2.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    color: #6366f1;
-  }
-
-  h2 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #1e293b; }
-  p { margin: 0; color: #64748b; }
-}
-
-.step-card {
-  border-radius: 12px !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
-
-  mat-card-title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.1rem !important;
-  }
-
-  mat-card-actions {
-    padding: 1rem 16px !important;
-    display: flex;
-    gap: 0.5rem;
+.select-card { margin-bottom: 20px;
+  .select-row { display: flex; align-items: center; gap: 12px;
+    mat-icon { color: #3b82f6; font-size: 28px; }
+    .select-field { flex: 1; max-width: 500px; }
   }
 }
 
-.drop-zone {
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 3rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin: 1rem 0;
-
-  &:hover { border-color: #6366f1; background: #f8f7ff; }
-
-  .upload-icon { font-size: 3rem; width: 3rem; height: 3rem; color: #94a3b8; }
-
-  p { color: #64748b; margin: 0.5rem 0 0; }
-
-  .file-name {
-    color: #16a34a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-weight: 500;
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;
+  .stat-card { border-radius: 12px; padding: 16px 20px; display: flex; align-items: center;
+    gap: 14px; color: white;
+    mat-icon { font-size: 28px; opacity: 0.9; }
+    .stat-val { display: block; font-size: 24px; font-weight: 800; }
+    .stat-lbl { font-size: 12px; opacity: 0.85; }
+    &.blue   { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    &.green  { background: linear-gradient(135deg, #059669, #10b981); }
+    &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
+    &.purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
   }
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  margin-top: 1rem;
-
-  .full-width { grid-column: 1 / -1; }
-
-  mat-form-field { width: 100%; }
-}
-
-.success-card {
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7) !important;
-  border: 1px solid #86efac !important;
-}
-
-.success-content {
-  text-align: center;
-  padding: 2rem;
-
-  .success-icon {
-    font-size: 4rem;
-    width: 4rem;
-    height: 4rem;
-    color: #16a34a;
+.progress-card { margin-bottom: 24px;
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    .stagiaire-info { display: flex; align-items: center; gap: 12px;
+      .s-avatar { width: 44px; height: 44px; border-radius: 50%;
+        background: linear-gradient(135deg, #1e40af, #7c3aed); color: white;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 15px; }
+      .s-name { display: block; font-weight: 700; color: #1e293b; }
+      .s-sub { display: block; font-size: 12px; color: #64748b; }
+    }
+    .progress-pct { font-size: 22px; font-weight: 800; color: #1e40af;
+      &.complete { color: #059669; }
+      span { font-size: 14px; margin-left: 8px; }
+    }
   }
-
-  h3 { font-size: 1.5rem; color: #15803d; margin: 0.5rem 0; }
-  p { color: #166534; }
+  mat-progress-bar { height: 10px; border-radius: 5px;
+    &.complete-bar { --mdc-linear-progress-active-indicator-color: #10b981; }
+  }
 }
 
-.credentials-box {
-  background: white;
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  margin: 1rem auto;
-  max-width: 400px;
-  text-align: left;
-  border: 1px solid #bbf7d0;
+.categories-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;
+}
 
-  p { margin: 0.25rem 0; color: #1e293b; }
+.cat-card {
+  border-radius: 16px; overflow: hidden; border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  &.cat-blue   { border-color: #bfdbfe; }
+  &.cat-purple { border-color: #ddd6fe; }
+  &.cat-green  { border-color: #bbf7d0; }
+  &.cat-orange { border-color: #fed7aa; }
+  &.cat-teal   { border-color: #99f6e4; }
+
+  mat-card-header { padding-bottom: 0; }
+  .cat-avatar { width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    mat-icon { font-size: 22px; color: white; }
+    &.bg-blue   { background: #3b82f6; }
+    &.bg-purple { background: #7c3aed; }
+    &.bg-green  { background: #10b981; }
+    &.bg-orange { background: #f59e0b; }
+    &.bg-teal   { background: #14b8a6; }
+  }
+  .cat-progress { margin: 8px 16px 0; border-radius: 4px; }
+}
+
+.checklist-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 8px; border-radius: 10px; transition: all 0.2s; margin-bottom: 4px;
+  &:hover { background: #f8fafc; }
+  &.completed { background: #f0fdf4;
+    button mat-icon { color: #16a34a; }
+  }
+  button { flex-shrink: 0; margin-top: -4px;
+    mat-icon { color: #cbd5e1; font-size: 22px;
+      &.done-icon { color: #16a34a; }
+    }
+  }
+  .item-content { flex: 1;
+    .item-label { display: block; font-size: 13px; font-weight: 600; color: #1e293b;
+      &.done-text { text-decoration: line-through; color: #94a3b8; }
+    }
+    .item-desc { display: block; font-size: 11px; color: #64748b; margin-top: 2px; }
+    .item-meta { display: flex; align-items: center; gap: 4px; font-size: 10px;
+      color: #10b981; margin-top: 4px; font-weight: 500;
+      mat-icon { font-size: 12px; }
+    }
+  }
+  .done-check { color: #16a34a; font-size: 18px; margin-top: 2px; }
+}
+
+.empty-cat { text-align: center; padding: 16px; color: #94a3b8; font-size: 13px; }
+
+.empty-state { text-align: center; padding: 80px; color: #94a3b8;
+  mat-icon { font-size: 64px; display: block; margin-bottom: 16px; color: #cbd5e1; }
+  h3 { margin: 0 0 8px; color: #475569; }
+  p { margin: 0; font-size: 14px; }
 }

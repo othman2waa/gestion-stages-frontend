@@ -76,7 +76,155 @@
 
     <!-- Tabs -->
     <mat-tab-group animationDuration="200ms" class="main-tabs">
+      <!-- Tab Bienvenue -->
+<mat-tab>
+  <ng-template mat-tab-label>
+    <mat-icon>waving_hand</mat-icon>&nbsp; Bienvenue
+  </ng-template>
+  <div class="tab-content">
 
+    <!-- Message bienvenue -->
+    <div class="welcome-banner">
+      <div class="welcome-left">
+        <div class="welcome-avatar">{{ dashboard.stagiairePrenom?.charAt(0) }}{{ dashboard.stagiaireNom?.charAt(0) }}</div>
+        <div>
+          <h2>Bienvenue chez OCP Group, {{ dashboard.stagiairePrenom }} ! 👋</h2>
+          <p>Nous sommes ravis de vous accueillir. Voici tout ce qu'il faut savoir pour bien démarrer votre stage.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checklist onboarding stagiaire -->
+    <div class="onboarding-section" *ngIf="checklist.length > 0">
+      <h3 class="section-title"><mat-icon>checklist</mat-icon> Votre checklist d'intégration</h3>
+      <div class="onboarding-progress">
+        <div class="prog-info">
+          <span>{{ checklistCompleted }}/{{ checklist.length }} étapes complétées</span>
+          <span class="prog-pct">{{ checklistProgression }}%</span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="checklistProgression"
+                          [class.complete-bar]="checklistProgression === 100"></mat-progress-bar>
+        <p class="complete-msg" *ngIf="checklistProgression === 100">
+          🎉 Félicitations ! Votre intégration est complète !
+        </p>
+      </div>
+
+      <div class="checklist-categories">
+        <div *ngFor="let cat of checklistCategories" class="checklist-cat">
+          <div class="cat-header" [class]="'cat-' + cat.color">
+            <mat-icon>{{ cat.icon }}</mat-icon>
+            <span>{{ cat.label }}</span>
+            <span class="cat-count">{{ getChecklistByCategorie(cat.key).length }} étapes</span>
+          </div>
+          <div *ngFor="let item of getChecklistByCategorie(cat.key)" class="checklist-item-view"
+               [class.done]="item.completed">
+            <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            <div>
+              <span class="item-name">{{ item.etape }}</span>
+              <span class="item-desc">{{ item.description }}</span>
+              <span class="item-done" *ngIf="item.completed && item.completedBy">
+                Complété par {{ item.completedBy }} le {{ item.completedAt | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Infos pratiques -->
+    <div class="guide-grid">
+      <mat-card class="guide-card">
+        <mat-card-header>
+          <div mat-card-avatar class="guide-avatar blue"><mat-icon>schedule</mat-icon></div>
+          <mat-card-title>Horaires</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="guide-item"><mat-icon>sunny</mat-icon><span>Lundi – Vendredi : 8h00 – 17h00</span></div>
+          <div class="guide-item"><mat-icon>restaurant</mat-icon><span>Pause déjeuner : 12h00 – 13h30</span></div>
+          <div class="guide-item"><mat-icon>event_available</mat-icon><span>Congés selon calendrier OCP</span></div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="guide-card">
+        <mat-card-header>
+          <div mat-card-avatar class="guide-avatar green"><mat-icon>security</mat-icon></div>
+          <mat-card-title>Règles de sécurité</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="guide-item"><mat-icon>badge</mat-icon><span>Porter votre badge en permanence</span></div>
+          <div class="guide-item"><mat-icon>no_photography</mat-icon><span>Pas de photos sans autorisation</span></div>
+          <div class="guide-item"><mat-icon>health_and_safety</mat-icon><span>EPI obligatoires sur site</span></div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="guide-card">
+        <mat-card-header>
+          <div mat-card-avatar class="guide-avatar orange"><mat-icon>computer</mat-icon></div>
+          <mat-card-title>Outils & Ressources</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="guide-item"><mat-icon>email</mat-icon><span>Messagerie OCP : Outlook</span></div>
+          <div class="guide-item"><mat-icon>folder</mat-icon><span>Espace partagé : SharePoint OCP</span></div>
+          <div class="guide-item"><mat-icon>support_agent</mat-icon><span>Support IT : ext. 4444</span></div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="guide-card">
+        <mat-card-header>
+          <div mat-card-avatar class="guide-avatar purple"><mat-icon>contacts</mat-icon></div>
+          <mat-card-title>Contacts utiles</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="guide-item"><mat-icon>supervisor_account</mat-icon>
+            <span>Encadrant : {{ dashboard.encadrantNom ?? 'Non assigné' }}</span>
+          </div>
+          <div class="guide-item"><mat-icon>email</mat-icon>
+            <span>{{ dashboard.encadrantEmail ?? '—' }}</span>
+          </div>
+          <div class="guide-item"><mat-icon>business</mat-icon>
+             <span>RH : rh&#64;ocpgroup.ma</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="guide-card">
+        <mat-card-header>
+          <div mat-card-avatar class="guide-avatar teal"><mat-icon>tips_and_updates</mat-icon></div>
+          <mat-card-title>Conseils pour réussir</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="guide-item"><mat-icon>lightbulb</mat-icon><span>Posez des questions à votre encadrant</span></div>
+          <div class="guide-item"><mat-icon>event_note</mat-icon><span>Consultez vos suivis hebdomadaires</span></div>
+          <div class="guide-item"><mat-icon>upload_file</mat-icon><span>Déposez votre rapport avant la fin</span></div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="guide-card highlight">
+        <mat-card-header>
+          <div mat-card-avatar class="guide-avatar gold"><mat-icon>emoji_events</mat-icon></div>
+          <mat-card-title>Votre stage en chiffres</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stats-mini">
+            <div class="stat-mini">
+              <span class="stat-mini-val">{{ dashboard.progression }}%</span>
+              <span class="stat-mini-lbl">Progression</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-val">{{ suivis.length }}</span>
+              <span class="stat-mini-lbl">Suivis</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-val">{{ evaluations.length }}</span>
+              <span class="stat-mini-lbl">Évaluations</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  </div>
+</mat-tab>
       <!-- Tab Infos -->
       <mat-tab>
         <ng-template mat-tab-label><mat-icon>info</mat-icon>&nbsp; Mon Stage</ng-template>
