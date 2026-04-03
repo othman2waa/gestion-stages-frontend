@@ -1,0 +1,83 @@
+<div class="attestations-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>workspace_premium</mat-icon> Attestations de Stage</h2>
+      <p>{{ attestations.length }} demande(s) au total</p>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card orange">
+      <mat-icon>hourglass_empty</mat-icon>
+      <div><span class="kpi-val">{{ enAttente }}</span><span class="kpi-lbl">En attente</span></div>
+    </div>
+    <div class="kpi-card green">
+      <mat-icon>verified</mat-icon>
+      <div><span class="kpi-val">{{ approuvees }}</span><span class="kpi-lbl">Approuvées</span></div>
+    </div>
+    <div class="kpi-card red">
+      <mat-icon>cancel</mat-icon>
+      <div><span class="kpi-val">{{ refusees }}</span><span class="kpi-lbl">Refusées</span></div>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- Liste -->
+  <div class="attestations-list" *ngIf="!isLoading">
+
+    <div *ngFor="let a of attestations" class="attestation-card" [class]="'border-' + getStatutClass(a.statut)">
+
+      <div class="card-left">
+        <div class="att-avatar" [class]="getStatutClass(a.statut)">
+          <mat-icon>{{ a.statut === 'APPROUVEE' ? 'verified' : a.statut === 'REFUSEE' ? 'cancel' : 'hourglass_empty' }}</mat-icon>
+        </div>
+        <div class="att-info">
+          <h4>{{ a.stagiaireNom }}</h4>
+          <span class="att-sujet">{{ a.stageSujet }}</span>
+          <span class="att-date">
+            <mat-icon>calendar_today</mat-icon>
+            Demandée le {{ a.dateDemande | date:'dd/MM/yyyy à HH:mm' }}
+          </span>
+          <span class="att-numero" *ngIf="a.numeroAttestation">
+            <mat-icon>tag</mat-icon>{{ a.numeroAttestation }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-right">
+        <span class="statut-badge" [class]="getStatutClass(a.statut)">
+          {{ a.statut.replace('_', ' ') }}
+        </span>
+        <div class="att-actions">
+          <button mat-raised-button class="btn-approuver"
+                  *ngIf="a.statut === 'EN_ATTENTE'"
+                  (click)="approuver(a)">
+            <mat-icon>check</mat-icon> Approuver
+          </button>
+          <button mat-stroked-button color="warn"
+                  *ngIf="a.statut === 'EN_ATTENTE'"
+                  (click)="refuser(a)">
+            <mat-icon>close</mat-icon> Refuser
+          </button>
+          <button mat-raised-button class="btn-pdf"
+                  *ngIf="a.statut === 'APPROUVEE'"
+                  (click)="telechargerPdf(a)">
+            <mat-icon>picture_as_pdf</mat-icon> Imprimer PDF
+          </button>
+        </div>
+        <span class="traite-par" *ngIf="a.traitePar">
+          Par {{ a.traitePar }}
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="attestations.length === 0" class="empty-state">
+      <mat-icon>workspace_premium</mat-icon>
+      <p>Aucune demande d'attestation</p>
+    </div>
+  </div>
+</div>

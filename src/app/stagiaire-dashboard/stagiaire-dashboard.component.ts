@@ -14,6 +14,7 @@ import { SuiviService } from '../core/services/suivi.service';
 import { EvaluationService } from '../core/services/evaluation.service';
 import { RapportService } from '../core/services/rapport.service';
 import { OnboardingChecklistService } from '../core/services/onboarding-checklist.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-stagiaire-dashboard',
@@ -36,6 +37,7 @@ export class StagiaireDashboardComponent implements OnInit {
   isLoading = true;
   moyenneNote = 0;
 checklist: any[] = [];
+attestation: any = null;
 
 get checklistCompleted(): number { return this.checklist.filter(c => c.completed).length; }
 get checklistProgression(): number {
@@ -82,6 +84,8 @@ readonly checklistCategories = [
     private rapportService: RapportService,
     private snackBar: MatSnackBar,
     private checklistService: OnboardingChecklistService,
+    private http: HttpClient,
+
 
   ) {}
 
@@ -95,7 +99,10 @@ readonly checklistCategories = [
           this.loadEvaluations();
           this.loadRapport(data.stageId);
           this.loadChecklist();
+         this.loadAttestation(data.stageId);
+
         }
+        
       },
       error: () => { this.isLoading = false; }
     });
@@ -241,6 +248,56 @@ readonly checklistCategories = [
 }
 getChecklistByCategorie(cat: string): any[] {
   return this.checklist.filter(c => c.categorie === cat);
+}
+
+
+loadAttestation(stageId: number): void {
+  this.http.get<any>(`http://localhost:8080/api/attestations/ma-demande/${stageId}`).subscribe({
+    next: (data: any) => this.attestation = data,
+    error: () => {}
+  });
+}
+
+demanderAttestation(): void {
+  if (!this.dashboard?.stageId) return;
+  if (!confirm('Confirmer la demande d\'attestation de stage ?')) return;
+  this.http.post<any>('http://localhost:8080/api/attestations/demander',
+    { stageId: this.dashboard.stageId }).subscribe({
+    next: (data: any) => {
+      this.attestation = data;
+      this.snackBar.open('✅ Demande envoyée au RH', 'Fermer', { duration: 3000 });
+    },
+    error: (err) => this.snackBar.open(err.error?.message ?? 'Erreur', 'Fermer', { duration: 3000 })
+  });
+}
+telechargerAttestation(): void {
+  if (!this.attestation?.id) return;
+  this.http.get(`http://localhost:8080/api/attestations/${this.attestation.id}/pdf`,
+    { responseType: 'blob' }).subscribe({
+    next: (blob: any) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `attestation-${this.attestation.numeroAttestation}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
+    error: () => this.snackBar.open('Erreur téléchargement', 'Fermer', { duration: 3000 })
+  });
+}
+telechargerDemande(): void {
+  if (!this.attestation?.id) return;
+  this.http.get(`http://localhost:8080/api/attestations/${this.attestation.id}/demande-pdf`,
+    { responseType: 'blob' }).subscribe({
+    next: (blob: any) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `demande-attestation.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  });
 }
 
 }

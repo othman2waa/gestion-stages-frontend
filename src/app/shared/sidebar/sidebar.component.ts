@@ -34,7 +34,7 @@ export class SidebarComponent {
     { label: 'Comptes', icon: 'manage_accounts', route: '/gestion-comptes', roles: ['ADMIN_RH'] },
     { label: 'Annonces', icon: 'campaign', route: '/annonces', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
     { label: 'Départements', icon: 'business', route: '/departements', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-
+    { label: 'Attestations', icon: 'workspace_premium', route: '/attestations', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
   ];
 
   constructor(

@@ -464,6 +464,92 @@
 
   </div>
 </mat-tab>
+
+
+<!-- Tab Attestation -->
+<mat-tab>
+  <ng-template mat-tab-label>
+    <mat-icon>workspace_premium</mat-icon>&nbsp; Attestation
+  </ng-template>
+  <div class="tab-content">
+
+    <!-- Pas encore demandée -->
+    <div *ngIf="!attestation" class="attestation-empty">
+      <div class="att-icon"><mat-icon>workspace_premium</mat-icon></div>
+      <h3>Attestation de stage</h3>
+      <p>Vous pouvez demander votre attestation de stage une fois votre stage terminé ou en cours de finalisation.</p>
+      <button mat-raised-button class="btn-demander" (click)="demanderAttestation()">
+        <mat-icon>send</mat-icon> Demander mon attestation
+      </button>
+    </div>
+
+    <!-- Demande en attente -->
+    <div *ngIf="attestation && attestation.statut === 'EN_ATTENTE'" class="attestation-card pending">
+      <div class="att-status-icon orange"><mat-icon>hourglass_empty</mat-icon></div>
+      <h3>Demande en cours de traitement</h3>
+      <p>Votre demande a été envoyée au service RH. Vous serez notifié dès qu'elle sera traitée.</p>
+      <div class="att-info">
+        <div class="att-row"><mat-icon>calendar_today</mat-icon>
+          <span>Demandée le {{ attestation.dateDemande | date:'dd/MM/yyyy à HH:mm' }}</span>
+        </div>
+        <div class="att-row"><mat-icon>work</mat-icon>
+          <span>{{ attestation.stageSujet }}</span>
+        </div>
+      </div>
+      <div class="att-steps">
+        <div class="att-step done"><mat-icon>check_circle</mat-icon><span>Demande envoyée</span></div>
+        <div class="att-step-line"></div>
+        <div class="att-step active"><mat-icon>pending</mat-icon><span>Traitement RH</span></div>
+        <div class="att-step-line"></div>
+        <div class="att-step"><mat-icon>workspace_premium</mat-icon><span>Attestation prête</span></div>
+      </div>
+      <button mat-stroked-button (click)="telechargerDemande()" style="margin-top: 12px;">
+        <mat-icon>download</mat-icon> Télécharger le formulaire de demande
+      </button>
+    </div>
+    
+
+    <!-- Demande approuvée -->
+    <div *ngIf="attestation && attestation.statut === 'APPROUVEE'" class="attestation-card approved">
+      <div class="att-status-icon green"><mat-icon>verified</mat-icon></div>
+      <h3>Attestation disponible !</h3>
+      <p>Votre attestation de stage a été approuvée et est prête à télécharger.</p>
+      <div class="att-info">
+        <div class="att-row"><mat-icon>tag</mat-icon>
+          <span>N° {{ attestation.numeroAttestation }}</span>
+        </div>
+        <div class="att-row"><mat-icon>person</mat-icon>
+          <span>Traitée par {{ attestation.traitePar }}</span>
+        </div>
+        <div class="att-row"><mat-icon>calendar_today</mat-icon>
+          <span>Le {{ attestation.dateTraitement | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+      <div class="att-steps">
+        <div class="att-step done"><mat-icon>check_circle</mat-icon><span>Demande envoyée</span></div>
+        <div class="att-step-line done"></div>
+        <div class="att-step done"><mat-icon>check_circle</mat-icon><span>Approuvée RH</span></div>
+        <div class="att-step-line done"></div>
+        <div class="att-step done"><mat-icon>check_circle</mat-icon><span>Prête</span></div>
+      </div>
+      <button mat-raised-button class="btn-download" (click)="telechargerAttestation()">
+        <mat-icon>download</mat-icon> Télécharger mon attestation PDF
+      </button>
+    </div>
+
+    <!-- Demande refusée -->
+    <div *ngIf="attestation && attestation.statut === 'REFUSEE'" class="attestation-card refused">
+      <div class="att-status-icon red"><mat-icon>cancel</mat-icon></div>
+      <h3>Demande refusée</h3>
+      <p *ngIf="attestation.commentaire">Motif : {{ attestation.commentaire }}</p>
+      <p *ngIf="!attestation.commentaire">Votre demande a été refusée. Contactez le service RH pour plus d'informations.</p>
+      <button mat-stroked-button (click)="attestation = null">
+        <mat-icon>refresh</mat-icon> Faire une nouvelle demande
+      </button>
+    </div>
+
+  </div>
+</mat-tab>
     </mat-tab-group>
 
   </ng-container>
