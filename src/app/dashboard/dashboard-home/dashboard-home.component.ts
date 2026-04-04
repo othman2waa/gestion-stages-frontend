@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Chart, registerables } from 'chart.js';
+import { Router } from '@angular/router';
 
 Chart.register(...registerables);
 
@@ -33,7 +34,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   private apiBase = 'http://localhost:8080/api/reporting';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   get isAdmin(): boolean {
     return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole);
@@ -41,6 +42,10 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (this.userRole === 'ENCADRANT') {
+      this.router.navigate(['/encadrant-dashboard']);
+      return;
+    }
     this.userRole = currentUser.role ?? '';
     if (this.isAdmin) {
       this.http.get<any>(`${this.apiBase}/stats-completes`).subscribe({

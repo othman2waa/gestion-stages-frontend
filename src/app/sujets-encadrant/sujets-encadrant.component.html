@@ -1,0 +1,155 @@
+<div class="sujets-enc-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>assignment</mat-icon> Mes Sujets Proposés</h2>
+      <p>Proposez des sujets de stage — le RH les validera et les affectera aux stagiaires</p>
+    </div>
+    <button mat-raised-button class="btn-new" (click)="ouvrirNouveau()">
+      <mat-icon>add</mat-icon> Proposer un sujet
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card orange">
+      <mat-icon>hourglass_empty</mat-icon>
+      <div><span class="kv">{{ proposes }}</span><span class="kl">En attente RH</span></div>
+    </div>
+    <div class="kpi-card green">
+      <mat-icon>check_circle</mat-icon>
+      <div><span class="kv">{{ valides }}</span><span class="kl">Validés</span></div>
+    </div>
+    <div class="kpi-card blue">
+      <mat-icon>assignment_ind</mat-icon>
+      <div><span class="kv">{{ affectes }}</span><span class="kl">Affectés</span></div>
+    </div>
+  </div>
+
+  <!-- Flux info -->
+  <div class="flux-info">
+    <div class="flux-step done"><mat-icon>edit_note</mat-icon><span>Vous proposez</span></div>
+    <div class="flux-arrow">→</div>
+    <div class="flux-step pending"><mat-icon>manage_accounts</mat-icon><span>RH valide</span></div>
+    <div class="flux-arrow">→</div>
+    <div class="flux-step pending"><mat-icon>assignment_ind</mat-icon><span>RH affecte</span></div>
+    <div class="flux-arrow">→</div>
+    <div class="flux-step pending"><mat-icon>school</mat-icon><span>Stagiaire voit</span></div>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- Liste -->
+  <div class="sujets-list" *ngIf="!isLoading">
+    <div *ngFor="let s of sujets" class="sujet-card"
+         [style.border-left]="'4px solid ' + getStatutConf(s.statut).color">
+
+      <div class="card-top">
+        <div class="card-left">
+          <div class="statut-badge"
+               [style.background]="getStatutConf(s.statut).color + '15'"
+               [style.color]="getStatutConf(s.statut).color">
+            <mat-icon>{{ getStatutConf(s.statut).icon }}</mat-icon>
+            {{ getStatutConf(s.statut).label }}
+          </div>
+          <h4>{{ s.titre }}</h4>
+          <p *ngIf="s.description">{{ s.description }}</p>
+        </div>
+        <div class="card-right">
+          <button mat-icon-button color="warn" matTooltip="Supprimer"
+                  *ngIf="s.statut === 'PROPOSE'"
+                  (click)="supprimer(s.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-meta">
+        <span *ngIf="s.typeStage"><mat-icon>category</mat-icon>{{ s.typeStage }}</span>
+        <span *ngIf="s.niveauRequis"><mat-icon>school</mat-icon>{{ s.niveauRequis }}</span>
+        <span *ngIf="s.technologies"><mat-icon>code</mat-icon>{{ s.technologies }}</span>
+        <span *ngIf="s.departementNom"><mat-icon>business</mat-icon>{{ s.departementNom }}</span>
+        <span><mat-icon>schedule</mat-icon>{{ s.createdAt | date:'dd/MM/yyyy' }}</span>
+      </div>
+
+      <div class="affecte-info" *ngIf="s.statut === 'AFFECTE'">
+        <mat-icon>check_circle</mat-icon>
+        Votre sujet a été affecté à un stagiaire (Stage #{{ s.stageId }})
+      </div>
+    </div>
+
+    <div *ngIf="sujets.length === 0" class="empty-state">
+      <mat-icon>assignment_add</mat-icon>
+      <h3>Aucun sujet proposé</h3>
+      <p>Cliquez sur "Proposer un sujet" pour soumettre un sujet au RH</p>
+      <button mat-raised-button class="btn-new" (click)="ouvrirNouveau()">
+        <mat-icon>add</mat-icon> Proposer mon premier sujet
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DIALOG NOUVEAU SUJET ═══ -->
+<ng-template #nouveauDialog>
+  <div class="dialog-header">
+    <mat-icon>assignment_add</mat-icon>
+    <h3>Proposer un sujet de stage</h3>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <p class="dialog-info">
+      <mat-icon>info</mat-icon>
+      Votre sujet sera envoyé au RH pour validation. Une fois validé, il pourra être affecté à un stagiaire.
+    </p>
+    <form [formGroup]="nouveauForm" class="dialog-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Titre du sujet *</mat-label>
+        <input matInput formControlName="titre" placeholder="Ex: Développement API REST Spring Boot">
+        <mat-icon matPrefix>title</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description du projet</mat-label>
+        <textarea matInput formControlName="description" rows="3"
+          placeholder="Contexte, objectifs, missions du stagiaire..."></textarea>
+      </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Type de stage</mat-label>
+          <mat-select formControlName="typeStage">
+            <mat-option *ngFor="let t of typeStages" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Niveau requis</mat-label>
+          <mat-select formControlName="niveauRequis">
+            <mat-option *ngFor="let n of niveaux" [value]="n">{{ n }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Technologies</mat-label>
+        <input matInput formControlName="technologies"
+               placeholder="Ex: Spring Boot, Angular, PostgreSQL, Docker">
+        <mat-icon matPrefix>code</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Département</mat-label>
+        <mat-select formControlName="departementId">
+          <mat-option [value]="null">— Non spécifié —</mat-option>
+          <mat-option *ngFor="let d of departements" [value]="d.id">
+            {{ d.code }} — {{ d.nom }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>business</mat-icon>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button class="btn-proposer"
+            (click)="proposer()" [disabled]="nouveauForm.invalid">
+      <mat-icon>send</mat-icon> Envoyer au RH
+    </button>
+  </mat-dialog-actions>
+</ng-template>

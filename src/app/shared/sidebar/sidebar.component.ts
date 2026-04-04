@@ -17,25 +17,24 @@ interface MenuItem {
 export class SidebarComponent {
   @Input() isCollapsed = false;
 
-  menuItems: MenuItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT', 'STAGIAIRE'] },
-    { label: 'Stagiaires', icon: 'school', route: '/stagiaires', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'] },
-    { label: 'Stages', icon: 'work', route: '/stages', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT', 'STAGIAIRE'] },
-    { label: 'Onboarding IA', icon: 'smart_toy', route: '/onboarding', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Encadrants', icon: 'supervisor_account', route: '/encadrants', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Conventions', icon: 'description', route: '/conventions', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Évaluations', icon: 'star_rate', route: '/evaluations', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'] },
-    { label: 'Reporting', icon: 'bar_chart', route: '/reporting', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Mon Espace', icon: 'dashboard', route: '/stagiaire-dashboard', roles: ['STAGIAIRE'] },
-    { label: 'Suivi hebdo', icon: 'event_note', route: '/suivi-hebdomadaire', roles: ['ENCADRANT', 'ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Mon Espace', icon: 'dashboard', route: '/encadrant-dashboard', roles: ['ENCADRANT'] },
-    { label: 'Mon Rapport', icon: 'upload_file', route: '/rapport-stage', roles: ['STAGIAIRE'] },
-    { label: 'Candidatures', icon: 'inbox', route: '/candidatures', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Comptes', icon: 'manage_accounts', route: '/gestion-comptes', roles: ['ADMIN_RH'] },
-    { label: 'Annonces', icon: 'campaign', route: '/annonces', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Départements', icon: 'business', route: '/departements', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-    { label: 'Attestations', icon: 'workspace_premium', route: '/attestations', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
-  ];
+menuItems: MenuItem[] = [
+  { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Mon Espace', icon: 'dashboard_customize', route: '/encadrant-dashboard', roles: ['ENCADRANT'] },
+  { label: 'Stagiaires', icon: 'school', route: '/stagiaires', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'] },
+  { label: 'Stages', icon: 'work', route: '/stages', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT', 'STAGIAIRE'] },
+  { label: 'Onboarding IA', icon: 'smart_toy', route: '/onboarding', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Encadrants', icon: 'supervisor_account', route: '/encadrants', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Conventions', icon: 'description', route: '/conventions', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Évaluations', icon: 'star_rate', route: '/evaluations', roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'] },
+  { label: 'Reporting', icon: 'bar_chart', route: '/reporting', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Suivi hebdo', icon: 'event_note', route: '/suivi-hebdomadaire', roles: ['ENCADRANT', 'ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Candidatures', icon: 'inbox', route: '/candidatures', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Comptes', icon: 'manage_accounts', route: '/gestion-comptes', roles: ['ADMIN_RH'] },
+  { label: 'Annonces', icon: 'campaign', route: '/annonces', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Départements', icon: 'business', route: '/departements', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Attestations', icon: 'workspace_premium', route: '/attestations', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+  { label: 'Sujets', icon: 'assignment', route: '/sujets', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
+];
 
   constructor(
     private authService: AuthService,

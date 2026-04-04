@@ -1,150 +1,238 @@
-<div class="encadrant-container">
+<div class="enc-container">
 
-  <div *ngIf="isLoading" class="loading">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  </div>
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="top-loader"></mat-progress-bar>
 
   <ng-container *ngIf="!isLoading && profil">
 
-    <!-- Profil Header -->
-    <div class="profil-header">
-      <div class="avatar-large">{{ getInitials(profil.nom, profil.prenom) }}</div>
-      <div class="profil-info">
-        <h2>{{ profil.prenom }} {{ profil.nom }}</h2>
-        <p><mat-icon>work</mat-icon> {{ profil.fonction ?? 'Encadrant OCP' }}</p>
-        <p><mat-icon>business</mat-icon> {{ profil.departementNom ?? 'Département non assigné' }}</p>
-        <p><mat-icon>email</mat-icon> {{ profil.email }}</p>
-      </div>
-      <div class="profil-stats">
-        <div class="stat-box">
-          <span class="stat-number">{{ profil.nombreStagiaires }}</span>
-          <span class="stat-label">Stagiaires</span>
+    <!-- ═══ HERO HEADER ═══ -->
+    <div class="hero-header">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="hero-avatar">{{ getInitials(profil.nom, profil.prenom) }}</div>
+          <div class="hero-info">
+            <div class="hero-badge">Encadrant OCP</div>
+            <h1>{{ profil.prenom }} {{ profil.nom }}</h1>
+            <div class="hero-meta">
+              <span><mat-icon>work</mat-icon>{{ profil.fonction ?? 'Ingénieur' }}</span>
+              <span><mat-icon>business</mat-icon>{{ profil.departementNom ?? 'OCP Group' }}</span>
+              <span><mat-icon>email</mat-icon>{{ profil.email }}</span>
+            </div>
+          </div>
         </div>
-        <div class="stat-box">
-          <span class="stat-number">{{ profil.nombreSuivis }}</span>
-          <span class="stat-label">Suivis créés</span>
+        <div class="hero-right">
+          <button mat-flat-button class="btn-suivi" (click)="allerAuSuivi()">
+            <mat-icon>add_chart</mat-icon> Nouveau suivi
+          </button>
+          <button mat-stroked-button class="btn-eval" (click)="allerAuxEvaluations()">
+            <mat-icon>star_rate</mat-icon> Évaluations
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Tabs -->
+    <!-- ═══ KPI ROW ═══ -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-icon blue"><mat-icon>group</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-val">{{ profil.nombreStagiaires }}</span>
+          <span class="kpi-lbl">Stagiaires</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon green"><mat-icon>play_circle</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-val">{{ enCours }}</span>
+          <span class="kpi-lbl">En cours</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon orange"><mat-icon>star_rate</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-val">{{ aEvaluer }}</span>
+          <span class="kpi-lbl">À évaluer</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon teal"><mat-icon>event_note</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-val">{{ profil.nombreSuivis }}</span>
+          <span class="kpi-lbl">Suivis créés</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon purple"><mat-icon>check_circle</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-val">{{ termines }}</span>
+          <span class="kpi-lbl">Terminés</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TABS ═══ -->
     <mat-tab-group animationDuration="200ms" class="main-tabs">
 
-      <!-- Tab 1: Mes Stagiaires -->
+      <!-- TAB 1 : MES STAGIAIRES -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon>group</mat-icon>&nbsp; Mes Stagiaires ({{ profil.nombreStagiaires }})
+          <mat-icon>group</mat-icon>&nbsp;Mes Stagiaires
+          <span class="tab-badge" *ngIf="aEvaluer > 0">{{ aEvaluer }}</span>
         </ng-template>
 
         <div class="tab-content">
-          <div *ngIf="profil.stagiaires?.length === 0" class="empty-state">
-            <mat-icon>person_off</mat-icon>
-            <p>Aucun stagiaire assigné</p>
+
+          <!-- Search + Filter -->
+          <div class="toolbar">
+            <div class="search-box">
+              <mat-icon>search</mat-icon>
+              <input [(ngModel)]="searchTerm" placeholder="Rechercher stagiaire, sujet...">
+            </div>
+            <div class="filter-pills">
+              <button class="pill" [class.active]="filterStatut === ''" (click)="filterStatut = ''">Tous</button>
+              <button class="pill" [class.active]="filterStatut === 'EN_COURS'" (click)="filterStatut = 'EN_COURS'">En cours</button>
+              <button class="pill" [class.active]="filterStatut === 'EN_ATTENTE_EVALUATION'" (click)="filterStatut = 'EN_ATTENTE_EVALUATION'">À évaluer</button>
+              <button class="pill" [class.active]="filterStatut === 'TERMINE'" (click)="filterStatut = 'TERMINE'">Terminés</button>
+            </div>
           </div>
 
+          <!-- Empty -->
+          <div *ngIf="filteredStagiaires.length === 0" class="empty-state">
+            <mat-icon>person_search</mat-icon>
+            <h3>Aucun stagiaire trouvé</h3>
+            <p>Modifiez votre recherche ou votre filtre</p>
+          </div>
+
+          <!-- Cards -->
           <div class="stagiaires-grid">
-            <mat-card *ngFor="let s of profil.stagiaires"
-                      class="stagiaire-card"
-                      [class.selected]="selectedStagiaire?.stageId === s.stageId"
-                      (click)="selectStagiaire(s)">
-              <mat-card-header>
-                <div mat-card-avatar class="stagiaire-avatar">
-                  {{ getInitials(s.stagiaireNom, s.stagiairePrenom) }}
-                </div>
-                <mat-card-title>{{ s.stagiairePrenom }} {{ s.stagiaireNom }}</mat-card-title>
-                <mat-card-subtitle>{{ s.stagiaireFiliere }} — {{ s.stagiaireNiveau }}</mat-card-subtitle>
-                <span class="statut-badge ml-auto" [class]="getStatutClass(s.statut)">
-                  {{ s.statut?.replace('_', ' ') }}
-                </span>
-              </mat-card-header>
+            <div *ngFor="let s of filteredStagiaires"
+                 class="stag-card"
+                 [class.expanded]="selectedStagiaire?.stageId === s.stageId"
+                 (click)="selectStagiaire(s)">
 
-              <mat-card-content>
-                <div class="stage-info">
-                  <div class="info-row"><mat-icon>assignment</mat-icon><span>{{ s.sujet }}</span></div>
-                  <div class="info-row"><mat-icon>category</mat-icon><span>{{ s.typeStage ?? '—' }}</span></div>
-                  <div class="info-row" *ngIf="s.stagiaireEtablissement">
-                    <mat-icon>school</mat-icon><span>{{ s.stagiaireEtablissement }}</span>
-                  </div>
-                  <div class="info-row" *ngIf="s.dateDebut">
-                    <mat-icon>date_range</mat-icon>
-                    <span>{{ s.dateDebut }} → {{ s.dateFin }}</span>
-                  </div>
+              <!-- Card Header -->
+              <div class="stag-header">
+                <div class="stag-avatar" [style.background]="getStatutConf(s.statut).color + '20'">
+                  <span [style.color]="getStatutConf(s.statut).color">{{ getInitials(s.stagiaireNom, s.stagiairePrenom) }}</span>
                 </div>
-
-                <div class="progression-section">
-                  <div class="prog-header">
-                    <span>Progression</span>
-                    <span>{{ s.progression }}%</span>
-                  </div>
-                  <mat-progress-bar mode="determinate" [value]="s.progression"></mat-progress-bar>
+                <div class="stag-identity">
+                  <h4>{{ s.stagiairePrenom }} {{ s.stagiaireNom }}</h4>
+                  <span class="stag-filiere">{{ s.stagiaireFiliere }} — {{ s.stagiaireNiveau }}</span>
+                  <span class="stag-etab" *ngIf="s.stagiaireEtablissement">
+                    <mat-icon>school</mat-icon>{{ s.stagiaireEtablissement }}
+                  </span>
                 </div>
+                <div class="stag-right">
+                  <div class="statut-pill" [style.background]="getStatutConf(s.statut).color + '18'"
+                       [style.color]="getStatutConf(s.statut).color"
+                       [style.border]="'1px solid ' + getStatutConf(s.statut).color + '40'">
+                    <mat-icon>{{ getStatutConf(s.statut).icon }}</mat-icon>
+                    {{ getStatutConf(s.statut).label }}
+                  </div>
+                  <mat-icon class="expand-icon">{{ selectedStagiaire?.stageId === s.stageId ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </div>
+              </div>
 
-                <div class="suivis-count">
+              <!-- Stage info -->
+              <div class="stag-stage">
+                <div class="stage-tag"><mat-icon>assignment</mat-icon>{{ s.sujet }}</div>
+                <div class="stage-tag" *ngIf="s.typeStage"><mat-icon>category</mat-icon>{{ s.typeStage }}</div>
+                <div class="stage-tag" *ngIf="s.dateDebut"><mat-icon>date_range</mat-icon>{{ s.dateDebut }} → {{ s.dateFin }}</div>
+              </div>
+
+              <!-- Progress -->
+              <div class="stag-progress">
+                <div class="prog-labels">
+                  <span>Progression du stage</span>
+                  <span [style.color]="getProgressColor(s.progression)" style="font-weight:700">{{ s.progression }}%</span>
+                </div>
+                <div class="prog-track">
+                  <div class="prog-fill" [style.width]="s.progression + '%'"
+                       [style.background]="getProgressColor(s.progression)"></div>
+                </div>
+              </div>
+
+              <!-- Quick actions -->
+              <div class="stag-actions">
+                <div class="suivis-info">
                   <mat-icon>event_note</mat-icon>
-                  <span>{{ s.nombreSuivis }} suivi(s) enregistré(s)</span>
-                  <button mat-stroked-button color="primary" (click)="allerAuSuivi(); $event.stopPropagation()">
-                    + Ajouter suivi
+                  <span>{{ s.nombreSuivis }} suivi(s)</span>
+                </div>
+                <div class="action-btns">
+                  <button mat-stroked-button class="btn-sm" (click)="allerAuSuivi(s.stageId); $event.stopPropagation()">
+                    <mat-icon>add</mat-icon> Suivi
+                  </button>
+                  <button mat-stroked-button class="btn-sm btn-eval-sm"
+                          *ngIf="s.statut === 'EN_ATTENTE_EVALUATION'"
+                          (click)="allerAuxEvaluations(); $event.stopPropagation()">
+                    <mat-icon>star_rate</mat-icon> Évaluer
                   </button>
                 </div>
-              </mat-card-content>
+              </div>
 
-              <!-- Détail expandable -->
-              <mat-card-content *ngIf="selectedStagiaire?.stageId === s.stageId" class="detail-section">
-                <h4>Informations de contact</h4>
-                <div class="info-row"><mat-icon>email</mat-icon><span>{{ s.stagiaireEmail }}</span></div>
-              </mat-card-content>
-            </mat-card>
+              <!-- Expanded detail -->
+              <div class="stag-detail" *ngIf="selectedStagiaire?.stageId === s.stageId">
+                <div class="detail-divider"></div>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <span class="detail-lbl">Email</span>
+                    <span class="detail-val">{{ s.stagiaireEmail }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-lbl">Établissement</span>
+                    <span class="detail-val">{{ s.stagiaireEtablissement ?? '—' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-lbl">Filière</span>
+                    <span class="detail-val">{{ s.stagiaireFiliere }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-lbl">Niveau</span>
+                    <span class="detail-val">{{ s.stagiaireNiveau }}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </mat-tab>
 
-      <!-- Tab 2: Mon Profil -->
+      <!-- TAB 2 : MON PROFIL -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon>person</mat-icon>&nbsp; Mon Profil
+          <mat-icon>person</mat-icon>&nbsp;Mon Profil
         </ng-template>
-
         <div class="tab-content">
-          <mat-card class="profil-card">
-            <mat-card-content>
-              <div class="profil-detail-grid">
-                <div class="profil-field">
-                  <span class="field-label">Prénom</span>
-                  <span class="field-value">{{ profil.prenom }}</span>
-                </div>
-                <div class="profil-field">
-                  <span class="field-label">Nom</span>
-                  <span class="field-value">{{ profil.nom }}</span>
-                </div>
-                <div class="profil-field">
-                  <span class="field-label">Email</span>
-                  <span class="field-value">{{ profil.email }}</span>
-                </div>
-                <div class="profil-field">
-                  <span class="field-label">Fonction</span>
-                  <span class="field-value">{{ profil.fonction ?? '—' }}</span>
-                </div>
-                <div class="profil-field">
-                  <span class="field-label">Département</span>
-                  <span class="field-value">{{ profil.departementNom ?? '—' }}</span>
-                </div>
-                <div class="profil-field">
-                  <span class="field-label">Stagiaires encadrés</span>
-                  <span class="field-value">{{ profil.nombreStagiaires }}</span>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
+          <div class="profil-card">
+            <div class="profil-avatar-big">{{ getInitials(profil.nom, profil.prenom) }}</div>
+            <h2>{{ profil.prenom }} {{ profil.nom }}</h2>
+            <p class="profil-fonction">{{ profil.fonction ?? 'Encadrant OCP' }}</p>
+            <div class="profil-fields">
+              <div class="pfield"><mat-icon>email</mat-icon><div><span class="plbl">Email</span><span class="pval">{{ profil.email }}</span></div></div>
+              <div class="pfield"><mat-icon>business</mat-icon><div><span class="plbl">Département</span><span class="pval">{{ profil.departementNom ?? '—' }}</span></div></div>
+              <div class="pfield"><mat-icon>group</mat-icon><div><span class="plbl">Stagiaires encadrés</span><span class="pval">{{ profil.nombreStagiaires }}</span></div></div>
+              <div class="pfield"><mat-icon>event_note</mat-icon><div><span class="plbl">Suivis enregistrés</span><span class="pval">{{ profil.nombreSuivis }}</span></div></div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      <!-- TAB 3 : MES SUJETS -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>assignment</mat-icon>&nbsp;Mes Sujets
+        </ng-template>
+        <div class="tab-content">
+          <app-sujets-encadrant></app-sujets-encadrant>
         </div>
       </mat-tab>
 
     </mat-tab-group>
-
   </ng-container>
 
-  <div *ngIf="!isLoading && !profil" class="empty-state">
+  <div *ngIf="!isLoading && !profil" class="empty-state full">
     <mat-icon>error_outline</mat-icon>
-    <p>Profil encadrant introuvable. Contactez l'administrateur.</p>
+    <h3>Profil introuvable</h3>
+    <p>Contactez l'administrateur RH</p>
   </div>
-
 </div>
