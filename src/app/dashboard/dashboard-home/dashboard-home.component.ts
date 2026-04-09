@@ -1,37 +1,22 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTabsModule } from '@angular/material/tabs';
-import { Chart, registerables } from 'chart.js';
 import { Router } from '@angular/router';
-
-Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatProgressBarModule, MatTabsModule],
+  imports: [CommonModule, MatIconModule, MatProgressBarModule],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss']
 })
-export class DashboardHomeComponent implements OnInit, AfterViewInit {
-  @ViewChild('statutChart') statutChartRef!: ElementRef;
-  @ViewChild('typeChart') typeChartRef!: ElementRef;
-  @ViewChild('deptChart') deptChartRef!: ElementRef;
-  @ViewChild('candidaturesChart') candidaturesChartRef!: ElementRef;
-
+export class DashboardHomeComponent implements OnInit {
   stats: any = null;
   isLoading = true;
   userRole = '';
-
-  statutChart: any;
-  typeChart: any;
-  deptChart: any;
-  candidaturesChart: any;
-
+  readonly today = new Date();
   private apiBase = 'http://localhost:8080/api/reporting';
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -40,13 +25,67 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole);
   }
 
+  get statutsList(): any[] {
+    if (!this.stats) return [];
+    const total = this.stats.totalStages || 1;
+    return [
+      { label:'En attente',          value: this.stats.stagesEnAttente ?? 0,            color:'#F59E0B', icon:'hourglass_empty',  pct: Math.round((this.stats.stagesEnAttente ?? 0) / total * 100) },
+      { label:'En cours',            value: this.stats.stagesEnCours ?? 0,              color:'#00843D', icon:'play_circle',       pct: Math.round((this.stats.stagesEnCours ?? 0) / total * 100) },
+      { label:'Convention générée',  value: this.stats.stagesConventionGeneree ?? 0,    color:'#7C3AED', icon:'description',       pct: Math.round((this.stats.stagesConventionGeneree ?? 0) / total * 100) },
+      { label:'Convention signée',   value: this.stats.stagesConventionSignee ?? 0,     color:'#0891B2', icon:'draw',              pct: Math.round((this.stats.stagesConventionSignee ?? 0) / total * 100) },
+      { label:'En attente éval.',    value: this.stats.stagesEnAttenteEvaluation ?? 0,  color:'#F47920', icon:'star_rate',         pct: Math.round((this.stats.stagesEnAttenteEvaluation ?? 0) / total * 100) },
+      { label:'Terminés',            value: this.stats.stagesTermines ?? 0,             color:'#059669', icon:'check_circle',      pct: Math.round((this.stats.stagesTermines ?? 0) / total * 100) },
+      { label:'Annulés',             value: this.stats.stagesAnnules ?? 0,              color:'#DC2626', icon:'cancel',            pct: Math.round((this.stats.stagesAnnules ?? 0) / total * 100) },
+    ];
+  }
+
+  get candidaturesDonut(): any[] {
+    if (!this.stats) return [];
+    const total = (this.stats.candidaturesEnAttente ?? 0) +
+                  (this.stats.candidaturesAcceptees ?? 0) +
+                  (this.stats.candidaturesRefusees ?? 0) || 1;
+    return [
+      { label:'En attente', value: this.stats.candidaturesEnAttente ?? 0, color:'#F59E0B', pct: Math.round((this.stats.candidaturesEnAttente ?? 0) / total * 100) },
+      { label:'Acceptées',  value: this.stats.candidaturesAcceptees ?? 0, color:'#00843D', pct: Math.round((this.stats.candidaturesAcceptees ?? 0) / total * 100) },
+      { label:'Refusées',   value: this.stats.candidaturesRefusees ?? 0,  color:'#DC2626', pct: Math.round((this.stats.candidaturesRefusees ?? 0) / total * 100) },
+    ];
+  }
+
+  get topKpis(): any[] {
+    if (!this.stats) return [];
+    return [
+      { label:'Stagiaires',   value: this.stats.totalStagiaires,  icon:'school',            color:'#1E40AF' },
+      { label:'Stages',       value: this.stats.totalStages,      icon:'work',              color:'#00843D' },
+      { label:'En cours',     value: this.stats.stagesEnCours,    icon:'play_circle',       color:'#059669' },
+      { label:'Conventions',  value: this.stats.totalConventions, icon:'description',       color:'#F47920' },
+      { label:'Évaluations',  value: this.stats.totalEvaluations, icon:'star_rate',         color:'#7C3AED' },
+      { label:'Encadrants',   value: this.stats.totalEncadrants,  icon:'supervisor_account',color:'#0891B2' },
+      { label:'Candidatures', value: this.stats.totalCandidatures,icon:'inbox',             color:'#DC2626' },
+      { label:'Annonces',     value: this.stats.totalAnnonces,    icon:'campaign',          color:'#D97706' },
+    ];
+  }
+
+  get alertes(): any[] {
+    if (!this.stats) return [];
+    const items = [];
+    if ((this.stats.candidaturesEnAttente ?? 0) > 0)
+      items.push({ icon:'person_add',         color:'#DC2626', bg:'#FEF2F2', border:'#FECACA', label:'Candidature(s) à traiter',  val: this.stats.candidaturesEnAttente, route:'/candidatures' });
+    if ((this.stats.stagesEnAttenteEvaluation ?? 0) > 0)
+      items.push({ icon:'star_rate',          color:'#F47920', bg:'#FFF7ED', border:'#FED7AA', label:'Stage(s) à évaluer',         val: this.stats.stagesEnAttenteEvaluation, route:'/evaluations' });
+    if ((this.stats.attestationsEnAttente ?? 0) > 0)
+      items.push({ icon:'workspace_premium',  color:'#1E40AF', bg:'#EFF6FF', border:'#BFDBFE', label:'Attestation(s) en attente',  val: this.stats.attestationsEnAttente, route:'/attestations' });
+    if (items.length === 0)
+      items.push({ icon:'check_circle',       color:'#00843D', bg:'#F0FDF4', border:'#BBF7D0', label:'Tout est à jour !',          val:'✓', route:'' });
+    return items;
+  }
+
   ngOnInit(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.userRole = currentUser.role ?? '';
     if (this.userRole === 'ENCADRANT') {
       this.router.navigate(['/encadrant-dashboard']);
       return;
     }
-    this.userRole = currentUser.role ?? '';
     if (this.isAdmin) {
       this.http.get<any>(`${this.apiBase}/stats-completes`).subscribe({
         next: (data) => { this.stats = data; this.isLoading = false; },
@@ -55,129 +94,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {
-    if (this.isAdmin) {
-      setTimeout(() => this.loadCharts(), 500);
-    }
-  }
-
-  loadCharts(): void {
-    this.http.get<any>(`${this.apiBase}/stats-completes`).subscribe(data => {
-      this.createStatutChart(data);
-      this.createCandidaturesChart(data);
-    });
-    this.http.get<any>(`${this.apiBase}/stages-par-type`).subscribe(res => {
-      this.createTypeChart(res.data || []);
-    });
-    this.http.get<any>(`${this.apiBase}/stages-par-departement`).subscribe(res => {
-      this.createDeptChart(res.data || []);
-    });
-  }
-
-  createStatutChart(data: any): void {
-    if (!this.statutChartRef) return;
-    if (this.statutChart) this.statutChart.destroy();
-    this.statutChart = new Chart(this.statutChartRef.nativeElement, {
-      type: 'doughnut',
-      data: {
-        labels: ['En attente', 'En cours', 'Terminés', 'Validés', 'Annulés'],
-        datasets: [{
-          data: [
-            data.stagesEnAttente || 0,
-            data.stagesEnCours || 0,
-            data.stagesTermines || 0,
-            data.stagesValides || 0,
-            data.stagesAnnules || 0
-          ],
-          backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'],
-          borderWidth: 0, hoverOffset: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } },
-        cutout: '65%'
-      }
-    });
-  }
-
-  createCandidaturesChart(data: any): void {
-    if (!this.candidaturesChartRef) return;
-    if (this.candidaturesChart) this.candidaturesChart.destroy();
-    this.candidaturesChart = new Chart(this.candidaturesChartRef.nativeElement, {
-      type: 'doughnut',
-      data: {
-        labels: ['En attente', 'Acceptées', 'Refusées'],
-        datasets: [{
-          data: [
-            data.candidaturesEnAttente || 0,
-            data.candidaturesAcceptees || 0,
-            data.candidaturesRefusees || 0
-          ],
-          backgroundColor: ['#f59e0b', '#10b981', '#ef4444'],
-          borderWidth: 0, hoverOffset: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } },
-        cutout: '65%'
-      }
-    });
-  }
-
-  createTypeChart(data: any[]): void {
-    if (!this.typeChartRef) return;
-    if (this.typeChart) this.typeChart.destroy();
-    const labels = data.map((d: any) => d[0] || d.typeStage || 'Inconnu');
-    const values = data.map((d: any) => d[1] || d.count || 0);
-    this.typeChart = new Chart(this.typeChartRef.nativeElement, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Stages par type',
-          data: values,
-          backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd'],
-          borderRadius: 8, borderSkipped: false
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-          x: { grid: { display: false } }
-        }
-      }
-    });
-  }
-
-  createDeptChart(data: any[]): void {
-    if (!this.deptChartRef) return;
-    if (this.deptChart) this.deptChart.destroy();
-    const labels = data.map((d: any) => d[0] || d.departement || 'Inconnu');
-    const values = data.map((d: any) => d[1] || d.count || 0);
-    this.deptChart = new Chart(this.deptChartRef.nativeElement, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Stages par département',
-          data: values,
-          backgroundColor: '#06b6d4',
-          borderRadius: 8, borderSkipped: false
-        }]
-      },
-      options: {
-        responsive: true,
-        indexAxis: 'y',
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-          y: { grid: { display: false } }
-        }
-      }
-    });
+  navigate(route: string): void {
+    if (route) this.router.navigate([route]);
   }
 }

@@ -1,192 +1,141 @@
-<div class="dashboard-container">
+<div class="dash">
 
   <div *ngIf="!isAdmin" class="not-admin">
     <mat-icon>lock</mat-icon>
-    <p>Accès réservé aux administrateurs RH</p>
+    <h3>Accès réservé aux administrateurs RH</h3>
   </div>
 
   <ng-container *ngIf="isAdmin">
-
-    <div *ngIf="isLoading" class="loading">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    </div>
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="top-bar"></mat-progress-bar>
 
     <ng-container *ngIf="!isLoading && stats">
 
-      <!-- Header -->
-      <div class="dashboard-header">
-        <h2><mat-icon>analytics</mat-icon> Tableau de Bord RH</h2>
-        <p>Vue d'ensemble de la gestion des stages OCP</p>
+      <!-- HERO -->
+      <div class="hero">
+        <div>
+          <div class="hero-live"><span class="dot"></span>En direct</div>
+          <h1>Tableau de Bord RH</h1>
+          <p>OCP Group · Direction Capital Humain · {{ today | date:'EEEE d MMMM yyyy' }}</p>
+        </div>
       </div>
 
-      <!-- KPI Row 1 -->
-      <div class="kpi-grid">
-        <div class="kpi-card blue">
-          <div class="kpi-icon"><mat-icon>school</mat-icon></div>
-          <div class="kpi-info">
-            <span class="kpi-value">{{ stats.totalStagiaires }}</span>
-            <span class="kpi-label">Stagiaires</span>
+      <!-- KPIs -->
+      <div class="kpis">
+        <div class="kpi" *ngFor="let k of topKpis" (click)="navigate('/' + k.label.toLowerCase())">
+          <div class="kpi-ico" [style.background]="k.color + '18'" [style.color]="k.color">
+            <mat-icon>{{ k.icon }}</mat-icon>
           </div>
-        </div>
-        <div class="kpi-card green">
-          <div class="kpi-icon"><mat-icon>work</mat-icon></div>
-          <div class="kpi-info">
-            <span class="kpi-value">{{ stats.totalStages }}</span>
-            <span class="kpi-label">Stages</span>
-          </div>
-        </div>
-        <div class="kpi-card orange">
-          <div class="kpi-icon"><mat-icon>description</mat-icon></div>
-          <div class="kpi-info">
-            <span class="kpi-value">{{ stats.totalConventions }}</span>
-            <span class="kpi-label">Conventions</span>
-          </div>
-        </div>
-        <div class="kpi-card purple">
-          <div class="kpi-icon"><mat-icon>star</mat-icon></div>
-          <div class="kpi-info">
-            <span class="kpi-value">{{ stats.totalEvaluations }}</span>
-            <span class="kpi-label">Évaluations</span>
-          </div>
-        </div>
-        <div class="kpi-card teal">
-          <div class="kpi-icon"><mat-icon>inbox</mat-icon></div>
-          <div class="kpi-info">
-            <span class="kpi-value">{{ stats.totalCandidatures }}</span>
-            <span class="kpi-label">Candidatures</span>
-          </div>
-        </div>
-        <div class="kpi-card red">
-          <div class="kpi-icon"><mat-icon>campaign</mat-icon></div>
-          <div class="kpi-info">
-            <span class="kpi-value">{{ stats.totalAnnonces }}</span>
-            <span class="kpi-label">Annonces</span>
+          <div>
+            <span class="kv">{{ k.value ?? 0 }}</span>
+            <span class="kl">{{ k.label }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Stats rapides -->
-      <div class="quick-stats">
-        <div class="quick-stat">
-          <mat-icon>trending_up</mat-icon>
+      <!-- ALERTES -->
+      <div class="section-title"><mat-icon>notification_important</mat-icon> Actions requises</div>
+      <div class="alertes">
+        <div class="alerte" *ngFor="let a of alertes"
+             [style.background]="a.bg" [style.border]="'1px solid ' + a.border"
+             (click)="navigate(a.route)" [class.clickable]="a.route">
+          <mat-icon [style.color]="a.color">{{ a.icon }}</mat-icon>
           <div>
-            <span class="qs-value">{{ stats.stagesEnCours }}</span>
-            <span class="qs-label">Stages en cours</span>
-          </div>
-        </div>
-        <div class="quick-stat">
-          <mat-icon>check_circle</mat-icon>
-          <div>
-            <span class="qs-value">{{ stats.tauxAcceptation }}%</span>
-            <span class="qs-label">Taux d'acceptation</span>
-          </div>
-        </div>
-        <div class="quick-stat">
-          <mat-icon>grade</mat-icon>
-          <div>
-            <span class="qs-value">{{ stats.moyenneEvaluations | number:'1.1-1' }}/20</span>
-            <span class="qs-label">Moyenne évaluations</span>
-          </div>
-        </div>
-        <div class="quick-stat">
-          <mat-icon>psychology</mat-icon>
-          <div>
-            <span class="qs-value">{{ stats.scoreMoyenMatching }}%</span>
-            <span class="qs-label">Score moyen matching</span>
+            <span class="av" [style.color]="a.color">{{ a.val }}</span>
+            <span class="al" [style.color]="a.color">{{ a.label }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Charts -->
-      <div class="charts-grid">
-
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title><mat-icon>donut_large</mat-icon> Statuts des stages</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <canvas #statutChart></canvas>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title><mat-icon>people</mat-icon> Candidatures</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <canvas #candidaturesChart></canvas>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title><mat-icon>bar_chart</mat-icon> Stages par type</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <canvas #typeChart></canvas>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title><mat-icon>business</mat-icon> Stages par département</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <canvas #deptChart></canvas>
-          </mat-card-content>
-        </mat-card>
-
+      <!-- INDICATEURS -->
+      <div class="section-title"><mat-icon>insights</mat-icon> Indicateurs de performance</div>
+      <div class="insights">
+        <div class="insight">
+          <div class="ins-header">
+            <span>Taux d'acceptation</span>
+            <span class="ins-val green">{{ stats.tauxAcceptation }}%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill green" [style.width]="stats.tauxAcceptation + '%'"></div></div>
+        </div>
+        <div class="insight">
+          <div class="ins-header">
+            <span>Moyenne évaluations</span>
+            <span class="ins-val orange">{{ stats.moyenneEvaluations | number:'1.1-1' }}/20</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill orange" [style.width]="(stats.moyenneEvaluations / 20 * 100) + '%'"></div></div>
+        </div>
+        <div class="insight">
+          <div class="ins-header">
+            <span>Score moyen IA matching</span>
+            <span class="ins-val purple">{{ stats.scoreMoyenMatching }}%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill purple" [style.width]="stats.scoreMoyenMatching + '%'"></div></div>
+        </div>
+        <div class="insight">
+          <div class="ins-header">
+            <span>Stages en cours / total</span>
+            <span class="ins-val blue">{{ stats.stagesEnCours }}/{{ stats.totalStages }}</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill blue" [style.width]="(stats.totalStages > 0 ? stats.stagesEnCours / stats.totalStages * 100 : 0) + '%'"></div></div>
+        </div>
       </div>
 
-      <!-- Statuts détaillés -->
-      <mat-card class="statuts-card">
-        <mat-card-header>
-          <mat-card-title><mat-icon>list_alt</mat-icon> Détail des statuts</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="statuts-grid">
-            <div class="statut-item">
-              <div class="statut-bar" style="background:#f59e0b">
-                <span>En attente</span>
-                <span>{{ stats.stagesEnAttente }}</span>
+      <!-- DEUX COLONNES -->
+      <div class="two-cols">
+
+        <!-- Statuts stages -->
+        <div class="panel">
+          <div class="panel-title"><mat-icon>donut_large</mat-icon> Statuts des stages</div>
+          <div class="statuts">
+            <div class="statut-row" *ngFor="let st of statutsList">
+              <div class="st-icon" [style.background]="st.color + '18'" [style.color]="st.color">
+                <mat-icon>{{ st.icon }}</mat-icon>
               </div>
-              <mat-progress-bar mode="determinate"
-                [value]="stats.totalStages > 0 ? (stats.stagesEnAttente / stats.totalStages) * 100 : 0"
-                style="--mdc-linear-progress-active-indicator-color: #f59e0b">
-              </mat-progress-bar>
-            </div>
-            <div class="statut-item">
-              <div class="statut-bar" style="background:#3b82f6">
-                <span>En cours</span>
-                <span>{{ stats.stagesEnCours }}</span>
+              <div class="st-body">
+                <div class="st-top">
+                  <span>{{ st.label }}</span>
+                  <span [style.color]="st.color" style="font-weight:700">{{ st.value }}</span>
+                </div>
+                <div class="st-track">
+                  <div class="st-fill" [style.width]="st.pct + '%'" [style.background]="st.color"></div>
+                </div>
               </div>
-              <mat-progress-bar mode="determinate"
-                [value]="stats.totalStages > 0 ? (stats.stagesEnCours / stats.totalStages) * 100 : 0">
-              </mat-progress-bar>
-            </div>
-            <div class="statut-item">
-              <div class="statut-bar" style="background:#10b981">
-                <span>Terminés</span>
-                <span>{{ stats.stagesTermines }}</span>
-              </div>
-              <mat-progress-bar mode="determinate"
-                [value]="stats.totalStages > 0 ? (stats.stagesTermines / stats.totalStages) * 100 : 0"
-                style="--mdc-linear-progress-active-indicator-color: #10b981">
-              </mat-progress-bar>
-            </div>
-            <div class="statut-item">
-              <div class="statut-bar" style="background:#ef4444">
-                <span>Annulés</span>
-                <span>{{ stats.stagesAnnules }}</span>
-              </div>
-              <mat-progress-bar mode="determinate"
-                [value]="stats.totalStages > 0 ? (stats.stagesAnnules / stats.totalStages) * 100 : 0"
-                style="--mdc-linear-progress-active-indicator-color: #ef4444">
-              </mat-progress-bar>
+              <span class="st-pct">{{ st.pct }}%</span>
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+
+        <!-- Candidatures -->
+        <div class="panel">
+          <div class="panel-title"><mat-icon>people</mat-icon> Candidatures</div>
+          <div class="cand-total">
+            <span class="ct-val">{{ stats.totalCandidatures }}</span>
+            <span class="ct-lbl">Total candidatures</span>
+          </div>
+          <div class="cand-bars">
+            <div class="cand-row" *ngFor="let c of candidaturesDonut">
+              <div class="cr-left">
+                <div class="cr-dot" [style.background]="c.color"></div>
+                <span>{{ c.label }}</span>
+              </div>
+              <div class="cr-track">
+                <div class="cr-fill" [style.width]="c.pct + '%'" [style.background]="c.color"></div>
+              </div>
+              <div class="cr-right">
+                <span class="cr-val" [style.color]="c.color">{{ c.value }}</span>
+                <span class="cr-pct">{{ c.pct }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Résumé rapide -->
+          <div class="quick-nums">
+            <div class="qn"><span class="qnv">{{ stats.stagesEnCours }}</span><span class="qnl">Stages actifs</span></div>
+            <div class="qn"><span class="qnv">{{ stats.totalSuivis }}</span><span class="qnl">Suivis total</span></div>
+            <div class="qn"><span class="qnv">{{ stats.totalEncadrants }}</span><span class="qnl">Encadrants</span></div>
+          </div>
+        </div>
+
+      </div>
 
     </ng-container>
   </ng-container>
