@@ -1,33 +1,72 @@
 <div class="sidebar" [class.collapsed]="isCollapsed">
 
-  <!-- Logo -->
-  <div class="sidebar-logo">
-    <div class="logo-circle">
-      <span>OCP</span>
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div class="logo-wrap">
+      <div class="logo-circle">OCP</div>
+      <div class="logo-text" *ngIf="!isCollapsed">
+        <span class="logo-title">Gestion Stages</span>
+        <span class="logo-sub">OCP Group</span>
+      </div>
     </div>
-    <span class="logo-title" *ngIf="!isCollapsed">Gestion Stages</span>
+    <button class="collapse-btn" (click)="toggleCollapse()"
+            [matTooltip]="isCollapsed ? 'Agrandir' : 'Réduire'"
+            matTooltipPosition="right">
+      <mat-icon>{{ isCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
   </div>
 
-  <!-- Menu Items -->
+  <!-- User card -->
+  <div class="user-card" *ngIf="!isCollapsed">
+    <div class="user-avatar">{{ getUserInfo().initials }}</div>
+    <div class="user-info">
+      <span class="user-name">{{ getUserInfo().name }}</span>
+      <span class="user-role">{{ getUserInfo().role }}</span>
+    </div>
+    <div class="user-dot"></div>
+  </div>
+  <div class="user-avatar-sm" *ngIf="isCollapsed"
+       [matTooltip]="getUserInfo().name" matTooltipPosition="right">
+    {{ getUserInfo().initials }}
+  </div>
+
+  <!-- Nav -->
   <nav class="sidebar-nav">
-    <a class="nav-item"
-       *ngFor="let item of filteredMenuItems"
-       [routerLink]="item.route"
-       [class.active]="isActive(item.route)"
-       [matTooltip]="isCollapsed ? item.label : ''"
-       matTooltipPosition="right">
-      <mat-icon>{{ item.icon }}</mat-icon>
-      <span *ngIf="!isCollapsed">{{ item.label }}</span>
-    </a>
+    <div *ngFor="let group of filteredGroups" class="nav-group">
+      <div class="group-title" *ngIf="!isCollapsed">{{ group.title }}</div>
+      <a class="nav-item"
+         *ngFor="let item of group.items"
+         (click)="router.navigate([item.route])"
+         [class.active]="isActive(item.route)"
+         [matTooltip]="isCollapsed ? item.label : ''"
+         matTooltipPosition="right">
+        <div class="nav-icon-wrap" [class.active]="isActive(item.route)">
+          <mat-icon>{{ item.icon }}</mat-icon>
+        </div>
+        <span class="nav-label" *ngIf="!isCollapsed">{{ item.label }}</span>
+        <span class="nav-badge"
+              *ngIf="!isCollapsed && getBadge(item.route) > 0">
+          {{ getBadge(item.route) }}
+        </span>
+        <span class="nav-badge-dot"
+              *ngIf="isCollapsed && getBadge(item.route) > 0"></span>
+        <mat-icon class="nav-arrow"
+                  *ngIf="!isCollapsed && isActive(item.route)">
+          chevron_right
+        </mat-icon>
+      </a>
+    </div>
   </nav>
 
-  <!-- Logout -->
+  <!-- Footer -->
   <div class="sidebar-footer">
     <a class="nav-item logout" (click)="logout()"
        [matTooltip]="isCollapsed ? 'Déconnexion' : ''"
        matTooltipPosition="right">
-      <mat-icon>logout</mat-icon>
-      <span *ngIf="!isCollapsed">Déconnexion</span>
+      <div class="nav-icon-wrap logout-icon">
+        <mat-icon>logout</mat-icon>
+      </div>
+      <span class="nav-label" *ngIf="!isCollapsed">Déconnexion</span>
     </a>
   </div>
 
