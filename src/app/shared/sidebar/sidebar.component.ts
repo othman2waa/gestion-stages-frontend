@@ -51,6 +51,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { label:'Annonces',     icon:'campaign',           route:'/annonces',            roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label:'Candidatures', icon:'inbox',              route:'/candidatures',        roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label:'Sujets',       icon:'assignment',         route:'/sujets',              roles:['ADMIN_RH','RESPONSABLE_RH'] },
+        { label:'Candidatures', icon:'inbox', route:'/candidatures-encadrant', roles:['ENCADRANT'] },
       ]
     },
     {

@@ -19,6 +19,7 @@ import { AnnoncesAdminComponent } from '../annonces-admin/annonces-admin.compone
 import { DepartementsComponent } from '../departements/departements.component';
 import { AttestationsAdminComponent } from '../attestations-admin/attestations-admin.component';
 import { SujetsAdminComponent } from '../sujets-admin/sujets-admin.component';
+import { CandidaturesEncadrantComponent } from '../candidatures-encadrant/candidatures-encadrant.component';
 
 const routes: Routes = [
   {
@@ -43,7 +44,9 @@ const routes: Routes = [
       { path: 'annonces', component: AnnoncesAdminComponent },
       { path: 'departements', component: DepartementsComponent },
       { path: 'attestations', component: AttestationsAdminComponent },
-      { path: 'sujets', component: SujetsAdminComponent }
+      { path: 'sujets', component: SujetsAdminComponent },
+      { path: 'candidatures-encadrant', component: CandidaturesEncadrantComponent },
+
 
 
 

@@ -1,0 +1,152 @@
+<div class="portail-container">
+
+  <!-- Header OCP -->
+  <div class="portail-header">
+    <div class="logo-wrap">
+      <div class="logo-circle">OCP</div>
+      <div>
+        <h1>OCP Group</h1>
+        <p>Portail de candidature aux stages</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Succès -->
+  <div class="success-card" *ngIf="submitted">
+    <div class="success-icon"><mat-icon>check_circle</mat-icon></div>
+    <h2>Candidature soumise avec succès !</h2>
+    <p>Votre dossier a été transmis au département concerné.<br>
+       Un encadrant OCP examinera votre candidature et vous contactera
+       pour planifier un entretien.</p>
+    <div class="success-steps">
+      <div class="sstep"><mat-icon>mark_email_read</mat-icon><span>Email de confirmation envoyé</span></div>
+      <div class="sstep"><mat-icon>event</mat-icon><span>Meeting planifié par l'encadrant</span></div>
+      <div class="sstep"><mat-icon>login</mat-icon><span>Identifiants envoyés si accepté</span></div>
+    </div>
+  </div>
+
+  <!-- Formulaire stepper -->
+  <div class="form-card" *ngIf="!submitted">
+    <mat-stepper [linear]="true" orientation="horizontal" class="stepper">
+
+      <!-- STEP 1 : Informations personnelles -->
+      <mat-step [stepControl]="step1Form" label="Informations personnelles">
+        <form [formGroup]="step1Form" class="step-form">
+          <h3><mat-icon>person</mat-icon> Vos informations</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Prénom *</mat-label>
+              <input matInput formControlName="prenom">
+              <mat-error *ngIf="step1Form.get('prenom')?.hasError('required')">Requis</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Nom *</mat-label>
+              <input matInput formControlName="nom">
+              <mat-error *ngIf="step1Form.get('nom')?.hasError('required')">Requis</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Email *</mat-label>
+              <input matInput type="email" formControlName="email">
+              <mat-icon matPrefix>email</mat-icon>
+              <mat-error *ngIf="step1Form.get('email')?.hasError('email')">Email invalide</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Téléphone *</mat-label>
+              <input matInput formControlName="telephone">
+              <mat-icon matPrefix>phone</mat-icon>
+            </mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Établissement *</mat-label>
+            <input matInput formControlName="etablissement" placeholder="Ex: ENSA Marrakech">
+            <mat-icon matPrefix>school</mat-icon>
+          </mat-form-field>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Filière *</mat-label>
+              <input matInput formControlName="filiere" placeholder="Ex: Génie Informatique">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Niveau *</mat-label>
+              <mat-select formControlName="niveau">
+                <mat-option *ngFor="let n of niveaux" [value]="n">{{ n }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="step-actions">
+            <button mat-raised-button class="btn-next"
+                    matStepperNext [disabled]="step1Form.invalid">
+              Suivant <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- STEP 2 : Stage + CV -->
+      <mat-step [stepControl]="step2Form" label="Votre candidature">
+        <form [formGroup]="step2Form" class="step-form">
+          <h3><mat-icon>work</mat-icon> Votre stage souhaité</h3>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Département OCP souhaité *</mat-label>
+            <mat-select formControlName="departementId">
+              <mat-option *ngFor="let d of departements" [value]="d.id">
+                {{ d.code }} — {{ d.nom }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>business</mat-icon>
+            <mat-error>Veuillez choisir un département</mat-error>
+          </mat-form-field>
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Type de stage *</mat-label>
+              <mat-select formControlName="typeStage">
+                <mat-option *ngFor="let t of typeStages" [value]="t">{{ t }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Sujet souhaité *</mat-label>
+              <input matInput formControlName="sujetSouhaite"
+                     placeholder="Ex: Développement application web">
+            </mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Message / Motivation</mat-label>
+            <textarea matInput formControlName="message" rows="3"
+                      placeholder="Décrivez votre motivation et vos compétences..."></textarea>
+          </mat-form-field>
+
+          <!-- CV Upload -->
+          <div class="cv-upload">
+            <div class="cv-label"><mat-icon>upload_file</mat-icon> CV (PDF)</div>
+            <label class="cv-btn">
+              <input type="file" accept=".pdf" (change)="onCvSelected($event)" hidden>
+              <mat-icon>attach_file</mat-icon>
+              {{ cvFile ? cvFile.name : 'Choisir un fichier PDF' }}
+            </label>
+            <span class="cv-ok" *ngIf="cvFile">✓ CV sélectionné</span>
+          </div>
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Retour
+            </button>
+            <button mat-raised-button class="btn-submit"
+                    (click)="soumettre()"
+                    [disabled]="step2Form.invalid || isSubmitting">
+              <mat-icon>send</mat-icon>
+              {{ isSubmitting ? 'Envoi en cours...' : 'Soumettre ma candidature' }}
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+    </mat-stepper>
+  </div>
+
+  <!-- Footer -->
+  <div class="portail-footer">
+    <p>OCP Group — Direction Capital Humain — Benguerir</p>
+  </div>
+</div>

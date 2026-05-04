@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { PortailCandidatureComponent } from './portail-candidature/portail-candidature.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -26,5 +27,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
   },
-  { path: '**', redirectTo: 'auth/login' }
+  { path: '**', redirectTo: 'auth/login' },
+  { path: 'postuler', component: PortailCandidatureComponent }
 ];

@@ -25,6 +25,10 @@
       <mat-icon>edit_note</mat-icon>
       <div><span class="kpi-val">{{ conventionsBrouillon }}</span><span class="kpi-lbl">Brouillons</span></div>
     </div>
+    <div class="kpi-card purple">
+      <mat-icon>draw</mat-icon>
+      <div><span class="kpi-val">{{ partiellementSignees }}</span><span class="kpi-lbl">En signature</span></div>
+    </div>
   </div>
 
   <!-- Filtres -->
@@ -53,7 +57,9 @@
 
   <!-- Cards -->
   <div class="conventions-grid" *ngIf="!isLoading">
-    <div *ngFor="let c of filteredConventions" class="convention-card" [class]="'border-' + getStatutClass(c.statut)">
+    <div *ngFor="let c of filteredConventions"
+         class="convention-card"
+         [class]="'border-' + getStatutClass(c.statut)">
 
       <div class="card-top">
         <div class="numero-section">
@@ -84,6 +90,31 @@
         </div>
       </div>
 
+      <!-- Signature status -->
+      <div class="sig-status-row">
+        <span class="sig-badge" [class]="getSignatureBadgeClass(c)">
+          {{ getSignatureLabel(c) }}
+        </span>
+      </div>
+
+      <!-- Signature buttons -->
+      <div class="sig-btns" *ngIf="c.statut !== 'ARCHIVEE'">
+        <button class="btn-sig"
+                [class.signed]="c.stagiaireSigne"
+                (click)="ouvrirSignature(c, 'stagiaire'); $event.stopPropagation()"
+                [matTooltip]="c.stagiaireSigne ? 'Stagiaire a déjà signé' : 'Signer pour le stagiaire'">
+          <mat-icon>{{ c.stagiaireSigne ? 'verified' : 'draw' }}</mat-icon>
+          <span>{{ c.stagiaireSigne ? 'Stagiaire ✓' : 'Stagiaire' }}</span>
+        </button>
+        <button class="btn-sig btn-sig-enc"
+                [class.signed]="c.encadrantSigne"
+                (click)="ouvrirSignature(c, 'encadrant'); $event.stopPropagation()"
+                [matTooltip]="c.encadrantSigne ? 'Encadrant a déjà signé' : 'Signer pour l\'encadrant'">
+          <mat-icon>{{ c.encadrantSigne ? 'verified' : 'draw' }}</mat-icon>
+          <span>{{ c.encadrantSigne ? 'Encadrant ✓' : 'Encadrant' }}</span>
+        </button>
+      </div>
+
       <div class="card-footer">
         <button mat-stroked-button (click)="voirDetail(c)">
           <mat-icon>visibility</mat-icon> Détail
@@ -110,7 +141,7 @@
   </div>
 </div>
 
-<!-- Dialog détail -->
+<!-- ═══ DIALOG DÉTAIL ═══ -->
 <ng-template #detailDialog>
   <div class="detail-header">
     <mat-icon>description</mat-icon>
@@ -122,7 +153,6 @@
     </div>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
   </div>
-
   <mat-dialog-content>
     <div class="detail-sections">
       <div class="detail-section">
@@ -136,7 +166,8 @@
         <p class="section-title">Stage</p>
         <div class="detail-row"><mat-icon>work</mat-icon><span>{{ selectedConvention?.stageSujet }}</span></div>
         <div class="detail-row"><mat-icon>date_range</mat-icon>
-          <span>{{ selectedConvention?.stageDebut | date:'dd/MM/yyyy' }} → {{ selectedConvention?.stageFin | date:'dd/MM/yyyy' }}</span>
+          <span>{{ selectedConvention?.stageDebut | date:'dd/MM/yyyy' }}
+            → {{ selectedConvention?.stageFin | date:'dd/MM/yyyy' }}</span>
         </div>
       </div>
       <div class="detail-section">
@@ -146,9 +177,23 @@
         <div class="detail-row"><mat-icon>supervisor_account</mat-icon><span>{{ selectedConvention?.encadrantNom }}</span></div>
         <div class="detail-row"><mat-icon>business</mat-icon><span>{{ selectedConvention?.departementNom ?? '—' }}</span></div>
       </div>
+      <div class="detail-section">
+        <p class="section-title">Signatures</p>
+        <div class="detail-row">
+          <mat-icon [style.color]="selectedConvention?.stagiaireSigne ? '#00843D' : '#94A3B8'">
+            {{ selectedConvention?.stagiaireSigne ? 'verified' : 'pending' }}
+          </mat-icon>
+          <span>Stagiaire : {{ selectedConvention?.stagiaireSigne ? 'Signé ✅' : 'En attente ⏳' }}</span>
+        </div>
+        <div class="detail-row">
+          <mat-icon [style.color]="selectedConvention?.encadrantSigne ? '#00843D' : '#94A3B8'">
+            {{ selectedConvention?.encadrantSigne ? 'verified' : 'pending' }}
+          </mat-icon>
+          <span>Encadrant : {{ selectedConvention?.encadrantSigne ? 'Signé ✅' : 'En attente ⏳' }}</span>
+        </div>
+      </div>
     </div>
   </mat-dialog-content>
-
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Fermer</button>
     <button mat-raised-button style="background:#16a34a;color:white"
@@ -160,4 +205,33 @@
       <mat-icon>edit</mat-icon> Modifier
     </button>
   </mat-dialog-actions>
+</ng-template>
+
+<!-- ═══ DIALOG SIGNATURE ═══ -->
+<ng-template #signatureDialog>
+  <div class="sig-dialog-header">
+    <mat-icon>draw</mat-icon>
+    <div>
+      <h3>Signature électronique</h3>
+      <p>{{ signatureCible === 'stagiaire' ? 'Signature du stagiaire' : "Signature de l'encadrant" }}
+         — {{ selectedConvention?.stagiaireNom }}</p>
+    </div>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <div class="sig-info-box">
+      <mat-icon>info</mat-icon>
+      <span>Dessinez votre signature dans la zone ci-dessous.
+            Elle sera intégrée dans le PDF de la convention.</span>
+    </div>
+    <app-signature-pad
+      [label]="signatureCible === 'stagiaire' ? 'Signature du stagiaire' : 'Signature de l\'encadrant'"
+      [width]="440"
+      [height]="160"
+      (signatureConfirmed)="envoyerSignature($event)">
+    </app-signature-pad>
+    <p class="sig-legal-note">
+      Cette signature électronique a valeur légale conformément aux dispositions en vigueur
+    </p>
+  </mat-dialog-content>
 </ng-template>

@@ -10,8 +10,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { HttpClient } from '@angular/common/http';
 import { ConventionService } from '../../core/services/convention.service';
 import { ConventionFormComponent } from '../convention-form/convention-form.component';
+import { SignaturePadComponent } from '../../signature-pad/signature-pad.component';
 
 @Component({
   selector: 'app-convention-list',
@@ -19,13 +21,15 @@ import { ConventionFormComponent } from '../convention-form/convention-form.comp
   imports: [
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
-    MatTooltipModule, MatProgressBarModule, MatSelectModule, MatChipsModule
+    MatTooltipModule, MatProgressBarModule, MatSelectModule,
+    MatChipsModule, SignaturePadComponent
   ],
   templateUrl: './convention-list.component.html',
   styleUrls: ['./convention-list.component.scss']
 })
 export class ConventionListComponent implements OnInit {
-  @ViewChild('detailDialog') detailDialog!: TemplateRef<any>;
+  @ViewChild('detailDialog')    detailDialog!: TemplateRef<any>;
+  @ViewChild('signatureDialog') signatureDialog!: TemplateRef<any>;
 
   conventions: any[] = [];
   filteredConventions: any[] = [];
@@ -33,16 +37,20 @@ export class ConventionListComponent implements OnInit {
   searchKeyword = '';
   selectedStatut = '';
   selectedConvention: any = null;
+  signatureCible: 'stagiaire' | 'encadrant' = 'stagiaire';
 
+  private api = 'http://localhost:8080/api/conventions';
   readonly statuts = ['BROUILLON', 'EN_VALIDATION', 'SIGNEE', 'ARCHIVEE'];
 
   get totalConventions(): number { return this.conventions.length; }
   get conventionsSignees(): number { return this.conventions.filter(c => c.statut === 'SIGNEE').length; }
   get conventionsBrouillon(): number { return this.conventions.filter(c => c.statut === 'BROUILLON').length; }
+  get partiellementSignees(): number { return this.conventions.filter(c => c.statutSignature === 'PARTIELLEMENT_SIGNEE').length; }
   get filtresActifs(): number { return [this.searchKeyword, this.selectedStatut].filter(v => v).length; }
 
   constructor(
     private conventionService: ConventionService,
+    private http: HttpClient,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
@@ -67,9 +75,7 @@ export class ConventionListComponent implements OnInit {
         c.stagiaireNom?.toLowerCase().includes(kw)
       );
     }
-    if (this.selectedStatut) {
-      result = result.filter(c => c.statut === this.selectedStatut);
-    }
+    if (this.selectedStatut) result = result.filter(c => c.statut === this.selectedStatut);
     this.filteredConventions = result;
   }
 
@@ -86,6 +92,26 @@ export class ConventionListComponent implements OnInit {
     this.dialog.open(this.detailDialog, { width: '600px' });
   }
 
+  ouvrirSignature(convention: any, cible: 'stagiaire' | 'encadrant'): void {
+    this.selectedConvention = convention;
+    this.signatureCible = cible;
+    this.dialog.open(this.signatureDialog, { width: '520px', disableClose: true });
+  }
+
+  envoyerSignature(signatureBase64: string): void {
+    this.http.post(`${this.api}/${this.selectedConvention.id}/signer-electronique`, {
+      signature: signatureBase64,
+      cible: this.signatureCible
+    }).subscribe({
+      next: (res: any) => {
+        this.snackBar.open('✅ Signature enregistrée !', 'Fermer', { duration: 3000 });
+        this.dialog.closeAll();
+        this.loadConventions();
+      },
+      error: () => this.snackBar.open('❌ Erreur signature', 'Fermer', { duration: 3000 })
+    });
+  }
+
   openForm(convention?: any): void {
     const dialogRef = this.dialog.open(ConventionFormComponent, {
       width: '600px', data: convention || null
@@ -96,7 +122,10 @@ export class ConventionListComponent implements OnInit {
   delete(id: number): void {
     if (confirm('Confirmer la suppression ?')) {
       this.conventionService.delete(id).subscribe({
-        next: () => { this.snackBar.open('Convention supprimée', 'Fermer', { duration: 3000 }); this.loadConventions(); }
+        next: () => {
+          this.snackBar.open('Convention supprimée', 'Fermer', { duration: 3000 });
+          this.loadConventions();
+        }
       });
     }
   }
@@ -132,7 +161,18 @@ export class ConventionListComponent implements OnInit {
 
   getInitials(nom: string): string {
     if (!nom) return '?';
-    const parts = nom.split(' ');
-    return parts.map(p => p.charAt(0)).join('').toUpperCase().substring(0, 2);
+    return nom.split(' ').map(p => p.charAt(0)).join('').toUpperCase().substring(0, 2);
+  }
+
+  getSignatureLabel(c: any): string {
+    if (c.statutSignature === 'SIGNEE_COMPLET') return '✅ Signée complètement';
+    if (c.statutSignature === 'PARTIELLEMENT_SIGNEE') return '⚠️ Partiellement signée';
+    return '⏳ En attente';
+  }
+
+  getSignatureBadgeClass(c: any): string {
+    if (c.statutSignature === 'SIGNEE_COMPLET') return 'badge-complete';
+    if (c.statutSignature === 'PARTIELLEMENT_SIGNEE') return 'badge-partial';
+    return 'badge-pending';
   }
 }

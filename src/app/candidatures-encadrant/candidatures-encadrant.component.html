@@ -1,0 +1,218 @@
+<div class="cand-enc-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>inbox</mat-icon> Candidatures — Mon Département</h2>
+      <p>{{ candidatures.length }} candidature(s) reçue(s) pour votre département</p>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card amber" (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'; applyFilter()">
+      <mat-icon>hourglass_empty</mat-icon>
+      <div><span class="kv">{{ enAttente }}</span><span class="kl">En attente</span></div>
+    </div>
+    <div class="kpi-card teal" (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'; applyFilter()">
+      <mat-icon>event</mat-icon>
+      <div><span class="kv">{{ meetingPlanifie }}</span><span class="kl">Meeting planifié</span></div>
+    </div>
+    <div class="kpi-card green" (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'; applyFilter()">
+      <mat-icon>check_circle</mat-icon>
+      <div><span class="kv">{{ acceptes }}</span><span class="kl">Acceptés</span></div>
+    </div>
+    <div class="kpi-card gray" (click)="filterStatut = ''; applyFilter()">
+      <mat-icon>list</mat-icon>
+      <div><span class="kv">{{ candidatures.length }}</span><span class="kl">Total</span></div>
+    </div>
+  </div>
+
+  <!-- Search + Filter -->
+  <div class="toolbar">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
+             placeholder="Rechercher candidat, filière, établissement...">
+    </div>
+    <div class="filter-pills">
+      <button class="pill" [class.active]="filterStatut === ''"
+              (click)="filterStatut = ''; applyFilter()">Tous</button>
+      <button class="pill amber" [class.active]="filterStatut === 'EN_ATTENTE'"
+              (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'; applyFilter()">En attente</button>
+      <button class="pill teal" [class.active]="filterStatut === 'MEETING_PLANIFIE'"
+              (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'; applyFilter()">Meeting planifié</button>
+      <button class="pill green" [class.active]="filterStatut === 'ACCEPTEE_ENCADRANT'"
+              (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'; applyFilter()">Acceptés</button>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- Cards -->
+  <div class="cands-list" *ngIf="!isLoading">
+    <div *ngFor="let c of filtered" class="cand-card"
+         [style.border-left]="'4px solid ' + getConf(c.statut).color">
+
+      <div class="cand-header">
+        <div class="cand-avatar"
+             [style.background]="getConf(c.statut).color + '20'"
+             [style.color]="getConf(c.statut).color">
+          {{ getInitials(c.prenom, c.nom) }}
+        </div>
+        <div class="cand-identity">
+          <h4>{{ c.prenom }} {{ c.nom }}</h4>
+          <span class="cand-filiere">{{ c.filiere }} — {{ c.niveau }}</span>
+          <span class="cand-etab"><mat-icon>school</mat-icon>{{ c.etablissement }}</span>
+        </div>
+        <div class="cand-right">
+          <div class="statut-pill"
+               [style.background]="getConf(c.statut).color + '18'"
+               [style.color]="getConf(c.statut).color"
+               [style.border]="'1px solid ' + getConf(c.statut).color + '40'">
+            <mat-icon>{{ getConf(c.statut).icon }}</mat-icon>
+            {{ getConf(c.statut).label }}
+          </div>
+          <span class="cand-date">{{ c.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+
+      <div class="cand-meta">
+        <span *ngIf="c.sujetSouhaite"><mat-icon>assignment</mat-icon>{{ c.sujetSouhaite }}</span>
+        <span *ngIf="c.email"><mat-icon>email</mat-icon>{{ c.email }}</span>
+        <span *ngIf="c.telephone"><mat-icon>phone</mat-icon>{{ c.telephone }}</span>
+        <span *ngIf="c.dateMeeting" style="color:#0891B2">
+          <mat-icon>event</mat-icon>Meeting : {{ c.dateMeeting | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+
+      <div class="cand-message" *ngIf="c.message">
+        <mat-icon>chat</mat-icon>
+        <span>{{ c.message }}</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="cand-actions">
+        <button mat-stroked-button class="btn-cv" (click)="voirCv(c.id)"
+                *ngIf="c.scoreMatching > 0 || true">
+          <mat-icon>picture_as_pdf</mat-icon> Voir CV
+        </button>
+
+        <button mat-raised-button class="btn-meeting"
+                *ngIf="c.statut === 'EN_ATTENTE'"
+                (click)="ouvrirMeeting(c)">
+          <mat-icon>event</mat-icon> Planifier meeting
+        </button>
+
+        <button mat-raised-button class="btn-decision"
+                *ngIf="c.statut === 'MEETING_PLANIFIE'"
+                (click)="ouvrirDecision(c)">
+          <mat-icon>how_to_reg</mat-icon> Donner décision
+        </button>
+
+        <div class="score-badge" *ngIf="c.scoreMatching > 0">
+          <mat-icon>psychology</mat-icon>
+          Score IA : {{ c.scoreMatching }}%
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filtered.length === 0" class="empty-state">
+      <mat-icon>inbox</mat-icon>
+      <h3>Aucune candidature trouvée</h3>
+      <p>Aucune candidature pour votre département actuellement</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DIALOG MEETING ═══ -->
+<ng-template #meetingDialog>
+  <div class="dialog-header teal">
+    <mat-icon>event</mat-icon>
+    <div>
+      <h3>Planifier un meeting</h3>
+      <p>{{ selected?.prenom }} {{ selected?.nom }}</p>
+    </div>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <p class="dialog-info">
+      <mat-icon>info</mat-icon>
+      Un email de convocation sera automatiquement envoyé au candidat.
+    </p>
+    <form [formGroup]="meetingForm" class="dialog-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Date et heure du meeting *</mat-label>
+        <input matInput type="datetime-local" formControlName="dateMeeting">
+        <mat-icon matPrefix>schedule</mat-icon>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button class="btn-confirm-teal"
+            (click)="planifierMeeting()" [disabled]="meetingForm.invalid">
+      <mat-icon>send</mat-icon> Confirmer et envoyer email
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- ═══ DIALOG DÉCISION ═══ -->
+<ng-template #decisionDialog>
+  <div class="dialog-header" [class.green]="decisionForm.value.decision === 'ACCEPTE'"
+       [class.red]="decisionForm.value.decision === 'REFUSE'">
+    <mat-icon>how_to_reg</mat-icon>
+    <div>
+      <h3>Décision après meeting</h3>
+      <p>{{ selected?.prenom }} {{ selected?.nom }}</p>
+    </div>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <form [formGroup]="decisionForm" class="dialog-form">
+      <div class="decision-btns">
+        <button type="button" class="dec-btn accepte"
+                [class.active]="decisionForm.value.decision === 'ACCEPTE'"
+                (click)="decisionForm.patchValue({decision: 'ACCEPTE'})">
+          <mat-icon>check_circle</mat-icon> Accepter
+        </button>
+        <button type="button" class="dec-btn refuse"
+                [class.active]="decisionForm.value.decision === 'REFUSE'"
+                (click)="decisionForm.patchValue({decision: 'REFUSE'})">
+          <mat-icon>cancel</mat-icon> Refuser
+        </button>
+      </div>
+      <mat-form-field appearance="outline" class="full-width" style="margin-top:16px">
+        <mat-label>Note / Commentaire</mat-label>
+        <textarea matInput formControlName="note" rows="3"
+                  placeholder="Observations après le meeting..."></textarea>
+      </mat-form-field>
+      <div class="decision-info" *ngIf="decisionForm.value.decision === 'ACCEPTE'">
+        <mat-icon>info</mat-icon>
+        <span>Un compte stagiaire sera créé automatiquement et les identifiants + liste des documents seront envoyés par email.</span>
+      </div>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button
+            [class.btn-confirm-green]="decisionForm.value.decision === 'ACCEPTE'"
+            [class.btn-confirm-red]="decisionForm.value.decision === 'REFUSE'"
+            (click)="envoyerDecision()" [disabled]="decisionForm.invalid">
+      <mat-icon>send</mat-icon> Confirmer et envoyer email
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- ═══ DIALOG CV ═══ -->
+<ng-template #cvDialog>
+  <div class="dialog-header blue">
+    <mat-icon>picture_as_pdf</mat-icon>
+    <h3>CV — {{ selected?.prenom }} {{ selected?.nom }}</h3>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content style="padding:0;height:80vh">
+    <iframe *ngIf="cvUrl" [src]="cvUrl" width="100%" height="100%"
+            style="border:none"></iframe>
+  </mat-dialog-content>
+</ng-template>

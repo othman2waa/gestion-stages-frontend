@@ -1,0 +1,43 @@
+<div class="sig-wrap">
+  <div class="sig-header">
+    <div class="sig-label">
+      <mat-icon>draw</mat-icon>
+      <span>{{ label }}</span>
+    </div>
+    <button mat-icon-button (click)="effacer()" matTooltip="Effacer">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <div class="sig-canvas-wrap">
+    <canvas #canvas
+      class="sig-canvas"
+      (mousedown)="startDraw($event)"
+      (mousemove)="draw($event)"
+      (mouseup)="stopDraw()"
+      (mouseleave)="stopDraw()"
+      (touchstart)="startDrawTouch($event)"
+      (touchmove)="drawTouch($event)"
+      (touchend)="stopDraw()">
+    </canvas>
+    <div class="sig-placeholder" *ngIf="!signed">
+      <mat-icon>gesture</mat-icon>
+      <span>Dessinez votre signature ici</span>
+    </div>
+  </div>
+
+  <div class="sig-footer">
+    <div class="sig-status">
+      <span class="status-pending" *ngIf="!signed">
+        <mat-icon>edit</mat-icon> En attente de signature
+      </span>
+      <span class="status-ok" *ngIf="signed">
+        <mat-icon>check_circle</mat-icon> Signature capturée
+      </span>
+    </div>
+    <button mat-raised-button class="btn-confirmer"
+            (click)="confirmer()" [disabled]="!signed">
+      <mat-icon>verified</mat-icon> Confirmer
+    </button>
+  </div>
+</div>
