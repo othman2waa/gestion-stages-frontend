@@ -15,6 +15,7 @@ import { EvaluationService } from '../core/services/evaluation.service';
 import { RapportService } from '../core/services/rapport.service';
 import { OnboardingChecklistService } from '../core/services/onboarding-checklist.service';
 import { HttpClient } from '@angular/common/http';
+import { DocumentsUploadComponent } from '../documents-upload/documents-upload.component';
 
 @Component({
   selector: 'app-stagiaire-dashboard',
@@ -22,7 +23,8 @@ import { HttpClient } from '@angular/common/http';
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatChipsModule, MatTooltipModule,
-    MatSnackBarModule, MatTabsModule
+    MatSnackBarModule, MatTabsModule,DocumentsUploadComponent,
+
   ],
   templateUrl: './stagiaire-dashboard.component.html',
   styleUrls: ['./stagiaire-dashboard.component.scss']

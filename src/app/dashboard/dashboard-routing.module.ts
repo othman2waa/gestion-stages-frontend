@@ -20,6 +20,7 @@ import { DepartementsComponent } from '../departements/departements.component';
 import { AttestationsAdminComponent } from '../attestations-admin/attestations-admin.component';
 import { SujetsAdminComponent } from '../sujets-admin/sujets-admin.component';
 import { CandidaturesEncadrantComponent } from '../candidatures-encadrant/candidatures-encadrant.component';
+import { ArchivesComponent } from '../archives/archives.component';
 
 const routes: Routes = [
   {
@@ -46,6 +47,7 @@ const routes: Routes = [
       { path: 'attestations', component: AttestationsAdminComponent },
       { path: 'sujets', component: SujetsAdminComponent },
       { path: 'candidatures-encadrant', component: CandidaturesEncadrantComponent },
+      { path: 'archives', component: ArchivesComponent },
 
 
 

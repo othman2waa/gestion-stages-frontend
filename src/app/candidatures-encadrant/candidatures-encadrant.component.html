@@ -4,7 +4,7 @@
   <div class="page-header">
     <div>
       <h2><mat-icon>inbox</mat-icon> Candidatures — Mon Département</h2>
-      <p>{{ candidatures.length }} candidature(s) reçue(s) pour votre département</p>
+      <p>{{ candidatures.length }} candidature(s) · {{ avecScore }} avec score IA</p>
     </div>
   </div>
 
@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <!-- Search + Filter -->
+  <!-- Toolbar -->
   <div class="toolbar">
     <div class="search-box">
       <mat-icon>search</mat-icon>
@@ -39,11 +39,37 @@
       <button class="pill" [class.active]="filterStatut === ''"
               (click)="filterStatut = ''; applyFilter()">Tous</button>
       <button class="pill amber" [class.active]="filterStatut === 'EN_ATTENTE'"
-              (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'; applyFilter()">En attente</button>
+              (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'; applyFilter()">
+        En attente</button>
       <button class="pill teal" [class.active]="filterStatut === 'MEETING_PLANIFIE'"
-              (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'; applyFilter()">Meeting planifié</button>
+              (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'; applyFilter()">
+        Meeting</button>
       <button class="pill green" [class.active]="filterStatut === 'ACCEPTEE_ENCADRANT'"
-              (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'; applyFilter()">Acceptés</button>
+              (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'; applyFilter()">
+        Acceptés</button>
+
+          <select class="spec-select" [(ngModel)]="filterSpecialite" (change)="applyFilter()">
+     <option value="">🎯 Toutes spécialités</option>
+     <option *ngFor="let s of specialitesDisponibles" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+  
+    <!-- Toggle tri -->
+    <button class="sort-btn" [class.active]="sortByScore" (click)="toggleSort()"
+            [matTooltip]="sortByScore ? 'Tri : Score IA (cliquer pour trier par date)' : 'Tri : Date (cliquer pour trier par score)'">
+      <mat-icon>{{ sortByScore ? 'psychology' : 'schedule' }}</mat-icon>
+      {{ sortByScore ? 'Classé par score IA' : 'Classé par date' }}
+    </button>
+  </div>
+
+  <!-- Légende score -->
+  <div class="score-legend" *ngIf="sortByScore && avecScore > 0">
+    <mat-icon>info</mat-icon>
+    <span>Les candidats sont classés du meilleur au moins bon score de matching CV IA</span>
+    <div class="legend-items">
+      <span class="leg-item green"><span class="dot"></span>≥75% Excellent</span>
+      <span class="leg-item orange"><span class="dot"></span>50-74% Moyen</span>
+      <span class="leg-item red"><span class="dot"></span>&lt;50% Faible</span>
     </div>
   </div>
 
@@ -51,8 +77,28 @@
 
   <!-- Cards -->
   <div class="cands-list" *ngIf="!isLoading">
-    <div *ngFor="let c of filtered" class="cand-card"
+    <div *ngFor="let c of filtered; let i = index" class="cand-card"
          [style.border-left]="'4px solid ' + getConf(c.statut).color">
+
+      <!-- Rang + Score (visible seulement si tri par score) -->
+      <div class="rank-banner" *ngIf="sortByScore && c.scoreMatching > 0"
+           [style.background]="getScoreColor(c.scoreMatching) + '12'">
+        <span class="rank-num">{{ getRank(i) }}</span>
+        <div class="score-bar-wrap">
+          <div class="score-bar-track">
+            <div class="score-bar-fill"
+                 [style.width]="c.scoreMatching + '%'"
+                 [style.background]="getScoreColor(c.scoreMatching)">
+            </div>
+          </div>
+          <span class="score-val" [style.color]="getScoreColor(c.scoreMatching)">
+            {{ c.scoreMatching }}% — {{ getScoreLabel(c.scoreMatching) }}
+          </span>
+        </div>
+        <div class="score-circle" [style.background]="getScoreColor(c.scoreMatching)">
+          {{ c.scoreMatching }}%
+        </div>
+      </div>
 
       <div class="cand-header">
         <div class="cand-avatar"
@@ -79,6 +125,7 @@
 
       <div class="cand-meta">
         <span *ngIf="c.sujetSouhaite"><mat-icon>assignment</mat-icon>{{ c.sujetSouhaite }}</span>
+        <span *ngIf="c.specialite" style="color:#7C3AED;background:#F5F3FF"><mat-icon style="color:#7C3AED">psychology</mat-icon>{{ c.specialite }}</span>
         <span *ngIf="c.email"><mat-icon>email</mat-icon>{{ c.email }}</span>
         <span *ngIf="c.telephone"><mat-icon>phone</mat-icon>{{ c.telephone }}</span>
         <span *ngIf="c.dateMeeting" style="color:#0891B2">
@@ -87,34 +134,26 @@
       </div>
 
       <div class="cand-message" *ngIf="c.message">
-        <mat-icon>chat</mat-icon>
-        <span>{{ c.message }}</span>
+        <mat-icon>chat</mat-icon><span>{{ c.message }}</span>
       </div>
 
       <!-- Actions -->
       <div class="cand-actions">
-        <button mat-stroked-button class="btn-cv" (click)="voirCv(c.id)"
-                *ngIf="c.scoreMatching > 0 || true">
+        <button mat-stroked-button class="btn-cv" (click)="voirCv(c.id)">
           <mat-icon>picture_as_pdf</mat-icon> Voir CV
         </button>
-
         <button mat-raised-button class="btn-meeting"
                 *ngIf="c.statut === 'EN_ATTENTE'"
                 (click)="ouvrirMeeting(c)">
           <mat-icon>event</mat-icon> Planifier meeting
         </button>
-
         <button mat-raised-button class="btn-decision"
                 *ngIf="c.statut === 'MEETING_PLANIFIE'"
                 (click)="ouvrirDecision(c)">
           <mat-icon>how_to_reg</mat-icon> Donner décision
         </button>
-
-        <div class="score-badge" *ngIf="c.scoreMatching > 0">
-          <mat-icon>psychology</mat-icon>
-          Score IA : {{ c.scoreMatching }}%
-        </div>
       </div>
+
     </div>
 
     <div *ngIf="filtered.length === 0" class="empty-state">
@@ -138,7 +177,7 @@
   <mat-dialog-content>
     <p class="dialog-info">
       <mat-icon>info</mat-icon>
-      Un email de convocation sera automatiquement envoyé au candidat.
+      Un email sera automatiquement envoyé au candidat.
     </p>
     <form [formGroup]="meetingForm" class="dialog-form">
       <mat-form-field appearance="outline" class="full-width">
@@ -159,12 +198,15 @@
 
 <!-- ═══ DIALOG DÉCISION ═══ -->
 <ng-template #decisionDialog>
-  <div class="dialog-header" [class.green]="decisionForm.value.decision === 'ACCEPTE'"
+  <div class="dialog-header"
+       [class.green]="decisionForm.value.decision === 'ACCEPTE'"
        [class.red]="decisionForm.value.decision === 'REFUSE'">
     <mat-icon>how_to_reg</mat-icon>
     <div>
       <h3>Décision après meeting</h3>
-      <p>{{ selected?.prenom }} {{ selected?.nom }}</p>
+      <p>{{ selected?.prenom }} {{ selected?.nom }}
+        <span *ngIf="selected?.scoreMatching > 0"> · Score IA : {{ selected?.scoreMatching }}%</span>
+      </p>
     </div>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
   </div>
@@ -189,7 +231,7 @@
       </mat-form-field>
       <div class="decision-info" *ngIf="decisionForm.value.decision === 'ACCEPTE'">
         <mat-icon>info</mat-icon>
-        <span>Un compte stagiaire sera créé automatiquement et les identifiants + liste des documents seront envoyés par email.</span>
+        <span>Un compte stagiaire sera créé + identifiants + liste documents envoyés par email.</span>
       </div>
     </form>
   </mat-dialog-content>
@@ -208,11 +250,13 @@
 <ng-template #cvDialog>
   <div class="dialog-header blue">
     <mat-icon>picture_as_pdf</mat-icon>
-    <h3>CV — {{ selected?.prenom }} {{ selected?.nom }}</h3>
+    <h3>CV — {{ selected?.prenom }} {{ selected?.nom }}
+      <span *ngIf="selected?.scoreMatching > 0"
+            [style.color]="'rgba(255,255,255,.8)'"> · {{ selected?.scoreMatching }}%</span>
+    </h3>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
   </div>
   <mat-dialog-content style="padding:0;height:80vh">
-    <iframe *ngIf="cvUrl" [src]="cvUrl" width="100%" height="100%"
-            style="border:none"></iframe>
+    <iframe *ngIf="cvUrl" [src]="cvUrl" width="100%" height="100%" style="border:none"></iframe>
   </mat-dialog-content>
 </ng-template>

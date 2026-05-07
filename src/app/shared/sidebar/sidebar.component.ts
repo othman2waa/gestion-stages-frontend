@@ -44,16 +44,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { label:'Mon Espace',   icon:'dashboard_customize',route:'/encadrant-dashboard', roles:['ENCADRANT'] },
       ]
     },
-    {
-      title: 'Recrutement',
-      roles: ['ADMIN_RH', 'RESPONSABLE_RH'],
-      items: [
-        { label:'Annonces',     icon:'campaign',           route:'/annonces',            roles:['ADMIN_RH','RESPONSABLE_RH'] },
-        { label:'Candidatures', icon:'inbox',              route:'/candidatures',        roles:['ADMIN_RH','RESPONSABLE_RH'] },
-        { label:'Sujets',       icon:'assignment',         route:'/sujets',              roles:['ADMIN_RH','RESPONSABLE_RH'] },
-        { label:'Candidatures', icon:'inbox', route:'/candidatures-encadrant', roles:['ENCADRANT'] },
-      ]
-    },
+{
+  title: 'Recrutement',
+  roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'],
+  items: [
+    { label:'Annonces',     icon:'campaign',  route:'/annonces',               roles:['ADMIN_RH','RESPONSABLE_RH'] },
+    { label:'Candidatures', icon:'inbox',     route:'/candidatures',           roles:['ADMIN_RH','RESPONSABLE_RH'] },
+    { label:'Sujets',       icon:'assignment',route:'/sujets',                 roles:['ADMIN_RH','RESPONSABLE_RH'] },
+    { label:'Candidatures', icon:'inbox',     route:'/candidatures-encadrant', roles:['ENCADRANT'] },
+  ]
+},
     {
       title: 'Gestion',
       roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'],
@@ -81,6 +81,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { label:'Attestations', icon:'workspace_premium',  route:'/attestations',        roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label:'Comptes',      icon:'manage_accounts',    route:'/gestion-comptes',     roles:['ADMIN_RH'] },
         { label:'Reporting',    icon:'bar_chart',          route:'/reporting',           roles:['ADMIN_RH','RESPONSABLE_RH'] },
+        { label: 'Archives', icon: 'archive', route: '/archives', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
       ]
     }
   ];

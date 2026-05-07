@@ -14,42 +14,69 @@
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card orange">
+    <div class="kpi-card orange" (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'">
       <mat-icon>hourglass_empty</mat-icon>
       <div><span class="kpi-val">{{ enAttente.length }}</span><span class="kpi-lbl">En attente</span></div>
     </div>
-    <div class="kpi-card green">
+    <div class="kpi-card purple" (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'">
+      <mat-icon>how_to_reg</mat-icon>
+      <div><span class="kpi-val">{{ aTraiterRH.length }}</span><span class="kpi-lbl">À traiter RH</span></div>
+    </div>
+    <div class="kpi-card green" (click)="filterStatut = ''">
       <mat-icon>check_circle</mat-icon>
       <div><span class="kpi-val">{{ acceptees.length }}</span><span class="kpi-lbl">Acceptées</span></div>
     </div>
-    <div class="kpi-card red">
+    <div class="kpi-card red" (click)="filterStatut = ''">
       <mat-icon>cancel</mat-icon>
       <div><span class="kpi-val">{{ refusees.length }}</span><span class="kpi-lbl">Refusées</span></div>
     </div>
-    <div class="kpi-card blue">
+    <div class="kpi-card blue" (click)="filterStatut = ''">
       <mat-icon>people</mat-icon>
       <div><span class="kpi-val">{{ candidatures.length }}</span><span class="kpi-lbl">Total</span></div>
     </div>
   </div>
 
-  <!-- Search -->
-  <div class="search-bar">
-    <mat-icon>search</mat-icon>
-    <input [(ngModel)]="searchTerm" placeholder="Rechercher par nom, email, filière...">
+  <!-- Search + Filter -->
+  <div class="toolbar">
+    <div class="search-bar">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="searchTerm" placeholder="Rechercher par nom, email, filière...">
+    </div>
+    <div class="filter-pills">
+      <button class="pill" [class.active]="filterStatut === ''" (click)="filterStatut = ''">Tous</button>
+      <button class="pill orange" [class.active]="filterStatut === 'EN_ATTENTE'"
+              (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'">En attente</button>
+      <button class="pill teal" [class.active]="filterStatut === 'MEETING_PLANIFIE'"
+              (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'">Meeting</button>
+      <button class="pill purple" [class.active]="filterStatut === 'ACCEPTEE_ENCADRANT'"
+              (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'">À traiter RH</button>
+      <button class="pill blue" [class.active]="filterStatut === 'DOCUMENTS_SOUMIS'"
+              (click)="filterStatut = filterStatut === 'DOCUMENTS_SOUMIS' ? '' : 'DOCUMENTS_SOUMIS'">Docs soumis</button>
+      <button class="pill green" [class.active]="filterStatut === 'ACCEPTEE_RH'"
+              (click)="filterStatut = filterStatut === 'ACCEPTEE_RH' ? '' : 'ACCEPTEE_RH'">Validées RH</button>
+    </div>
   </div>
 
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
   <!-- Liste -->
   <div class="candidatures-list" *ngIf="!isLoading">
-    <div *ngFor="let c of filtered" class="candidature-card" [class]="getStatutClass(c.statut)">
+    <div *ngFor="let c of filtered" class="candidature-card"
+         [style.border-left]="'4px solid ' + getConf(c.statut).color">
 
       <div class="card-left">
-        <div class="cand-avatar">{{ c.prenom?.charAt(0) }}{{ c.nom?.charAt(0) }}</div>
+        <div class="cand-avatar"
+             [style.background]="getConf(c.statut).color + '20'"
+             [style.color]="getConf(c.statut).color">
+          {{ c.prenom?.charAt(0) }}{{ c.nom?.charAt(0) }}
+        </div>
         <div class="cand-info">
           <h4>{{ c.prenom }} {{ c.nom }}</h4>
           <span class="cand-sub">{{ c.filiere }} — {{ c.niveau }}</span>
           <span class="cand-etab"><mat-icon>school</mat-icon>{{ c.etablissement }}</span>
+          <span class="cand-dept" *ngIf="c.departementNom">
+            <mat-icon>business</mat-icon>{{ c.departementNom }}
+          </span>
           <span class="cand-sujet" *ngIf="c.sujetSouhaite">
             <mat-icon>work</mat-icon>{{ c.sujetSouhaite }}
           </span>
@@ -57,25 +84,34 @@
       </div>
 
       <div class="card-right">
-        <!-- Score IA -->
         <div class="score-badge" *ngIf="c.scoreMatching"
-             [style.background]="getScoreColor(c.scoreMatching) + '20'"
+             [style.background]="getScoreColor(c.scoreMatching) + '18'"
              [style.color]="getScoreColor(c.scoreMatching)">
           <mat-icon>psychology</mat-icon> {{ c.scoreMatching }}%
         </div>
 
-        <span class="statut-badge" [class]="getStatutClass(c.statut)">
-          <mat-icon>{{ getStatutIcon(c.statut) }}</mat-icon>
-          {{ c.statut.replace('_', ' ') }}
-        </span>
+        <div class="statut-pill"
+             [style.background]="getConf(c.statut).color + '18'"
+             [style.color]="getConf(c.statut).color"
+             [style.border]="'1px solid ' + getConf(c.statut).color + '40'">
+          <mat-icon>{{ getConf(c.statut).icon }}</mat-icon>
+          {{ getConf(c.statut).label }}
+        </div>
+
+        <!-- Docs badge -->
+        <div class="docs-badge" *ngIf="c.nbDocuments > 0">
+          <mat-icon>attach_file</mat-icon> {{ c.nbDocuments }}/4 docs
+        </div>
 
         <div class="card-actions">
           <button mat-icon-button matTooltip="Voir détail" (click)="ouvrirDetail(c)">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Voir CV" *ngIf="c.hasCv" (click)="voirCv(c.id)">
+          <button mat-icon-button matTooltip="Voir CV" (click)="voirCv(c.id)">
             <mat-icon>description</mat-icon>
           </button>
+
+          <!-- Actions selon statut -->
           <button mat-raised-button class="btn-accept"
                   *ngIf="c.statut === 'EN_ATTENTE'"
                   (click)="ouvrirAcceptation(c)">
@@ -85,6 +121,13 @@
                   *ngIf="c.statut === 'EN_ATTENTE'"
                   (click)="ouvrirRefus(c)">
             <mat-icon>close</mat-icon> Refuser
+          </button>
+
+          <!-- Bouton documents pour candidatures acceptées par encadrant -->
+          <button mat-raised-button class="btn-docs"
+                  *ngIf="['ACCEPTEE_ENCADRANT','DOCUMENTS_SOUMIS','VERIFICATION_IA'].includes(c.statut)"
+                  (click)="ouvrirDocuments(c)">
+            <mat-icon>folder_open</mat-icon> Dossier
           </button>
         </div>
         <span class="cand-date">{{ c.createdAt | date:'dd/MM/yyyy' }}</span>
@@ -98,157 +141,194 @@
   </div>
 </div>
 
-<!-- ===== DIALOG ACCEPTATION ===== -->
-<ng-template #acceptDialog>
-  <div class="form-header" style="background: linear-gradient(135deg, #059669, #10b981)">
-    <mat-icon>check_circle</mat-icon>
-    <h3>Accepter — {{ selectedCandidature?.prenom }} {{ selectedCandidature?.nom }}</h3>
+<!-- ═══ DIALOG DOCUMENTS & VÉRIFICATION IA ═══ -->
+<ng-template #documentsDialog>
+  <div class="dialog-header purple">
+    <mat-icon>folder_open</mat-icon>
+    <div>
+      <h3>Dossier — {{ selectedCandidature?.prenom }} {{ selectedCandidature?.nom }}</h3>
+      <p>{{ selectedCandidature?.statut }}</p>
+    </div>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
   </div>
 
-  <mat-dialog-content>
-    <div class="cand-recap">
-      <div class="recap-item"><mat-icon>school</mat-icon><span>{{ selectedCandidature?.filiere }} — {{ selectedCandidature?.niveau }}</span></div>
-      <div class="recap-item"><mat-icon>business</mat-icon><span>{{ selectedCandidature?.etablissement }}</span></div>
-      <div class="recap-item" *ngIf="selectedCandidature?.sujetSouhaite">
-        <mat-icon>work</mat-icon><span>{{ selectedCandidature?.sujetSouhaite }}</span>
+  <mat-dialog-content style="min-width:650px">
+
+    <!-- Documents liste -->
+    <div class="docs-section">
+      <h4 style="margin:16px 0 10px;font-size:14px;color:#1E293B">
+        <mat-icon style="vertical-align:middle;color:#7C3AED">attach_file</mat-icon>
+        Documents uploadés ({{ documents.length }}/4)
+      </h4>
+
+      <div *ngIf="documents.length === 0" class="no-docs">
+        <mat-icon>upload_file</mat-icon>
+        <p>Aucun document uploadé pour l'instant</p>
+      </div>
+
+      <div class="doc-row" *ngFor="let d of documents">
+        <div class="doc-icon-wrap"
+             [style.background]="getDocStatut(d.statutIa).color + '18'"
+             [style.color]="getDocStatut(d.statutIa).color">
+          <mat-icon>{{ getDocStatut(d.statutIa).icon }}</mat-icon>
+        </div>
+        <div class="doc-info">
+          <span class="doc-type">{{ d.typeDocument }}</span>
+          <span class="doc-file">{{ d.nomFichier }}</span>
+          <span class="doc-date">{{ d.uploadedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="doc-ia" *ngIf="d.scoreIa">
+          <span [style.color]="getDocStatut(d.statutIa).color">
+            {{ d.statutIa }} — {{ d.scoreIa }}%
+          </span>
+          <small>{{ d.commentaireIa }}</small>
+        </div>
       </div>
     </div>
 
-    <form [formGroup]="acceptForm" class="accept-form">
+    <!-- Vérification IA -->
+    <div class="ia-section" *ngIf="documents.length > 0">
+      <button mat-raised-button class="btn-ia"
+              (click)="lancerVerificationIa()"
+              [disabled]="isVerifyingIa">
+        <mat-icon>psychology</mat-icon>
+        {{ isVerifyingIa ? 'Vérification en cours...' : 'Lancer vérification IA' }}
+      </button>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Sujet du stage *</mat-label>
-        <input matInput formControlName="sujet" placeholder="Sujet définitif du stage">
-        <mat-icon matPrefix>work</mat-icon>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Type de stage *</mat-label>
-        <mat-select formControlName="typeStage">
-          <mat-option *ngFor="let t of typeStages" [value]="t.value">{{ t.label }}</mat-option>
-        </mat-select>
-        <mat-icon matPrefix>category</mat-icon>
-      </mat-form-field>
-
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Date début *</mat-label>
-          <input matInput [matDatepicker]="pickerDebut" formControlName="dateDebut">
-          <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
-          <mat-datepicker #pickerDebut></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Date fin *</mat-label>
-          <input matInput [matDatepicker]="pickerFin" formControlName="dateFin">
-          <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-          <mat-datepicker #pickerFin></mat-datepicker>
-        </mat-form-field>
+      <div class="ia-result" *ngIf="iaResult">
+        <div class="ia-score"
+             [style.color]="getScoreColor(iaResult.scoreMoyen)">
+          {{ iaResult.scoreMoyen }}%
+        </div>
+        <div class="ia-label">Score de cohérence IA</div>
+        <div class="ia-status">
+          {{ iaResult.statut === 'DOCUMENTS_VALIDES' ? '✅ Documents valides' : '⚠️ Documents suspects' }}
+        </div>
       </div>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Encadrant *</mat-label>
-        <mat-select formControlName="encadrantId">
-          <mat-option *ngFor="let e of encadrants" [value]="e.id">
-            {{ e.prenom }} {{ e.nom }} — {{ e.fonction ?? 'Encadrant' }}
-          </mat-option>
-        </mat-select>
-        <mat-icon matPrefix>supervisor_account</mat-icon>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Département *</mat-label>
-        <mat-select formControlName="departementId">
-          <mat-option *ngFor="let d of departements" [value]="d.id">
-            {{ d.code }} — {{ d.nom }}
-          </mat-option>
-        </mat-select>
-        <mat-icon matPrefix>business</mat-icon>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Commentaire RH (optionnel)</mat-label>
-        <textarea matInput formControlName="commentaireRh" rows="2"></textarea>
-      </mat-form-field>
-    </form>
-
-    <div class="accept-info">
-      <mat-icon>info</mat-icon>
-      <span>Un compte stagiaire sera créé automatiquement et les identifiants envoyés par email. La checklist d'onboarding sera également générée.</span>
     </div>
+
   </mat-dialog-content>
 
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Annuler</button>
-    <button mat-raised-button class="btn-accept-final"
-            (click)="accepter()" [disabled]="acceptForm.invalid">
-      <mat-icon>check_circle</mat-icon> Confirmer l'acceptation
+  <mat-dialog-actions align="end" style="padding:12px 20px">
+    <button mat-button mat-dialog-close>Fermer</button>
+    <button mat-raised-button class="btn-refuse-final"
+            *ngIf="['ACCEPTEE_ENCADRANT','DOCUMENTS_SOUMIS','VERIFICATION_IA'].includes(selectedCandidature?.statut)"
+            (click)="validerDossier('REFUSE')">
+      <mat-icon>cancel</mat-icon> Refuser le dossier
+    </button>
+    <button mat-raised-button class="btn-valider-final"
+            *ngIf="['ACCEPTEE_ENCADRANT','DOCUMENTS_SOUMIS','VERIFICATION_IA'].includes(selectedCandidature?.statut)"
+            (click)="validerDossier('VALIDE')">
+      <mat-icon>verified</mat-icon> Valider + Envoyer convocation
     </button>
   </mat-dialog-actions>
 </ng-template>
 
-<!-- ===== DIALOG REFUS ===== -->
-<ng-template #refusDialog>
-  <div class="form-header" style="background: linear-gradient(135deg, #dc2626, #ef4444)">
-    <mat-icon>cancel</mat-icon>
-    <h3>Refuser — {{ selectedCandidature?.prenom }} {{ selectedCandidature?.nom }}</h3>
-    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
-  </div>
-  <mat-dialog-content>
-    <form [formGroup]="refusForm">
-      <mat-form-field appearance="outline" class="full-width" style="margin-top: 16px;">
-        <mat-label>Motif du refus (optionnel)</mat-label>
-        <textarea matInput formControlName="commentaireRh" rows="3"
-                  placeholder="Expliquez le motif du refus..."></textarea>
-      </mat-form-field>
-    </form>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Annuler</button>
-    <button mat-raised-button color="warn" (click)="refuser()">
-      <mat-icon>cancel</mat-icon> Confirmer le refus
-    </button>
-  </mat-dialog-actions>
-</ng-template>
-
-<!-- ===== DIALOG DETAIL ===== -->
+<!-- ═══ DIALOG DÉTAIL ═══ -->
 <ng-template #detailDialog>
-  <div class="form-header" style="background: linear-gradient(135deg, #1e40af, #3b82f6)">
+  <div class="dialog-header blue">
     <mat-icon>person</mat-icon>
     <h3>{{ selectedCandidature?.prenom }} {{ selectedCandidature?.nom }}</h3>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
   </div>
-  <mat-dialog-content>
+  <mat-dialog-content style="padding:20px">
     <div class="detail-grid">
-      <div class="detail-item"><span class="detail-lbl">Email</span><span>{{ selectedCandidature?.email }}</span></div>
-      <div class="detail-item"><span class="detail-lbl">Téléphone</span><span>{{ selectedCandidature?.telephone }}</span></div>
-      <div class="detail-item"><span class="detail-lbl">Filière</span><span>{{ selectedCandidature?.filiere }}</span></div>
-      <div class="detail-item"><span class="detail-lbl">Niveau</span><span>{{ selectedCandidature?.niveau }}</span></div>
-      <div class="detail-item"><span class="detail-lbl">Établissement</span><span>{{ selectedCandidature?.etablissement }}</span></div>
-      <div class="detail-item"><span class="detail-lbl">Sujet souhaité</span><span>{{ selectedCandidature?.sujetSouhaite }}</span></div>
-      <div class="detail-item"><span class="detail-lbl">Département souhaité</span><span>{{ selectedCandidature?.departementSouhaite }}</span></div>
-      <div class="detail-item" *ngIf="selectedCandidature?.scoreMatching">
-        <span class="detail-lbl">Score IA</span>
-        <span [style.color]="getScoreColor(selectedCandidature?.scoreMatching)">
-          {{ selectedCandidature?.scoreMatching }}%
-        </span>
+      <div class="detail-item"><span class="dl">Email</span><span class="dv">{{ selectedCandidature?.email }}</span></div>
+      <div class="detail-item"><span class="dl">Téléphone</span><span class="dv">{{ selectedCandidature?.telephone }}</span></div>
+      <div class="detail-item"><span class="dl">Filière</span><span class="dv">{{ selectedCandidature?.filiere }}</span></div>
+      <div class="detail-item"><span class="dl">Niveau</span><span class="dv">{{ selectedCandidature?.niveau }}</span></div>
+      <div class="detail-item"><span class="dl">Établissement</span><span class="dv">{{ selectedCandidature?.etablissement }}</span></div>
+      <div class="detail-item"><span class="dl">Département</span><span class="dv">{{ selectedCandidature?.departementNom }}</span></div>
+      <div class="detail-item"><span class="dl">Sujet souhaité</span><span class="dv">{{ selectedCandidature?.sujetSouhaite }}</span></div>
+      <div class="detail-item"><span class="dl">Statut</span><span class="dv">{{ selectedCandidature?.statut }}</span></div>
+      <div class="detail-item" *ngIf="selectedCandidature?.username">
+        <span class="dl">Username créé</span><span class="dv" style="color:#00843D;font-weight:700">{{ selectedCandidature?.username }}</span>
       </div>
-      <div class="detail-item full" *ngIf="selectedCandidature?.message">
-        <span class="detail-lbl">Message</span>
-        <span>{{ selectedCandidature?.message }}</span>
-      </div>
-      <div class="detail-item full" *ngIf="selectedCandidature?.commentaireRh">
-        <span class="detail-lbl">Commentaire RH</span>
-        <span>{{ selectedCandidature?.commentaireRh }}</span>
+      <div class="detail-item" *ngIf="selectedCandidature?.message">
+        <span class="dl">Message</span><span class="dv">{{ selectedCandidature?.message }}</span>
       </div>
     </div>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Fermer</button>
-    <button mat-raised-button class="btn-accept" *ngIf="selectedCandidature?.statut === 'EN_ATTENTE'"
-            (click)="dialog.closeAll(); ouvrirAcceptation(selectedCandidature)">
-      <mat-icon>check</mat-icon> Accepter
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- ═══ DIALOG ACCEPTATION (ancien flux) ═══ -->
+<ng-template #acceptDialog>
+  <div class="dialog-header green">
+    <mat-icon>check_circle</mat-icon>
+    <h3>Accepter — {{ selectedCandidature?.prenom }} {{ selectedCandidature?.nom }}</h3>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <form [formGroup]="acceptForm" class="dialog-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Encadrant *</mat-label>
+        <mat-select formControlName="encadrantId">
+          <mat-option *ngFor="let e of encadrants" [value]="e.id">{{ e.prenom }} {{ e.nom }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Département *</mat-label>
+        <mat-select formControlName="departementId">
+          <mat-option *ngFor="let d of departements" [value]="d.id">{{ d.nom }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Date début *</mat-label>
+          <input matInput [matDatepicker]="dp1" formControlName="dateDebut">
+          <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+          <mat-datepicker #dp1></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date fin *</mat-label>
+          <input matInput [matDatepicker]="dp2" formControlName="dateFin">
+          <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+          <mat-datepicker #dp2></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Type de stage *</mat-label>
+        <mat-select formControlName="typeStage">
+          <mat-option *ngFor="let t of typeStages" [value]="t.value">{{ t.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Sujet</mat-label>
+        <input matInput formControlName="sujet">
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button class="btn-valider-final"
+            (click)="accepter()" [disabled]="acceptForm.invalid">
+      <mat-icon>check</mat-icon> Confirmer
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- ═══ DIALOG REFUS ═══ -->
+<ng-template #refusDialog>
+  <div class="dialog-header red">
+    <mat-icon>cancel</mat-icon>
+    <h3>Refuser — {{ selectedCandidature?.prenom }} {{ selectedCandidature?.nom }}</h3>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <form [formGroup]="refusForm" style="padding-top:16px">
+      <mat-form-field appearance="outline" style="width:100%">
+        <mat-label>Motif du refus</mat-label>
+        <textarea matInput formControlName="commentaireRh" rows="3"></textarea>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button class="btn-refuse-final" (click)="refuser()">
+      <mat-icon>cancel</mat-icon> Confirmer refus
     </button>
   </mat-dialog-actions>
 </ng-template>

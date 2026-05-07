@@ -8,9 +8,15 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
   },
   {
-    path: 'candidature',  // ← PAS de canActivate ici
+    path: 'candidature',
     loadComponent: () => import('./candidature-publique/candidature-publique.component')
       .then(m => m.CandidaturePubliqueComponent)
+  },
+ 
+  {
+    path: 'offres',
+    loadComponent: () => import('./annonces-publiques/annonces-publiques.component')
+      .then(m => m.AnnoncesPubliquesComponent)
   },
   {
     path: 'stagiaire',
@@ -18,15 +24,13 @@ export const routes: Routes = [
     loadChildren: () => import('./stagiaire-portal/stagiaire-portal.module').then(m => m.StagiairePortalModule)
   },
   {
-  path: 'offres',
-  loadComponent: () => import('./annonces-publiques/annonces-publiques.component')
-    .then(m => m.AnnoncesPubliquesComponent)
-},
-  {
     path: '',
     canActivate: [authGuard],
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule)
   },
+   {
+    path: 'postuler',
+    component: PortailCandidatureComponent   
+  },
   { path: '**', redirectTo: 'auth/login' },
-  { path: 'postuler', component: PortailCandidatureComponent }
 ];

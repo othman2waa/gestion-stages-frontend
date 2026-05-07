@@ -1,0 +1,93 @@
+<div class="docs-container">
+
+  <!-- Header -->
+  <div class="docs-header">
+    <div class="docs-header-left">
+      <mat-icon>upload_file</mat-icon>
+      <div>
+        <h3>Documents requis</h3>
+        <p>Uploadez les 4 documents pour valider votre dossier de stage</p>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <span class="progress-label">{{ uploadedCount }}/{{ documents.length }} documents</span>
+      <mat-progress-bar mode="determinate"
+        [value]="uploadedCount / documents.length * 100"
+        class="docs-progress">
+      </mat-progress-bar>
+    </div>
+  </div>
+
+  <!-- Success banner -->
+  <div class="success-banner" *ngIf="allUploaded">
+    <mat-icon>check_circle</mat-icon>
+    <div>
+      <strong>Dossier complet !</strong>
+      <span>Tous vos documents ont été envoyés. Le service RH va vérifier votre dossier.</span>
+    </div>
+  </div>
+
+  <!-- Info banner -->
+  <div class="info-banner" *ngIf="!candidatureId">
+    <mat-icon>info</mat-icon>
+    <span>Cette section est disponible après acceptation de votre candidature par un encadrant.</span>
+  </div>
+
+  <!-- Documents grid -->
+  <div class="docs-grid" *ngIf="candidatureId">
+    <div *ngFor="let doc of documents" class="doc-card"
+         [class.uploaded]="doc.uploaded"
+         [class.uploading]="doc.uploading">
+
+      <!-- Icon -->
+      <div class="doc-icon" [style.background]="doc.color + '18'" [style.color]="doc.color">
+        <mat-icon>{{ doc.icon }}</mat-icon>
+      </div>
+
+      <!-- Info -->
+      <div class="doc-info">
+        <h4>{{ doc.label }}</h4>
+        <p>{{ doc.description }}</p>
+        <div class="doc-status" *ngIf="doc.uploaded">
+          <mat-icon>check_circle</mat-icon> Document reçu
+        </div>
+        <div class="doc-status uploading" *ngIf="doc.uploading">
+          <mat-icon>hourglass_empty</mat-icon> Upload en cours...
+        </div>
+        <div class="doc-status pending" *ngIf="!doc.uploaded && !doc.uploading">
+          <mat-icon>pending</mat-icon> En attente
+        </div>
+      </div>
+
+      <!-- Upload button -->
+      <div class="doc-action">
+        <label class="upload-btn"
+               [class.uploaded]="doc.uploaded"
+               [style.border-color]="doc.color"
+               [style.color]="doc.uploaded ? '#00843D' : doc.color"
+               [matTooltip]="doc.uploaded ? 'Remplacer le document' : 'Uploader le document'">
+          <input type="file" accept=".pdf"
+                 (change)="onFileSelected($event, doc)"
+                 [disabled]="doc.uploading"
+                 hidden>
+          <mat-icon>{{ doc.uploaded ? 'refresh' : 'upload' }}</mat-icon>
+          {{ doc.uploaded ? 'Remplacer' : 'Uploader PDF' }}
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="docs-instructions" *ngIf="candidatureId">
+    <h4><mat-icon>info</mat-icon> Instructions</h4>
+    <ul>
+      <li>Tous les documents doivent être au format <strong>PDF</strong></li>
+      <li>Taille maximale par fichier : <strong>5 MB</strong></li>
+      <li>La convention doit être signée et tamponnée par votre établissement</li>
+      <li>Le CIN doit être lisible (recto et verso)</li>
+      <li>Une fois tous les documents envoyés, le RH sera notifié automatiquement</li>
+    </ul>
+  </div>
+
+</div>

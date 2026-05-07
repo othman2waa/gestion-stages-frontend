@@ -12,6 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-candidatures-encadrant',
@@ -35,43 +36,51 @@ export class CandidaturesEncadrantComponent implements OnInit {
   isLoading = true;
   searchTerm = '';
   filterStatut = '';
+  filterSpecialite = '';
+  sortByScore = true;
   selected: any = null;
-  cvUrl: string | null = null;
+  cvUrl: SafeResourceUrl | null = null;
 
   meetingForm: FormGroup;
   decisionForm: FormGroup;
 
   private api = 'http://localhost:8080/api/candidatures';
 
-  readonly statuts = ['EN_ATTENTE', 'MEETING_PLANIFIE', 'ACCEPTEE_ENCADRANT', 'REFUSEE_ENCADRANT'];
-
   readonly statutConf: Record<string, { label: string; color: string; icon: string }> = {
-    EN_ATTENTE:          { label: 'En attente',       color: '#F59E0B', icon: 'hourglass_empty' },
-    MEETING_PLANIFIE:    { label: 'Meeting planifié', color: '#0891B2', icon: 'event' },
-    ACCEPTEE_ENCADRANT:  { label: 'Accepté',          color: '#00843D', icon: 'check_circle' },
-    REFUSEE_ENCADRANT:   { label: 'Refusé',           color: '#DC2626', icon: 'cancel' },
-    DOCUMENTS_REQUIS:    { label: 'Docs requis',      color: '#7C3AED', icon: 'upload_file' },
-    DOCUMENTS_SOUMIS:    { label: 'Docs soumis',      color: '#059669', icon: 'task_alt' },
-    ACCEPTEE_RH:         { label: 'Validé RH',        color: '#00843D', icon: 'verified' },
+    EN_ATTENTE:         { label: 'En attente',      color: '#F59E0B', icon: 'hourglass_empty' },
+    MEETING_PLANIFIE:   { label: 'Meeting planifié',color: '#0891B2', icon: 'event' },
+    ACCEPTEE_ENCADRANT: { label: 'Accepté',         color: '#00843D', icon: 'check_circle' },
+    REFUSEE_ENCADRANT:  { label: 'Refusé',          color: '#DC2626', icon: 'cancel' },
+    DOCUMENTS_SOUMIS:   { label: 'Docs soumis',     color: '#059669', icon: 'task_alt' },
+    ACCEPTEE_RH:        { label: 'Validé RH',       color: '#00843D', icon: 'verified' },
   };
 
-  get enAttente(): number { return this.candidatures.filter(c => c.statut === 'EN_ATTENTE').length; }
+  get enAttente(): number     { return this.candidatures.filter(c => c.statut === 'EN_ATTENTE').length; }
   get meetingPlanifie(): number { return this.candidatures.filter(c => c.statut === 'MEETING_PLANIFIE').length; }
-  get acceptes(): number { return this.candidatures.filter(c => c.statut === 'ACCEPTEE_ENCADRANT').length; }
+  get acceptes(): number      { return this.candidatures.filter(c => c.statut === 'ACCEPTEE_ENCADRANT').length; }
+  get avecScore(): number     { return this.candidatures.filter(c => c.scoreMatching > 0).length; }
+
+  getScoreColor(score: number): string {
+    if (score >= 75) return '#00843D';
+    if (score >= 50) return '#F47920';
+    return '#DC2626';
+  }
+
+  getScoreLabel(score: number): string {
+    if (score >= 75) return 'Excellent';
+    if (score >= 50) return 'Moyen';
+    return 'Faible';
+  }
 
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
+    private sanitizer: DomSanitizer,
     public dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.meetingForm = this.fb.group({
-      dateMeeting: ['', Validators.required]
-    });
-    this.decisionForm = this.fb.group({
-      decision: ['', Validators.required],
-      note: ['']
-    });
+    this.meetingForm  = this.fb.group({ dateMeeting: ['', Validators.required] });
+    this.decisionForm = this.fb.group({ decision: ['', Validators.required], note: [''] });
   }
 
   ngOnInit(): void { this.load(); }
@@ -83,15 +92,25 @@ export class CandidaturesEncadrantComponent implements OnInit {
       error: () => this.isLoading = false
     });
   }
-
-  applyFilter(): void {
-    this.filtered = this.candidatures.filter(c => {
+applyFilter(): void {
+  this.filtered = this.candidatures
+    .filter(c => {
       const matchSearch = !this.searchTerm ||
         `${c.prenom} ${c.nom} ${c.filiere} ${c.etablissement}`.toLowerCase()
           .includes(this.searchTerm.toLowerCase());
-      const matchStatut = !this.filterStatut || c.statut === this.filterStatut;
-      return matchSearch && matchStatut;
-    });
+      const matchStatut   = !this.filterStatut   || c.statut    === this.filterStatut;
+      const matchSpec     = !this.filterSpecialite || c.specialite === this.filterSpecialite;
+      return matchSearch && matchStatut && matchSpec;
+    })
+    .sort((a, b) => this.sortByScore
+      ? (b.scoreMatching ?? 0) - (a.scoreMatching ?? 0)
+      : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+}
+
+  toggleSort(): void {
+    this.sortByScore = !this.sortByScore;
+    this.applyFilter();
   }
 
   getConf(statut: string) {
@@ -100,6 +119,13 @@ export class CandidaturesEncadrantComponent implements OnInit {
 
   getInitials(prenom: string, nom: string): string {
     return `${prenom?.charAt(0) ?? ''}${nom?.charAt(0) ?? ''}`.toUpperCase();
+  }
+
+  getRank(index: number): string {
+    if (index === 0) return '🥇';
+    if (index === 1) return '🥈';
+    if (index === 2) return '🥉';
+    return `#${index + 1}`;
   }
 
   ouvrirMeeting(c: any): void {
@@ -114,9 +140,8 @@ export class CandidaturesEncadrantComponent implements OnInit {
       { dateMeeting: this.meetingForm.value.dateMeeting }
     ).subscribe({
       next: () => {
-        this.snackBar.open('✅ Meeting planifié — Email envoyé au candidat', 'Fermer', { duration: 3000 });
-        this.dialog.closeAll();
-        this.load();
+        this.snackBar.open('✅ Meeting planifié — Email envoyé', 'Fermer', { duration: 3000 });
+        this.dialog.closeAll(); this.load();
       }
     });
   }
@@ -134,11 +159,10 @@ export class CandidaturesEncadrantComponent implements OnInit {
     ).subscribe({
       next: () => {
         const msg = this.decisionForm.value.decision === 'ACCEPTE'
-          ? '✅ Candidat accepté — Email + identifiants envoyés'
-          : '❌ Candidat refusé — Email de notification envoyé';
+          ? '✅ Accepté — Email + identifiants envoyés'
+          : '❌ Refusé — Email envoyé';
         this.snackBar.open(msg, 'Fermer', { duration: 4000 });
-        this.dialog.closeAll();
-        this.load();
+        this.dialog.closeAll(); this.load();
       }
     });
   }
@@ -146,9 +170,16 @@ export class CandidaturesEncadrantComponent implements OnInit {
   voirCv(id: number): void {
     this.http.get(`${this.api}/${id}/cv`, { responseType: 'blob' }).subscribe({
       next: (blob) => {
-        this.cvUrl = window.URL.createObjectURL(blob);
+        const url = window.URL.createObjectURL(blob);
+        this.cvUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
         this.dialog.open(this.cvDialog, { width: '80vw', height: '90vh' });
       }
     });
   }
+get specialitesDisponibles(): string[] {
+  return [...new Set(this.candidatures
+    .filter(c => c.specialite)
+    .map(c => c.specialite))];
+}
+
 }

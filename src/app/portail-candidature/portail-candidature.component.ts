@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -15,8 +16,9 @@ import { HttpClient } from '@angular/common/http';
   selector: 'app-portail-candidature',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatButtonModule, MatIconModule, MatStepperModule,
+    CommonModule, FormsModule, ReactiveFormsModule,
+    MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatButtonModule, MatIconModule, MatStepperModule,
     MatSnackBarModule, MatProgressBarModule
   ],
   templateUrl: './portail-candidature.component.html',
@@ -29,35 +31,54 @@ export class PortailCandidatureComponent implements OnInit {
   submitted = false;
   cvFile: File | null = null;
   departements: any[] = [];
+  specialites: string[] = [];
 
-  readonly niveaux = ['Bac+2', 'Bac+3', 'Bac+5', 'Ingénieur'];
+  readonly niveaux    = ['Bac+2', 'Bac+3', 'Bac+5', 'Ingénieur', 'Master'];
   readonly typeStages = ['PFE', 'PFA', 'Stage été', 'Stage observation'];
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private snackBar: MatSnackBar) {}
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.step1Form = this.fb.group({
-      prenom:       ['', [Validators.required, Validators.minLength(2)]],
-      nom:          ['', [Validators.required, Validators.minLength(2)]],
-      email:        ['', [Validators.required, Validators.email]],
-      telephone:    ['', Validators.required],
-      filiere:      ['', Validators.required],
-      niveau:       ['', Validators.required],
-      etablissement:['', Validators.required],
+      prenom:        ['', [Validators.required, Validators.minLength(2)]],
+      nom:           ['', [Validators.required, Validators.minLength(2)]],
+      email:         ['', [Validators.required, Validators.email]],
+      telephone:     ['', Validators.required],
+      filiere:       ['', Validators.required],
+      niveau:        ['', Validators.required],
+      etablissement: ['', Validators.required],
     });
 
     this.step2Form = this.fb.group({
-      departementId:  [null, Validators.required],
-      sujetSouhaite:  ['', Validators.required],
-      typeStage:      ['PFE', Validators.required],
-      message:        [''],
+      departementId: [null, Validators.required],
+      specialite:    ['',   Validators.required],
+      sujetSouhaite: ['',   Validators.required],
+      typeStage:     ['PFE', Validators.required],
+      message:       [''],
     });
 
     this.http.get<any[]>('http://localhost:8080/api/departements/actifs').subscribe({
-      next: (d) => this.departements = d,
-      error: () => {}
+      next: (d) => { this.departements = d; },
+      error: (err) => console.error('Erreur départements:', err)
     });
   }
+
+onDepartementChange(departementId: any): void {
+  this.specialites = [];
+  this.step2Form.patchValue({ specialite: '' });
+  const id = Number(departementId);
+  if (!id) return;
+  console.log('Chargement spécialités pour dept:', id);
+  this.http.get<string[]>(`http://localhost:8080/api/departements/${id}/specialites`)
+    .subscribe({
+      next: (s) => { console.log('Spécialités:', s); this.specialites = s; },
+      error: (err) => { console.error('Erreur:', err); this.specialites = []; }
+    });
+}
 
   onCvSelected(event: any): void {
     const file = event.target.files[0];
@@ -71,23 +92,15 @@ export class PortailCandidatureComponent implements OnInit {
   soumettre(): void {
     if (this.step1Form.invalid || this.step2Form.invalid) return;
     this.isSubmitting = true;
-
     const data = { ...this.step1Form.value, ...this.step2Form.value };
     const formData = new FormData();
     formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
     if (this.cvFile) formData.append('cv', this.cvFile);
-
     this.http.post('http://localhost:8080/api/candidatures', formData).subscribe({
-      next: () => {
-        this.submitted = true;
-        this.isSubmitting = false;
-      },
+      next: () => { this.submitted = true; this.isSubmitting = false; },
       error: (err) => {
         this.isSubmitting = false;
-        this.snackBar.open(
-          err.error?.message || '❌ Erreur lors de la soumission',
-          'Fermer', { duration: 4000 }
-        );
+        this.snackBar.open(err.error?.message || '❌ Erreur', 'Fermer', { duration: 4000 });
       }
     });
   }

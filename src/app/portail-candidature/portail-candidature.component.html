@@ -25,7 +25,7 @@
     </div>
   </div>
 
-  <!-- Formulaire stepper -->
+  <!-- Formulaire -->
   <div class="form-card" *ngIf="!submitted">
     <mat-stepper [linear]="true" orientation="horizontal" class="stepper">
 
@@ -37,12 +37,12 @@
             <mat-form-field appearance="outline">
               <mat-label>Prénom *</mat-label>
               <input matInput formControlName="prenom">
-              <mat-error *ngIf="step1Form.get('prenom')?.hasError('required')">Requis</mat-error>
+              <mat-error>Requis</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Nom *</mat-label>
               <input matInput formControlName="nom">
-              <mat-error *ngIf="step1Form.get('nom')?.hasError('required')">Requis</mat-error>
+              <mat-error>Requis</mat-error>
             </mat-form-field>
           </div>
           <div class="form-row">
@@ -50,7 +50,7 @@
               <mat-label>Email *</mat-label>
               <input matInput type="email" formControlName="email">
               <mat-icon matPrefix>email</mat-icon>
-              <mat-error *ngIf="step1Form.get('email')?.hasError('email')">Email invalide</mat-error>
+              <mat-error>Email invalide</mat-error>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Téléphone *</mat-label>
@@ -60,20 +60,23 @@
           </div>
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Établissement *</mat-label>
-            <input matInput formControlName="etablissement" placeholder="Ex: ENSA Marrakech">
+            <input matInput formControlName="etablissement"
+                   placeholder="Ex: ENSA Marrakech">
             <mat-icon matPrefix>school</mat-icon>
           </mat-form-field>
           <div class="form-row">
             <mat-form-field appearance="outline">
               <mat-label>Filière *</mat-label>
-              <input matInput formControlName="filiere" placeholder="Ex: Génie Informatique">
+              <input matInput formControlName="filiere"
+                     placeholder="Ex: Génie Informatique">
             </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>Niveau *</mat-label>
-              <mat-select formControlName="niveau">
-                <mat-option *ngFor="let n of niveaux" [value]="n">{{ n }}</mat-option>
-              </mat-select>
-            </mat-form-field>
+            <div class="native-field">
+              <label>Niveau *</label>
+              <select formControlName="niveau" class="native-select">
+                <option value="" disabled>-- Choisir --</option>
+                <option *ngFor="let n of niveaux" [value]="n">{{ n }}</option>
+              </select>
+            </div>
           </div>
           <div class="step-actions">
             <button mat-raised-button class="btn-next"
@@ -84,37 +87,74 @@
         </form>
       </mat-step>
 
-      <!-- STEP 2 : Stage + CV -->
+      <!-- STEP 2 : Stage -->
       <mat-step [stepControl]="step2Form" label="Votre candidature">
         <form [formGroup]="step2Form" class="step-form">
           <h3><mat-icon>work</mat-icon> Votre stage souhaité</h3>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Département OCP souhaité *</mat-label>
-            <mat-select formControlName="departementId">
-              <mat-option *ngFor="let d of departements" [value]="d.id">
-                {{ d.code }} — {{ d.nom }}
-              </mat-option>
-            </mat-select>
-            <mat-icon matPrefix>business</mat-icon>
-            <mat-error>Veuillez choisir un département</mat-error>
-          </mat-form-field>
+
+          <!-- Département -->
+          <div class="native-field full-width" style="margin-bottom:16px">
+            <label>
+              <mat-icon style="font-size:16px;vertical-align:middle;color:#00843D">business</mat-icon>
+              Département OCP souhaité *
+            </label>
+                <select formControlName="departementId" class="native-select"
+                (ngModelChange)="onDepartementChange($event)"
+                [class.error]="step2Form.get('departementId')?.invalid && step2Form.get('departementId')?.touched">
+        <option [ngValue]="null" disabled>-- Choisir un département --</option>
+        <option *ngFor="let d of departements" [ngValue]="d.id">
+            {{ d.code }} — {{ d.nom }}
+        </option>
+        </select>
+            <small class="field-error"
+                   *ngIf="step2Form.get('departementId')?.invalid && step2Form.get('departementId')?.touched">
+              Veuillez choisir un département
+            </small>
+          </div>
+
+          <!-- Spécialité — apparaît après choix département -->
+          <div class="native-field full-width" style="margin-bottom:16px"
+               *ngIf="specialites.length > 0">
+            <label>
+              <mat-icon style="font-size:16px;vertical-align:middle;color:#7C3AED">psychology</mat-icon>
+              Spécialité souhaitée *
+            </label>
+            <select formControlName="specialite" class="native-select"
+                    [class.error]="step2Form.get('specialite')?.invalid && step2Form.get('specialite')?.touched">
+              <option value="" disabled>-- Choisir une spécialité --</option>
+              <option *ngFor="let s of specialites" [value]="s">{{ s }}</option>
+            </select>
+            <small class="field-error"
+                   *ngIf="step2Form.get('specialite')?.invalid && step2Form.get('specialite')?.touched">
+              Veuillez choisir une spécialité
+            </small>
+          </div>
+
+          <!-- Chargement spécialités -->
+          <div class="spec-hint"
+               *ngIf="step2Form.get('departementId')?.value && specialites.length === 0">
+            <mat-icon>hourglass_empty</mat-icon>
+            Chargement des spécialités...
+          </div>
+
           <div class="form-row">
-            <mat-form-field appearance="outline">
-              <mat-label>Type de stage *</mat-label>
-              <mat-select formControlName="typeStage">
-                <mat-option *ngFor="let t of typeStages" [value]="t">{{ t }}</mat-option>
-              </mat-select>
-            </mat-form-field>
+            <div class="native-field">
+              <label>Type de stage *</label>
+              <select formControlName="typeStage" class="native-select">
+                <option *ngFor="let t of typeStages" [value]="t">{{ t }}</option>
+              </select>
+            </div>
             <mat-form-field appearance="outline">
               <mat-label>Sujet souhaité *</mat-label>
               <input matInput formControlName="sujetSouhaite"
-                     placeholder="Ex: Développement application web">
+                     placeholder="Ex: Développement API REST">
             </mat-form-field>
           </div>
+
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Message / Motivation</mat-label>
             <textarea matInput formControlName="message" rows="3"
-                      placeholder="Décrivez votre motivation et vos compétences..."></textarea>
+                      placeholder="Décrivez votre motivation..."></textarea>
           </mat-form-field>
 
           <!-- CV Upload -->
@@ -145,7 +185,6 @@
     </mat-stepper>
   </div>
 
-  <!-- Footer -->
   <div class="portail-footer">
     <p>OCP Group — Direction Capital Humain — Benguerir</p>
   </div>

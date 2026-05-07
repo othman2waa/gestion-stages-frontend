@@ -27,9 +27,28 @@
   padding-top: 20px;
   h3 { display: flex; align-items: center; gap: 8px; font-size: 16px; color: #1E293B;
     font-weight: 700; margin-bottom: 16px; mat-icon { color: #00843D; } }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
   .full-width { width: 100%; }
   mat-form-field { width: 100%; }
+}
+
+// Native select fields
+.native-field {
+  display: flex; flex-direction: column; gap: 6px;
+  label { font-size: 13px; font-weight: 600; color: #475569;
+    display: flex; align-items: center; gap: 4px; }
+  .native-select {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid #CBD5E1; border-radius: 10px;
+    font-size: 14px; color: #1E293B; background: white;
+    outline: none; cursor: pointer; transition: border-color 0.15s;
+    appearance: auto;
+    &:focus { border-color: #00843D; box-shadow: 0 0 0 2px rgba(0,132,61,0.1); }
+    &.error { border-color: #DC2626; }
+    &:hover { border-color: #94A3B8; }
+  }
+  .field-error { font-size: 11px; color: #DC2626; }
+  .field-hint  { font-size: 11px; color: #94A3B8; }
 }
 
 .cv-upload {
@@ -46,7 +65,8 @@
 
 .step-actions {
   display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;
-  .btn-next, .btn-submit { background: #00843D !important; color: white !important; border-radius: 10px !important; }
+  .btn-next, .btn-submit { background: #00843D !important; color: white !important;
+    border-radius: 10px !important; }
 }
 
 .success-card {

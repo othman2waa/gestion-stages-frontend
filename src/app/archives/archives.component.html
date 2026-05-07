@@ -1,0 +1,194 @@
+<div class="archives-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>archive</mat-icon> Archives des Stages</h2>
+      <p>{{ totalArchives }} stage(s) archivé(s) au total</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="exportExcel()" [disabled]="filtered.length === 0">
+        <mat-icon>table_chart</mat-icon> Export CSV
+      </button>
+      <button mat-raised-button class="btn-archive"
+              (click)="archiverTous()" [disabled]="isArchiving">
+        <mat-icon>archive</mat-icon>
+        {{ isArchiving ? 'Archivage...' : 'Archiver stages terminés' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats KPIs -->
+  <div class="stats-row" *ngIf="stats">
+    <div class="stat-card green">
+      <mat-icon>archive</mat-icon>
+      <div><span class="sv">{{ stats.total }}</span><span class="sl">Total archivés</span></div>
+    </div>
+    <div class="stat-card blue">
+      <mat-icon>calendar_today</mat-icon>
+      <div>
+        <span class="sv">{{ stats.annees?.length ?? 0 }}</span>
+        <span class="sl">Années</span>
+      </div>
+    </div>
+    <div class="stat-card purple">
+      <mat-icon>business</mat-icon>
+      <div>
+        <span class="sv">{{ stats.departements?.length ?? 0 }}</span>
+        <span class="sl">Départements</span>
+      </div>
+    </div>
+    <div class="stat-card orange">
+      <mat-icon>star</mat-icon>
+      <div>
+        <span class="sv">{{ stats.moyenneNote ? (stats.moyenneNote | number:'1.1-1') : '—' }}</span>
+        <span class="sl">Moyenne générale</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats visuelles par département -->
+  <div class="charts-row" *ngIf="stats?.parDepartement">
+    <div class="chart-card">
+      <h4><mat-icon>business</mat-icon> Par Département</h4>
+      <div class="bar-chart">
+        <div *ngFor="let item of stats.parDepartement | keyvalue" class="bar-item">
+          <span class="bar-label">{{ item.key }}</span>
+          <div class="bar-track">
+            <div class="bar-fill green"
+                [style.width]="($any(item.value) / stats.total * 100) + '%'">
+                
+            </div>
+          </div>
+          <span class="bar-val">{{ item.value }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h4><mat-icon>work</mat-icon> Par Type de Stage</h4>
+      <div class="type-pills">
+        <div *ngFor="let item of stats.parTypeStage | keyvalue" class="type-pill"
+            [style.background]="getTypeColor($any(item.key)) + '18'"
+            [style.border]="'1px solid ' + getTypeColor($any(item.key)) + '40'"
+            [style.color]="getTypeColor($any(item.key))">
+          <span class="type-count">{{ item.value }}</span>
+          <span class="type-name">{{ item.key }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h4><mat-icon>timeline</mat-icon> Par Année</h4>
+      <div class="bar-chart">
+        <div *ngFor="let item of stats.parAnnee | keyvalue" class="bar-item">
+          <span class="bar-label">{{ item.key }}</span>
+          <div class="bar-track">
+            <div class="bar-fill blue"
+                 [style.width]="($any(item.value) / stats.total * 100) + '%'">
+            </div>
+          </div>
+          <span class="bar-val">{{ item.value }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filtres-bar">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
+             placeholder="Rechercher stagiaire, sujet, encadrant...">
+    </div>
+    <select class="filter-select" [(ngModel)]="filterAnnee" (change)="onFilterChange()">
+      <option [ngValue]="null">Toutes les années</option>
+      <option *ngFor="let a of anneesDisponibles" [ngValue]="a">{{ a }}</option>
+    </select>
+    <select class="filter-select" [(ngModel)]="filterDept" (change)="onFilterChange()">
+      <option value="">Tous les départements</option>
+      <option *ngFor="let d of departementsDisponibles" [value]="d">{{ d }}</option>
+    </select>
+    <select class="filter-select" [(ngModel)]="filterType" (change)="applyFilter()">
+      <option value="">Tous les types</option>
+      <option *ngFor="let t of typesDisponibles" [value]="t">{{ t }}</option>
+    </select>
+    <span class="results-count">{{ filtered.length }} résultat(s)</span>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- Table archives -->
+  <div class="archives-table" *ngIf="!isLoading">
+    <div class="table-header">
+      <span>Stagiaire</span>
+      <span>Formation</span>
+      <span>Stage</span>
+      <span>Période</span>
+      <span>Encadrant</span>
+      <span>Résultat</span>
+      <span>Année</span>
+    </div>
+
+    <div *ngFor="let a of filtered" class="table-row">
+      <!-- Stagiaire -->
+      <div class="cell-stagiaire">
+        <div class="stag-avatar">{{ a.stagiaireNom?.charAt(0) }}{{ a.stagiaireNom?.split(' ')[1]?.charAt(0) }}</div>
+        <div>
+          <span class="stag-nom">{{ a.stagiaireNom }}</span>
+          <span class="stag-email">{{ a.stagiaireEmail }}</span>
+        </div>
+      </div>
+      <!-- Formation -->
+      <div class="cell-formation">
+        <span class="f-filiere">{{ a.stagiaireFiliere }}</span>
+        <span class="f-niveau">{{ a.stagiaireNiveau }}</span>
+        <span class="f-etab">{{ a.stagiaireEtablissement }}</span>
+      </div>
+      <!-- Stage -->
+      <div class="cell-stage">
+        <span class="s-dept">
+          <mat-icon>business</mat-icon>{{ a.departementNom }}
+        </span>
+        <span class="s-sujet" [matTooltip]="a.sujet">
+          {{ a.sujet?.length > 35 ? (a.sujet | slice:0:35) + '...' : a.sujet }}
+        </span>
+        <span class="s-type" [style.background]="getTypeColor(a.typeStage) + '18'"
+              [style.color]="getTypeColor(a.typeStage)">
+          {{ a.typeStage }}
+        </span>
+      </div>
+      <!-- Période -->
+      <div class="cell-periode">
+        <span>{{ a.dateDebut | date:'dd/MM/yyyy' }}</span>
+        <span class="periode-arrow">→</span>
+        <span>{{ a.dateFin | date:'dd/MM/yyyy' }}</span>
+        <span class="duree">{{ getDurationDays(a.dateDebut, a.dateFin) }} jours</span>
+      </div>
+      <!-- Encadrant -->
+      <div class="cell-encadrant">
+        <mat-icon>supervisor_account</mat-icon>
+        {{ a.encadrantNom }}
+      </div>
+      <!-- Résultat -->
+      <div class="cell-resultat">
+        <span class="note" *ngIf="a.noteFinale">{{ a.noteFinale | number:'1.1-1' }}/20</span>
+        <span class="note-na" *ngIf="!a.noteFinale">—</span>
+        <span class="mention-badge"
+              [style.background]="getMentionStyle(a.mention).bg"
+              [style.color]="getMentionStyle(a.mention).color">
+          {{ a.mention }}
+        </span>
+      </div>
+      <!-- Année -->
+      <div class="cell-annee">
+        <span class="annee-badge">{{ a.anneeStage }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="filtered.length === 0" class="empty-state">
+      <mat-icon>archive</mat-icon>
+      <h3>Aucune archive trouvée</h3>
+      <p *ngIf="totalArchives === 0">Cliquez sur "Archiver stages terminés" pour commencer</p>
+      <p *ngIf="totalArchives > 0">Modifiez vos filtres</p>
+    </div>
+  </div>
+</div>
