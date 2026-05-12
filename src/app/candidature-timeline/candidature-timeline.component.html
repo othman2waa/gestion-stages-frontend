@@ -1,0 +1,121 @@
+<div class="timeline-container">
+
+  <!-- Pas de candidature -->
+  <div class="no-candidature" *ngIf="!profil?.candidatureId">
+    <mat-icon>assignment</mat-icon>
+    <h3>Aucune candidature trouvée</h3>
+    <p>Vous n'avez pas encore soumis de candidature.</p>
+    <a href="/postuler" mat-raised-button class="btn-postuler">
+      <mat-icon>send</mat-icon> Postuler maintenant
+    </a>
+  </div>
+
+  <!-- Timeline candidature -->
+  <div *ngIf="profil?.candidatureId">
+
+    <!-- Header statut -->
+    <div class="statut-header" [style.border-color]="getStatutColor()">
+      <div class="statut-left">
+        <div class="statut-icon" [style.background]="getStatutColor() + '20'"
+             [style.color]="getStatutColor()">
+          <mat-icon>{{ getCurrentStep()?.icon ?? 'help' }}</mat-icon>
+        </div>
+        <div>
+          <h3>{{ getStatutLabel() }}</h3>
+          <p *ngIf="profil?.candidatureDepartement">
+            <mat-icon>business</mat-icon>{{ profil.candidatureDepartement }}
+            <span *ngIf="profil?.candidatureSpecialite"> — {{ profil.candidatureSpecialite }}</span>
+          </p>
+        </div>
+      </div>
+      <div class="progress-section" *ngIf="!isRefused">
+        <span class="progress-label">{{ progressPercent }}% complété</span>
+        <mat-progress-bar mode="determinate" [value]="progressPercent"
+                          class="timeline-progress"></mat-progress-bar>
+      </div>
+    </div>
+
+    <!-- Meeting info -->
+    <div class="meeting-card" *ngIf="profil?.candidatureDateMeeting">
+      <mat-icon>event</mat-icon>
+      <div>
+        <strong>Entretien planifié</strong>
+        <span>{{ profil.candidatureDateMeeting | date:'dd/MM/yyyy à HH:mm' }}</span>
+      </div>
+    </div>
+
+    <!-- Refus -->
+    <div class="refus-card" *ngIf="isRefused">
+      <mat-icon>cancel</mat-icon>
+      <div>
+        <strong>Candidature non retenue</strong>
+        <span>Votre candidature n'a pas été retenue cette fois. Vous pouvez retenter.</span>
+      </div>
+    </div>
+
+    <!-- Steps timeline -->
+    <div class="timeline" *ngIf="!isRefused">
+      <div *ngFor="let step of steps; let i = index; let last = last"
+           class="timeline-item" [class]="'state-' + getStepState(step)">
+
+        <!-- Ligne connectrice -->
+        <div class="step-connector" *ngIf="!last">
+          <div class="connector-line"
+               [class.completed]="isCompleted(steps[i+1]) || isCurrent(steps[i+1])">
+          </div>
+        </div>
+
+        <!-- Icône étape -->
+        <div class="step-icon" [style.background]="getStepState(step) === 'pending' ? '#F1F5F9' : step.color + '20'"
+             [style.color]="getStepState(step) === 'pending' ? '#94A3B8' : step.color"
+             [style.border]="'2px solid ' + (getStepState(step) === 'pending' ? '#E2E8F0' : step.color)">
+          <mat-icon *ngIf="getStepState(step) === 'completed'">check</mat-icon>
+          <mat-icon *ngIf="getStepState(step) !== 'completed'">{{ step.icon }}</mat-icon>
+        </div>
+
+        <!-- Contenu étape -->
+        <div class="step-content">
+          <div class="step-label" [style.color]="getStepState(step) === 'pending' ? '#94A3B8' : '#1E293B'">
+            {{ step.label }}
+            <span class="step-badge current" *ngIf="getStepState(step) === 'current'">
+              En cours
+            </span>
+            <span class="step-badge done" *ngIf="getStepState(step) === 'completed'">
+              ✓ Fait
+            </span>
+          </div>
+          <div class="step-desc" *ngIf="getStepState(step) === 'current'">
+            {{ step.description }}
+          </div>
+
+          <!-- Action documents -->
+          <div class="step-action" *ngIf="step.statut === 'ACCEPTEE_ENCADRANT' && isCurrent(step)">
+            <div class="docs-progress">
+              <mat-icon>upload_file</mat-icon>
+              <span>{{ profil?.nbDocuments ?? 0 }}/4 documents uploadés</span>
+              <mat-progress-bar mode="determinate"
+                [value]="(profil?.nbDocuments ?? 0) / 4 * 100"
+                style="width:120px">
+              </mat-progress-bar>
+            </div>
+          </div>
+
+          <!-- Convocation -->
+          <div class="step-action" *ngIf="step.statut === 'ACCEPTEE_RH' && isCurrent(step) && profil?.convocationEnvoyee">
+            <div class="convocation-badge">
+              <mat-icon>mark_email_read</mat-icon>
+              Convocation envoyée le {{ profil?.dateConvocation | date:'dd/MM/yyyy' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info soumission -->
+    <div class="submit-info">
+      <mat-icon>info</mat-icon>
+      <span>Candidature soumise le {{ profil?.candidatureCreatedAt | date:'dd/MM/yyyy à HH:mm' }}</span>
+    </div>
+
+  </div>
+</div>

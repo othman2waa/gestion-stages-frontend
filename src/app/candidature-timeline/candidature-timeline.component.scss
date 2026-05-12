@@ -1,0 +1,80 @@
+.timeline-container { padding: 16px; max-width: 700px; margin: 0 auto; }
+
+.no-candidature { text-align: center; padding: 50px 20px;
+  mat-icon { font-size: 56px; color: #CBD5E1; display: block; margin-bottom: 12px; }
+  h3 { margin: 0 0 8px; color: #475569; }
+  p  { color: #94A3B8; margin-bottom: 20px; }
+  .btn-postuler { background: #00843D !important; color: white !important; border-radius: 10px !important; }
+}
+
+.statut-header { display: flex; justify-content: space-between; align-items: center;
+  background: white; border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;
+  border-left: 4px solid; box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  .statut-left { display: flex; align-items: center; gap: 14px;
+    .statut-icon { width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      mat-icon { font-size: 24px; } }
+    h3 { margin: 0 0 4px; font-size: 15px; font-weight: 700; color: #1E293B; }
+    p  { margin: 0; font-size: 12px; color: #64748B; display: flex; align-items: center; gap: 4px;
+      mat-icon { font-size: 14px; } }
+  }
+  .progress-section { text-align: right; min-width: 180px;
+    .progress-label { font-size: 12px; color: #64748B; display: block; margin-bottom: 6px; }
+    .timeline-progress { border-radius: 4px; }
+  }
+}
+
+.meeting-card { display: flex; align-items: center; gap: 12px; background: #EFF6FF;
+  border: 1px solid #BFDBFE; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+  mat-icon { color: #1E40AF; font-size: 22px; }
+  strong { display: block; font-size: 13px; color: #1E40AF; }
+  span { font-size: 12px; color: #3B82F6; }
+}
+
+.refus-card { display: flex; align-items: center; gap: 12px; background: #FEF2F2;
+  border: 1px solid #FECACA; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+  mat-icon { color: #DC2626; font-size: 22px; }
+  strong { display: block; font-size: 13px; color: #DC2626; }
+  span { font-size: 12px; color: #EF4444; }
+}
+
+.timeline { position: relative; padding: 8px 0; }
+
+.timeline-item { display: flex; align-items: flex-start; gap: 14px; position: relative;
+  margin-bottom: 4px;
+  &.state-completed { opacity: 1; }
+  &.state-current { }
+  &.state-pending { opacity: 0.5; }
+}
+
+.step-connector { position: absolute; left: 23px; top: 50px; width: 2px;
+  height: calc(100% - 10px); z-index: 0;
+  .connector-line { width: 100%; height: 100%; background: #E2E8F0; border-radius: 2px;
+    &.completed { background: #00843D; }
+  }
+}
+
+.step-icon { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; z-index: 1;
+  mat-icon { font-size: 20px; }
+}
+
+.step-content { flex: 1; padding: 10px 0 20px;
+  .step-label { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .step-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    &.current { background: #EFF6FF; color: #1E40AF; }
+    &.done    { background: #F0FDF4; color: #00843D; }
+  }
+  .step-desc { font-size: 12px; color: #64748B; margin-top: 4px; line-height: 1.5; }
+}
+
+.step-action { margin-top: 8px;
+  .docs-progress { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #7C3AED;
+    mat-icon { font-size: 16px; } }
+  .convocation-badge { display: flex; align-items: center; gap: 6px; background: #F0FDF4;
+    border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #00843D; font-weight: 600;
+    mat-icon { font-size: 16px; } }
+}
+
+.submit-info { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94A3B8;
+  margin-top: 12px; mat-icon { font-size: 14px; } }

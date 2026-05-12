@@ -16,6 +16,9 @@ import { RapportService } from '../core/services/rapport.service';
 import { OnboardingChecklistService } from '../core/services/onboarding-checklist.service';
 import { HttpClient } from '@angular/common/http';
 import { DocumentsUploadComponent } from '../documents-upload/documents-upload.component';
+import { CandidatureTimelineComponent } from '../candidature-timeline/candidature-timeline.component';
+
+
 
 @Component({
   selector: 'app-stagiaire-dashboard',
@@ -23,7 +26,7 @@ import { DocumentsUploadComponent } from '../documents-upload/documents-upload.c
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatChipsModule, MatTooltipModule,
-    MatSnackBarModule, MatTabsModule,DocumentsUploadComponent,
+    MatSnackBarModule, MatTabsModule,DocumentsUploadComponent,CandidatureTimelineComponent,
 
   ],
   templateUrl: './stagiaire-dashboard.component.html',
@@ -31,6 +34,7 @@ import { DocumentsUploadComponent } from '../documents-upload/documents-upload.c
 })
 export class StagiaireDashboardComponent implements OnInit {
   dashboard: any = null;
+  profil: any=null;
   suivis: any[] = [];
   evaluations: any[] = [];
   rapport: any = null;
@@ -40,6 +44,7 @@ export class StagiaireDashboardComponent implements OnInit {
   moyenneNote = 0;
 checklist: any[] = [];
 attestation: any = null;
+
 
 get checklistCompleted(): number { return this.checklist.filter(c => c.completed).length; }
 get checklistProgression(): number {
@@ -108,6 +113,10 @@ readonly checklistCategories = [
       },
       error: () => { this.isLoading = false; }
     });
+    this.http.get<any>('http://localhost:8080/api/stagiaires/mon-profil').subscribe({
+    next: (p) => { this.profil = p; },
+    error: () => {}
+  });
   }
 
   loadSuivis(stageId: number): void {
