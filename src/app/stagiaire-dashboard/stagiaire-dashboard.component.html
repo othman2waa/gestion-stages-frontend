@@ -85,6 +85,15 @@
     <app-candidature-timeline [profil]="profil"></app-candidature-timeline>
   </div>
 </mat-tab>
+
+<mat-tab>
+  <ng-template mat-tab-label>
+    <mat-icon>assignment_ind</mat-icon>&nbsp; Fiche OCP
+  </ng-template>
+  <div class="tab-content">
+    <app-fiche-renseignement [profil]="profil" [stage]="dashboard"></app-fiche-renseignement>
+  </div>
+</mat-tab>
       <!-- Tab Bienvenue -->
 <mat-tab>
   <ng-template mat-tab-label>

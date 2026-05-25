@@ -1,0 +1,257 @@
+<div class="fiche-container">
+
+  <!-- Header -->
+  <div class="fiche-header">
+    <div class="fiche-header-left">
+      <div class="ocp-badge">OCP</div>
+      <div>
+        <h3>Fiche de renseignements stagiaire</h3>
+        <p>Complétez votre fiche administrative OCP — environ 7 minutes</p>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <span class="prog-label">{{ progressPercent }}% complété</span>
+      <mat-progress-bar mode="determinate" [value]="progressPercent"></mat-progress-bar>
+    </div>
+  </div>
+
+  <!-- Succès -->
+  <div class="success-banner" *ngIf="isCompleted">
+    <mat-icon>check_circle</mat-icon>
+    <div>
+      <strong>Fiche complétée ✅</strong>
+      <span>Vos informations ont été enregistrées. Vous pouvez maintenant remplir le formulaire officiel OCP.</span>
+    </div>
+    <button mat-raised-button class="btn-ocp" (click)="ouvrirFormulaireOCP()">
+      <mat-icon>open_in_new</mat-icon> Formulaire officiel OCP
+    </button>
+  </div>
+
+  <!-- QR Code section -->
+  <div class="qr-section">
+    <div class="qr-info">
+      <mat-icon>qr_code_2</mat-icon>
+      <div>
+        <strong>Formulaire officiel OCP</strong>
+        <span>Scannez le QR code ou cliquez le bouton pour accéder au formulaire Microsoft 365 d'OCP</span>
+      </div>
+    </div>
+    <div class="qr-actions">
+      <div class="qr-code">
+        <!-- QR code généré via Google Charts API -->
+        <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=' + FORM_URL"
+             alt="QR Code formulaire OCP" width="100" height="100">
+      </div>
+      <button mat-stroked-button class="btn-form-ocp" (click)="ouvrirFormulaireOCP()">
+        <mat-icon>launch</mat-icon> Ouvrir le formulaire
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <form [formGroup]="form" class="fiche-form">
+
+    <!-- SECTION 1 : Identité (pré-remplie) -->
+    <div class="section-title">
+      <mat-icon>person</mat-icon>
+      <span>Informations personnelles</span>
+      <span class="auto-badge">Pré-rempli automatiquement</span>
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>1. Nom *</mat-label>
+        <input matInput formControlName="nom">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>2. Prénom *</mat-label>
+        <input matInput formControlName="prenom">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>3. Numéro CIN *</mat-label>
+        <input matInput formControlName="cin" placeholder="Ex: AB123456">
+        <mat-icon matPrefix>badge</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>4. Téléphone *</mat-label>
+        <input matInput formControlName="telephone">
+        <mat-icon matPrefix>phone</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>5. Adresse e-mail</mat-label>
+        <input matInput formControlName="email" type="email">
+        <mat-icon matPrefix>email</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>6. Adresse personnelle *</mat-label>
+        <input matInput formControlName="adressePersonnelle">
+        <mat-icon matPrefix>home</mat-icon>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>8. Ville d'établissement *</mat-label>
+        <input matInput formControlName="villeEtablissement" placeholder="Ex: Marrakech">
+        <mat-icon matPrefix>location_city</mat-icon>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- SECTION 2 : Formation -->
+    <div class="section-title">
+      <mat-icon>school</mat-icon>
+      <span>Formation académique</span>
+      <span class="auto-badge">Pré-rempli automatiquement</span>
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>7. Sigle établissement *</mat-label>
+        <input matInput [value]="profil?.etablissement ?? ''" readonly>
+        <mat-icon matPrefix>account_balance</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>9. Filière *</mat-label>
+        <input matInput formControlName="filiere">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>10. Niveau *</mat-label>
+        <mat-select formControlName="niveau">
+          <mat-option *ngFor="let n of niveaux" [value]="n">{{ n }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>11. Diplôme *</mat-label>
+        <mat-select formControlName="diplome">
+          <mat-option *ngFor="let d of diplomes" [value]="d">{{ d }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- SECTION 3 : Stage -->
+    <div class="section-title">
+      <mat-icon>work</mat-icon>
+      <span>Informations de stage</span>
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>12. Adresse de logement pendant le stage *</mat-label>
+        <input matInput formControlName="adresseLogementStage">
+        <mat-icon matPrefix>apartment</mat-icon>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>15. Service d'accueil (ex: OIG/B/E)</mat-label>
+        <input matInput formControlName="serviceAccueil" placeholder="Ex: OIG/B/E">
+        <mat-icon matPrefix>business</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>16. Début de stage</mat-label>
+        <input matInput formControlName="dateDebut" [readonly]="true">
+        <mat-icon matPrefix>calendar_today</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>17. Fin de stage</mat-label>
+        <input matInput formControlName="dateFin" [readonly]="true">
+        <mat-icon matPrefix>event</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- SECTION 4 : Urgence -->
+    <div class="section-title">
+      <mat-icon>emergency</mat-icon>
+      <span>Contact d'urgence</span>
+    </div>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>13. Personne à contacter *</mat-label>
+        <input matInput formControlName="contactUrgenceNom"
+               placeholder="Nom Prénom (Père/Mère/Frère...)">
+        <mat-icon matPrefix>contacts</mat-icon>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>14. Téléphone d'urgence *</mat-label>
+        <input matInput formControlName="contactUrgenceTel">
+        <mat-icon matPrefix>phone_in_talk</mat-icon>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- SECTION 5 : Règles de conduite -->
+    <div class="section-title red">
+      <mat-icon>gavel</mat-icon>
+      <span>Règles de conduite et de présentation</span>
+    </div>
+
+    <div class="regles-card">
+      <div class="regle-item">
+        <mat-icon>checkroom</mat-icon>
+        <div>
+          <strong>1. Tenue vestimentaire professionnelle</strong>
+          <p>Tenue soignée, propre. Interdits : jeans déchirés, pantacourts, survêtements, tenues de sport.</p>
+        </div>
+      </div>
+      <div class="regle-item">
+        <mat-icon>no_photography</mat-icon>
+        <div>
+          <strong>2. Utilisation du nom et logo OCP</strong>
+          <p>Strictement interdit d'utiliser le nom, logo ou image de marque d'OCP sur les réseaux sociaux.</p>
+        </div>
+      </div>
+      <div class="regle-item">
+        <mat-icon>camera_alt</mat-icon>
+        <div>
+          <strong>3. Photos et vidéos</strong>
+          <p>Aucune photo ou vidéo sans autorisation préalable. Interdiction de diffuser des images de l'entreprise.</p>
+        </div>
+      </div>
+      <div class="regle-item">
+        <mat-icon>rule</mat-icon>
+        <div>
+          <strong>4. Autres règles</strong>
+          <p>Respect des horaires, ponctualité exigée. Confidentialité des informations internes. Utilisation responsable des outils informatiques.</p>
+        </div>
+      </div>
+      <div class="sanction-warning">
+        <mat-icon>warning</mat-icon>
+        <span>Tout comportement non conforme pourra entraîner l'interruption immédiate du stage sans possibilité de prolongation.</span>
+      </div>
+      <mat-checkbox formControlName="reglesAcceptees" class="accept-checkbox">
+        <strong>J'accepte les règles de conduite OCP *</strong>
+      </mat-checkbox>
+      <mat-error *ngIf="form.get('reglesAcceptees')?.invalid && form.get('reglesAcceptees')?.touched"
+                 style="font-size:12px;color:#DC2626;margin-top:4px">
+        Vous devez accepter les règles pour continuer
+      </mat-error>
+    </div>
+
+    <!-- SECTION 6 : Observation -->
+    <mat-form-field appearance="outline" class="full-width" style="margin-top:16px">
+      <mat-label>19. Observation (optionnel)</mat-label>
+      <textarea matInput formControlName="observation" rows="3"></textarea>
+    </mat-form-field>
+
+    <!-- Actions -->
+    <div class="fiche-actions">
+      <div class="action-info">
+        <mat-icon>info</mat-icon>
+        <span>Après avoir sauvegardé, utilisez le bouton ci-dessous pour remplir le formulaire officiel OCP avec vos données.</span>
+      </div>
+      <div class="action-btns">
+        <button mat-raised-button class="btn-save"
+                (click)="sauvegarder()" [disabled]="isSubmitting">
+          <mat-icon>save</mat-icon>
+          {{ isSubmitting ? 'Enregistrement...' : 'Sauvegarder ma fiche' }}
+        </button>
+        <button mat-raised-button class="btn-ocp"
+                (click)="ouvrirFormulaireOCP()" [disabled]="!isCompleted"
+                [matTooltip]="!isCompleted ? 'Sauvegardez d\'abord votre fiche' : 'Ouvrir le formulaire officiel OCP'">
+          <mat-icon>launch</mat-icon> Formulaire officiel OCP
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>

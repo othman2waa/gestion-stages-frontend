@@ -1,0 +1,89 @@
+.fiche-container { padding: 16px; max-width: 850px; margin: 0 auto; }
+
+.fiche-header { display: flex; justify-content: space-between; align-items: center;
+  background: white; border-radius: 14px; padding: 18px 20px; margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  .fiche-header-left { display: flex; align-items: center; gap: 14px;
+    .ocp-badge { width: 46px; height: 46px; border-radius: 10px; background: #00843D;
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 900; flex-shrink: 0; }
+    h3 { margin: 0 0 3px; font-size: 15px; font-weight: 700; color: #1E293B; }
+    p  { margin: 0; font-size: 12px; color: #64748B; }
+  }
+  .progress-wrap { min-width: 180px; text-align: right;
+    .prog-label { font-size: 12px; color: #64748B; display: block; margin-bottom: 6px; }
+  }
+}
+
+.success-banner { display: flex; align-items: center; gap: 12px; background: #F0FDF4;
+  border: 1px solid #BBF7D0; border-radius: 12px; padding: 14px 18px; margin-bottom: 14px;
+  mat-icon { color: #00843D; font-size: 24px; flex-shrink: 0; }
+  strong { display: block; color: #166534; font-size: 14px; }
+  span { font-size: 12px; color: #166534; }
+  .btn-ocp { margin-left: auto; background: #00843D !important; color: white !important;
+    border-radius: 10px !important; flex-shrink: 0; }
+}
+
+.qr-section { display: flex; align-items: center; justify-content: space-between;
+  background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 16px;
+  .qr-info { display: flex; align-items: center; gap: 12px;
+    mat-icon { font-size: 28px; color: #1E40AF; }
+    strong { display: block; font-size: 13px; color: #1E40AF; font-weight: 700; }
+    span { font-size: 12px; color: #3B82F6; }
+  }
+  .qr-actions { display: flex; align-items: center; gap: 14px;
+    .qr-code img { border-radius: 8px; border: 2px solid #BFDBFE; display: block; }
+    .btn-form-ocp { border-color: #1E40AF !important; color: #1E40AF !important;
+      border-radius: 10px !important; }
+  }
+}
+
+.fiche-form { background: white; border-radius: 14px; padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.section-title { display: flex; align-items: center; gap: 8px; margin: 20px 0 12px;
+  font-size: 13px; font-weight: 700; color: #1E293B; padding-bottom: 8px;
+  border-bottom: 2px solid #E2E8F0;
+  mat-icon { color: #00843D; font-size: 18px; }
+  &.red { border-color: #FECACA; mat-icon { color: #DC2626; } }
+  .auto-badge { margin-left: auto; background: #F0FDF4; color: #00843D;
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+    border: 1px solid #BBF7D0; }
+}
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  mat-form-field { width: 100%; }
+  .full-width { grid-column: 1 / -1; }
+}
+
+.full-width { width: 100%; }
+
+.regles-card { background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 12px;
+  padding: 16px; margin-bottom: 8px;
+  .regle-item { display: flex; gap: 12px; margin-bottom: 12px; padding-bottom: 12px;
+    border-bottom: 1px solid #FEE0C0;
+    &:last-of-type { border-bottom: none; }
+    mat-icon { color: #F47920; flex-shrink: 0; font-size: 20px; margin-top: 2px; }
+    strong { display: block; font-size: 12px; color: #92400E; margin-bottom: 2px; }
+    p { margin: 0; font-size: 11px; color: #78350F; line-height: 1.4; }
+  }
+  .sanction-warning { display: flex; align-items: flex-start; gap: 8px; background: #FEF2F2;
+    border-radius: 8px; padding: 10px 12px; margin: 12px 0;
+    mat-icon { color: #DC2626; font-size: 18px; flex-shrink: 0; }
+    span { font-size: 11px; color: #DC2626; font-weight: 600; }
+  }
+  .accept-checkbox { font-size: 13px; }
+}
+
+.fiche-actions { margin-top: 20px;
+  .action-info { display: flex; align-items: flex-start; gap: 8px; background: #EFF6FF;
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: #1E40AF;
+    mat-icon { font-size: 16px; flex-shrink: 0; }
+  }
+  .action-btns { display: flex; gap: 12px; justify-content: flex-end;
+    .btn-save { background: #1E40AF !important; color: white !important; border-radius: 10px !important; }
+    .btn-ocp  { background: #00843D !important; color: white !important; border-radius: 10px !important; }
+  }
+}

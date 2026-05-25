@@ -17,6 +17,7 @@ import { OnboardingChecklistService } from '../core/services/onboarding-checklis
 import { HttpClient } from '@angular/common/http';
 import { DocumentsUploadComponent } from '../documents-upload/documents-upload.component';
 import { CandidatureTimelineComponent } from '../candidature-timeline/candidature-timeline.component';
+import { FicheRenseignementComponent } from '../fiche-renseignement/fiche-renseignement.component';
 
 
 
@@ -26,7 +27,8 @@ import { CandidatureTimelineComponent } from '../candidature-timeline/candidatur
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatChipsModule, MatTooltipModule,
-    MatSnackBarModule, MatTabsModule,DocumentsUploadComponent,CandidatureTimelineComponent,
+    MatSnackBarModule, MatTabsModule,DocumentsUploadComponent,CandidatureTimelineComponent,FicheRenseignementComponent,
+
 
   ],
   templateUrl: './stagiaire-dashboard.component.html',
