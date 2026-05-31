@@ -63,14 +63,16 @@ export class AttestationsAdminComponent implements OnInit {
   }
 
   approuver(att: any): void {
+    att._processing = true;
     this.http.patch(`${this.api}/${att.id}/approuver`, {}).subscribe({
       next: (data: any) => {
+        att._processing = false;
         att.statut = 'APPROUVEE';
         att.numeroAttestation = data.numeroAttestation;
         att.traitePar = data.traitePar;
         this.snackBar.open('✅ Attestation approuvée', 'Fermer', { duration: 3000 });
       },
-      error: () => this.snackBar.open('Erreur lors de l\'approbation', 'Fermer', { duration: 3000 })
+      error: () => { att._processing = false; this.snackBar.open('Erreur lors de l\'approbation', 'Fermer', { duration: 3000 }); }
     });
   }
 
@@ -88,13 +90,15 @@ export class AttestationsAdminComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((commentaire: string | null) => {
       if (commentaire === null) return;
+      att._processing = true;
       this.http.patch(`${this.api}/${att.id}/refuser`, { commentaire }).subscribe({
         next: () => {
+          att._processing = false;
           att.statut = 'REFUSEE';
           att.commentaire = commentaire;
           this.snackBar.open('❌ Attestation refusée', 'Fermer', { duration: 3000 });
         },
-        error: () => this.snackBar.open('Erreur lors du refus', 'Fermer', { duration: 3000 })
+        error: () => { att._processing = false; this.snackBar.open('Erreur lors du refus', 'Fermer', { duration: 3000 }); }
       });
     });
   }

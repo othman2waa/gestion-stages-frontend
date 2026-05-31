@@ -81,11 +81,13 @@
         <div class="att-actions">
           <button mat-raised-button class="btn-approuver"
                   *ngIf="a.statut === 'EN_ATTENTE'"
+                  [disabled]="a._processing"
                   (click)="approuver(a)">
             <mat-icon>check</mat-icon> Approuver
           </button>
           <button mat-stroked-button color="warn"
                   *ngIf="a.statut === 'EN_ATTENTE'"
+                  [disabled]="a._processing"
                   (click)="refuser(a)">
             <mat-icon>close</mat-icon> Refuser
           </button>

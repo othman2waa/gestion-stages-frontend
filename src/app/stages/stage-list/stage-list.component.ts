@@ -157,7 +157,8 @@ export class StageListComponent implements OnInit {
 
   updateStatut(id: number, statut: string): void {
     this.stageService.updateStatut(id, statut).subscribe({
-      next: () => { this.snackBar.open('✅ Statut mis à jour', 'Fermer', { duration: 3000 }); this.loadStages(); }
+      next: () => { this.snackBar.open('✅ Statut mis à jour', 'Fermer', { duration: 3000 }); this.loadStages(); },
+      error: () => this.snackBar.open('Erreur mise à jour statut', 'Fermer', { duration: 3000 })
     });
   }
 
