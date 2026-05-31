@@ -69,7 +69,8 @@ export class AttestationsAdminComponent implements OnInit {
         att.numeroAttestation = data.numeroAttestation;
         att.traitePar = data.traitePar;
         this.snackBar.open('✅ Attestation approuvée', 'Fermer', { duration: 3000 });
-      }
+      },
+      error: () => this.snackBar.open('Erreur lors de l\'approbation', 'Fermer', { duration: 3000 })
     });
   }
 
@@ -92,7 +93,8 @@ export class AttestationsAdminComponent implements OnInit {
           att.statut = 'REFUSEE';
           att.commentaire = commentaire;
           this.snackBar.open('❌ Attestation refusée', 'Fermer', { duration: 3000 });
-        }
+        },
+        error: () => this.snackBar.open('Erreur lors du refus', 'Fermer', { duration: 3000 })
       });
     });
   }

@@ -53,8 +53,7 @@ export class OnboardingComponent implements OnInit {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     this.userRole = currentUser.role ?? '';
     this.stagiaireService.getAll().subscribe({
-      next: (data) => this.stagiaires = data,
-      error: () => {}
+      next: (data) => this.stagiaires = data
     });
   }
 
@@ -90,8 +89,7 @@ export class OnboardingComponent implements OnInit {
 
   loadStats(stagiaireId: number): void {
     this.checklistService.getStats(stagiaireId).subscribe({
-      next: (data: any) => this.stats = data,
-      error: () => {}
+      next: (data: any) => this.stats = data
     });
   }
 

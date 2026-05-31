@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -28,13 +29,14 @@ import { EncadrantService } from '../../core/services/encadrant.service';
   styleUrls: ['./evaluation-form.component.scss']
 })
 export class EvaluationFormComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   form: FormGroup;
   isLoading = false;
   isEdit = false;
   stages: any[] = [];
   encadrants: any[] = [];
   selectedStage: any = null;
-typesEval = ['MI_PARCOURS', 'FIN_STAGE'];
+  typesEval = ['MI_PARCOURS', 'FIN_STAGE'];
   constructor(
     private fb: FormBuilder,
     private evaluationService: EvaluationService,
@@ -58,7 +60,7 @@ typesEval = ['MI_PARCOURS', 'FIN_STAGE'];
     this.encadrantService.getAll().subscribe(d => this.encadrants = d);
 
     // Quand on change le stage, on met à jour les infos
-    this.form.get('stageId')?.valueChanges.subscribe(stageId => {
+    this.form.get('stageId')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(stageId => {
       this.selectedStage = this.stages.find(s => s.id === stageId) ?? null;
       // Pré-remplir l'encadrant automatiquement
       if (this.selectedStage?.encadrantId) {

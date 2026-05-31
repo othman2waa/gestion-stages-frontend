@@ -168,7 +168,7 @@ get departementsDisponibles(): string[] {
     this.iaResult = null;
     this.http.get<any[]>(`${environment.apiUrl}/candidatures/${c.id}/documents`).subscribe({
       next: (docs) => this.documents = docs,
-      error: () => {}
+      error: () => this.snackBar.open('Erreur chargement documents', 'Fermer', { duration: 3000 })
     });
     this.dialog.open(this.documentsDialog, { width: '750px' });
   }
@@ -184,7 +184,7 @@ get departementsDisponibles(): string[] {
           this.snackBar.open(`🤖 Score IA : ${result.scoreMoyen}%`, 'Fermer', { duration: 3000 });
           this.loadCandidatures();
         },
-        error: () => { this.isVerifyingIa = false; }
+        error: () => { this.isVerifyingIa = false; this.snackBar.open('Erreur vérification IA', 'Fermer', { duration: 3000 }); }
       });
   }
 
@@ -200,7 +200,8 @@ get departementsDisponibles(): string[] {
         this.snackBar.open(msg, 'Fermer', { duration: 4000 });
         this.dialog.closeAll();
         this.loadCandidatures();
-      }
+      },
+      error: () => this.snackBar.open('Erreur lors de la validation', 'Fermer', { duration: 3000 })
     });
   }
 
@@ -212,7 +213,8 @@ get departementsDisponibles(): string[] {
       next: () => {
         this.snackBar.open('✅ Candidature acceptée', 'Fermer', { duration: 3000 });
         this.dialog.closeAll(); this.loadCandidatures();
-      }
+      },
+      error: () => this.snackBar.open('Erreur lors de l\'acceptation', 'Fermer', { duration: 3000 })
     });
   }
 
@@ -224,7 +226,8 @@ get departementsDisponibles(): string[] {
       next: () => {
         this.snackBar.open('❌ Candidature refusée', 'Fermer', { duration: 3000 });
         this.dialog.closeAll(); this.loadCandidatures();
-      }
+      },
+      error: () => this.snackBar.open('Erreur lors du refus', 'Fermer', { duration: 3000 })
     });
   }
 
