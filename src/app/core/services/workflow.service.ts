@@ -2,19 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { StageHistoriqueResponse, StageResponse, StageStatus } from '../models';
+
+export type StageHistorique = StageHistoriqueResponse;
 
 export interface WorkflowRequest {
   nouveauStatut: string;
   commentaire?: string;
-}
-
-export interface StageHistorique {
-  id: number;
-  statutPrecedent: string;
-  statutNouveau: string;
-  commentaire: string;
-  modifiePar: string;
-  dateModification: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,12 +17,12 @@ export class WorkflowService {
 
   constructor(private http: HttpClient) {}
 
-  transitionner(stageId: number, request: WorkflowRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${stageId}/transition`, request);
+  transitionner(stageId: number, request: WorkflowRequest): Observable<StageResponse> {
+    return this.http.post<StageResponse>(`${this.apiUrl}/${stageId}/transition`, request);
   }
 
-  getHistorique(stageId: number): Observable<StageHistorique[]> {
-    return this.http.get<StageHistorique[]>(`${this.apiUrl}/${stageId}/historique`);
+  getHistorique(stageId: number): Observable<StageHistoriqueResponse[]> {
+    return this.http.get<StageHistoriqueResponse[]>(`${this.apiUrl}/${stageId}/historique`);
   }
 
   getTransitionsPossibles(stageId: number): Observable<string[]> {

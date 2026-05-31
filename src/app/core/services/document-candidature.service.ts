@@ -3,20 +3,28 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface DocumentCandidatureResponse {
+  id: number;
+  type: string;
+  nomFichier: string;
+  statut: string;
+  commentaire: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DocumentCandidatureService {
   private api = `${environment.apiUrl}/candidatures`;
   constructor(private http: HttpClient) {}
 
-  getDocuments(candidatureId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.api}/${candidatureId}/documents`);
+  getDocuments(candidatureId: number): Observable<DocumentCandidatureResponse[]> {
+    return this.http.get<DocumentCandidatureResponse[]>(`${this.api}/${candidatureId}/documents`);
   }
 
-  uploadDocument(candidatureId: number, type: string, fichier: File): Observable<any> {
+  uploadDocument(candidatureId: number, type: string, fichier: File): Observable<DocumentCandidatureResponse> {
     const form = new FormData();
     form.append('type', type);
     form.append('fichier', fichier);
-    return this.http.post(`${this.api}/${candidatureId}/upload-document`, form);
+    return this.http.post<DocumentCandidatureResponse>(`${this.api}/${candidatureId}/upload-document`, form);
   }
 
   verifierIa(candidatureId: number): Observable<any> {

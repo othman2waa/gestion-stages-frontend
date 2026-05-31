@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { StageResponse, StageRequest, PageResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class StageService {
@@ -9,37 +10,39 @@ export class StageService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<any[]> {
-    return this.http.get<any[]>(this.api);
+  getAll(): Observable<StageResponse[]> {
+    return this.http.get<StageResponse[]>(this.api);
   }
 
-  getById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.api}/${id}`);
+  getById(id: number): Observable<StageResponse> {
+    return this.http.get<StageResponse>(`${this.api}/${id}`);
   }
 
-  create(data: any): Observable<any> {
-    return this.http.post<any>(this.api, data);
+  create(data: StageRequest): Observable<StageResponse> {
+    return this.http.post<StageResponse>(this.api, data);
   }
 
-  update(id: number, data: any): Observable<any> {
-    return this.http.put<any>(`${this.api}/${id}`, data);
+  update(id: number, data: StageRequest): Observable<StageResponse> {
+    return this.http.put<StageResponse>(`${this.api}/${id}`, data);
   }
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
 
-  updateStatut(id: number, statut: string): Observable<any> {
-    return this.http.patch<any>(`${this.api}/${id}/statut?statut=${statut}`, {});
+  updateStatut(id: number, statut: string): Observable<StageResponse> {
+    return this.http.patch<StageResponse>(`${this.api}/${id}/statut?statut=${statut}`, {});
   }
-  getMesStages(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.api}/mes-stages`);
-}
-rechercher(params: any): Observable<any> {
-  return this.http.get<any>(`${this.api}/rechercher`, { params });
-}
-getByEncadrant(encadrantId: number): Observable<any[]> {
-  return this.http.get<any[]>(`${this.api}/encadrant/${encadrantId}`);
-}
 
+  getMesStages(): Observable<StageResponse[]> {
+    return this.http.get<StageResponse[]>(`${this.api}/mes-stages`);
+  }
+
+  rechercher(params: any): Observable<PageResponse<StageResponse>> {
+    return this.http.get<PageResponse<StageResponse>>(`${this.api}/rechercher`, { params });
+  }
+
+  getByEncadrant(encadrantId: number): Observable<StageResponse[]> {
+    return this.http.get<StageResponse[]>(`${this.api}/encadrant/${encadrantId}`);
+  }
 }

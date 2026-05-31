@@ -3,11 +3,12 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { CandidatureResponse, StageResponse, EvaluationResponse, StagiaireResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ExportService {
 
-exportCandidaturesPdf(candidatures: any[]): void {
+exportCandidaturesPdf(candidatures: CandidatureResponse[]): void {
   const doc = new jsPDF();
 
   // Header OCP
@@ -52,7 +53,7 @@ exportCandidaturesPdf(candidatures: any[]): void {
   doc.save(`candidatures_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
-exportStagesPdf(stages: any[]): void {
+exportStagesPdf(stages: StageResponse[]): void {
   const doc = new jsPDF('landscape');
 
   doc.setFillColor(30, 64, 175);
@@ -88,7 +89,7 @@ exportStagesPdf(stages: any[]): void {
   doc.save(`stages_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
-exportEvaluationsPdf(evaluations: any[]): void {
+exportEvaluationsPdf(evaluations: EvaluationResponse[]): void {
   const doc = new jsPDF();
 
   doc.setFillColor(124, 58, 237);
@@ -128,7 +129,7 @@ exportEvaluationsPdf(evaluations: any[]): void {
   doc.save(`evaluations_${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
-exportStagiairesPdf(stagiaires: any[]): void {
+exportStagiairesPdf(stagiaires: StagiaireResponse[]): void {
   const doc = new jsPDF();
 
   doc.setFillColor(0, 132, 61);
@@ -198,7 +199,7 @@ exportStagiairesPdf(stagiaires: any[]): void {
     saveAs(blob, `${fileName}_${new Date().toISOString().split('T')[0]}.xlsx`);
   }
 
-  exportCandidatures(candidatures: any[]): void {
+  exportCandidatures(candidatures: CandidatureResponse[]): void {
     const data = candidatures.map(c => ({
       'Prénom': c.prenom,
       'Nom': c.nom,
@@ -220,7 +221,7 @@ exportStagiairesPdf(stagiaires: any[]): void {
     this.exportExcel(data, 'candidatures', 'Candidatures');
   }
 
-  exportStages(stages: any[]): void {
+  exportStages(stages: StageResponse[]): void {
     const data = stages.map(s => ({
       'Sujet': s.sujet,
       'Type': s.typeStage ?? '',
@@ -235,7 +236,7 @@ exportStagiairesPdf(stagiaires: any[]): void {
     this.exportExcel(data, 'stages', 'Stages');
   }
 
-  exportStagiaires(stagiaires: any[]): void {
+  exportStagiaires(stagiaires: StagiaireResponse[]): void {
     const data = stagiaires.map(s => ({
       'Prénom': s.prenom,
       'Nom': s.nom,
@@ -252,7 +253,7 @@ exportStagiairesPdf(stagiaires: any[]): void {
     this.exportExcel(data, 'stagiaires', 'Stagiaires');
   }
 
-  exportEvaluations(evaluations: any[]): void {
+  exportEvaluations(evaluations: EvaluationResponse[]): void {
     const data = evaluations.map(e => ({
       'Stage': e.stageSujet ?? '',
       'Stagiaire': e.stagiaireNom ?? '',

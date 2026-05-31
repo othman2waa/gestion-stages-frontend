@@ -2,20 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { RapportResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class RapportService {
   private api = `${environment.apiUrl}/rapports`;
   constructor(private http: HttpClient) {}
 
-  upload(stageId: number, file: File): Observable<any> {
+  upload(stageId: number, file: File): Observable<RapportResponse> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<any>(`${this.api}/stage/${stageId}`, formData);
+    return this.http.post<RapportResponse>(`${this.api}/stage/${stageId}`, formData);
   }
 
-  getMeta(stageId: number): Observable<any> {
-    return this.http.get<any>(`${this.api}/stage/${stageId}`);
+  getMeta(stageId: number): Observable<RapportResponse> {
+    return this.http.get<RapportResponse>(`${this.api}/stage/${stageId}`);
   }
 
   download(stageId: number): Observable<Blob> {
@@ -26,7 +27,7 @@ export class RapportService {
     return this.http.delete<void>(`${this.api}/stage/${stageId}`);
   }
 
-  getMesRapports(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.api}/mes-rapports`);
+  getMesRapports(): Observable<RapportResponse[]> {
+    return this.http.get<RapportResponse[]>(`${this.api}/mes-rapports`);
   }
 }
