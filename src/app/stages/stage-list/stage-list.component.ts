@@ -19,6 +19,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { StageService } from '../../core/services/stage.service';
 import { StageFormComponent } from '../stage-form/stage-form.component';
 import { ExportService } from '../../core/services/export.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-stage-list',
@@ -73,7 +74,8 @@ export class StageListComponent implements OnInit {
     private stageService: StageService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private exportService: ExportService
+    private exportService: ExportService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -92,6 +94,23 @@ export class StageListComponent implements OnInit {
     this.stageService.rechercher(params).subscribe({
       next: (data) => { this.stages = data.content; this.totalElements = data.totalElements; this.isLoading = false; },
       error: () => this.isLoading = false
+    });
+  }
+
+  genererLettreAccord(stage: any): void {
+    this.http.get(`http://localhost:8080/api/stages/${stage.id}/lettre-accord`, { responseType: "blob" }).subscribe({
+      next: (blob: any) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
+        this.snackBar.open("Lettre d'accord générée avec succès", "Fermer", { duration: 3000 });
+      },
+      error: (err) => {
+        let msg = "Erreur lors de la génération de la lettre";
+        if (err.status === 403) msg = "Accès refusé — rôle ADMIN_RH ou RESPONSABLE_RH requis";
+        else if (err.status === 404) msg = "Stage introuvable";
+        else if (err.status === 500) msg = "Erreur serveur — vérifiez le service PDF backend";
+        this.snackBar.open(msg, "Fermer", { duration: 5000 });
+      }
     });
   }
 

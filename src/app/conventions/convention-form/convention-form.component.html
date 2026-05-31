@@ -1,37 +1,113 @@
-<h2 mat-dialog-title>
-  <mat-icon>{{ isEdit ? 'edit' : 'add' }}</mat-icon>
-  {{ isEdit ? 'Modifier Convention' : 'Nouvelle Convention' }}
-</h2>
-<mat-dialog-content>
-  <form [formGroup]="form" class="form-grid">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Stage</mat-label>
-      <mat-select formControlName="stageId">
-        <mat-option *ngFor="let s of stages" [value]="s.id">{{ s.sujet }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Numéro</mat-label>
-      <input matInput formControlName="numero" placeholder="CONV-2026-001">
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Statut</mat-label>
-      <mat-select formControlName="statut">
-        <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Date d'Émission</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="dateEmission">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Annuler</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || isLoading">
-    <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
-    <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
-  </button>
-</mat-dialog-actions>
+<div class="conv-form-dialog">
+
+  <!-- Header -->
+  <div class="conv-header">
+    <div class="ch-icon"><mat-icon>{{ isEdit ? 'edit_document' : 'note_add' }}</mat-icon></div>
+    <div>
+      <h2>{{ isEdit ? 'Modifier la convention' : 'Nouvelle convention de stage' }}</h2>
+      <p>{{ isEdit ? 'Mettre à jour les informations' : 'Créez une convention liée à un stage' }}</p>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="form">
+
+      <!-- Section 1 : Sélection stage -->
+      <div class="form-section">
+        <div class="section-label"><mat-icon>work</mat-icon> Stage concerné</div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Rechercher un stage (nom, sujet, département...)</mat-label>
+          <input matInput
+                 [formControl]="stageSearchCtrl"
+                 [matAutocomplete]="auto"
+                 placeholder="Tapez le nom du stagiaire...">
+          <mat-icon matPrefix>search</mat-icon>
+          <mat-autocomplete #auto="matAutocomplete"
+                            [displayWith]="displayStage"
+                            (optionSelected)="onStageSelected($event.option.value)">
+            <mat-option *ngFor="let s of filteredStages" [value]="s">
+              <div class="stage-option">
+                <span class="so-sujet">{{ s.sujet }}</span>
+                <span class="so-meta">{{ s.stagiaireNom }} · {{ s.departementNom || 'N/A' }}</span>
+              </div>
+            </mat-option>
+            <mat-option *ngIf="filteredStages.length === 0" disabled>
+              Aucun stage trouvé
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <!-- Aperçu du stage sélectionné -->
+      <div class="stage-preview" *ngIf="selectedStage">
+        <div class="preview-title">
+          <mat-icon>visibility</mat-icon> Aperçu du stage
+        </div>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <mat-icon>person</mat-icon>
+            <div><span class="pl">Stagiaire</span><span class="pv">{{ selectedStage.stagiaireNom }}</span></div>
+          </div>
+          <div class="preview-item">
+            <mat-icon>supervisor_account</mat-icon>
+            <div><span class="pl">Encadrant</span><span class="pv">{{ selectedStage.encadrantNom || '—' }}</span></div>
+          </div>
+          <div class="preview-item">
+            <mat-icon>business</mat-icon>
+            <div><span class="pl">Département</span><span class="pv">{{ selectedStage.departementNom || '—' }}</span></div>
+          </div>
+          <div class="preview-item">
+            <mat-icon>category</mat-icon>
+            <div><span class="pl">Type</span><span class="pv">{{ selectedStage.typeStage }}</span></div>
+          </div>
+          <div class="preview-item">
+            <mat-icon>event_available</mat-icon>
+            <div><span class="pl">Début</span><span class="pv">{{ selectedStage.dateDebut | date:'dd/MM/yyyy' }}</span></div>
+          </div>
+          <div class="preview-item">
+            <mat-icon>event_busy</mat-icon>
+            <div><span class="pl">Fin</span><span class="pv">{{ selectedStage.dateFin | date:'dd/MM/yyyy' }}</span></div>
+          </div>
+        </div>
+        <div class="duree-badge" *ngIf="dureeJours > 0">
+          <mat-icon>schedule</mat-icon> Durée : {{ dureeJours }} jours
+        </div>
+      </div>
+
+      <!-- Section 2 : Détails convention -->
+      <div class="form-section">
+        <div class="section-label"><mat-icon>description</mat-icon> Détails de la convention</div>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Numéro de convention</mat-label>
+            <input matInput formControlName="numero" placeholder="CONV-2026-001">
+            <mat-icon matPrefix>tag</mat-icon>
+            <mat-hint>Auto-généré, modifiable</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Statut initial</mat-label>
+            <mat-select formControlName="statut">
+              <mat-option *ngFor="let s of statuts" [value]="s">{{ s.replace('_', ' ') }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Date d'émission</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dateEmission">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-icon matPrefix>calendar_today</mat-icon>
+        </mat-form-field>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Annuler</button>
+    <button mat-raised-button class="btn-submit" (click)="onSubmit()" [disabled]="form.invalid || isLoading">
+      <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+      <span *ngIf="!isLoading"><mat-icon>{{ isEdit ? 'save' : 'add' }}</mat-icon> {{ isEdit ? 'Modifier' : 'Créer la convention' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

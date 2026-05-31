@@ -130,6 +130,11 @@
         <button mat-icon-button matTooltip="Modifier" (click)="openForm(s)">
           <mat-icon>edit</mat-icon>
         </button>
+        <button mat-icon-button matTooltip="Lettre d'accord PFE"
+                *ngIf="s.typeStage === 'PFE'"
+                (click)="genererLettreAccord(s)">
+          <mat-icon>description</mat-icon>
+        </button>
         <button mat-icon-button [matMenuTriggerFor]="statutMenu" matTooltip="Changer statut">
           <mat-icon>swap_horiz</mat-icon>
         </button>
