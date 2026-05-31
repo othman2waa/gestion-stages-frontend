@@ -50,6 +50,7 @@ export class CandidaturesAdminComponent implements OnInit {
   selectedCandidature: any = null;
   searchTerm = '';
   filterStatut = '';
+  filterDept = '';
   documents: any[] = [];
   iaResult: any = null;
   isVerifyingIa = false;
@@ -84,14 +85,23 @@ export class CandidaturesAdminComponent implements OnInit {
   get aTraiterRH(): any[]        { return this.candidatures.filter(c => ['ACCEPTEE_ENCADRANT','DOCUMENTS_SOUMIS','VERIFICATION_IA'].includes(c.statut)); }
 
   get filtered(): any[] {
-    return this.candidatures.filter(c => {
-      const matchSearch = !this.searchTerm ||
-        (c.nom + ' ' + c.prenom + ' ' + c.email + ' ' + c.filiere).toLowerCase()
-          .includes(this.searchTerm.toLowerCase());
-      const matchStatut = !this.filterStatut || c.statut === this.filterStatut;
-      return matchSearch && matchStatut;
-    });
-  }
+  return this.candidatures.filter(c => {
+    const matchSearch = !this.searchTerm ||
+      `${c.prenom} ${c.nom} ${c.email} ${c.filiere} ${c.etablissement}`
+        .toLowerCase().includes(this.searchTerm.toLowerCase());
+    const matchStatut = !this.filterStatut || c.statut === this.filterStatut;
+    const matchDept   = !this.filterDept   || c.departementNom === this.filterDept;
+    return matchSearch && matchStatut && matchDept;
+  });
+}
+
+get departementsDisponibles(): string[] {
+  return [...new Set(this.candidatures
+    .map(c => c.departementNom)
+    .filter(Boolean))].sort();
+}
+
+
 
   getConf(statut: string) {
     return this.statutConf[statut] ?? { label: statut, color: '#94A3B8', icon: 'circle' };
@@ -127,8 +137,8 @@ export class CandidaturesAdminComponent implements OnInit {
 
   loadCandidatures(): void {
     this.isLoading = true;
-    this.candidatureService.getAll().subscribe({
-      next: (data) => { this.candidatures = data; this.isLoading = false; },
+    this.http.get<any[]>('http://localhost:8080/api/candidatures/rh').subscribe({
+  next: (data) => { this.candidatures = data; this.isLoading = false; },
       error: () => this.isLoading = false
     });
   }
@@ -235,6 +245,10 @@ export class CandidaturesAdminComponent implements OnInit {
     if (score >= 60) return '#F47920';
     return '#DC2626';
   }
+
+  get docssoumis(): any[] {
+  return this.candidatures.filter(c => c.statut === 'DOCUMENTS_SOUMIS');
+}
 
   exportExcel(): void { this.exportService.exportCandidatures(this.candidatures); }
   exportPdf():   void { this.exportService.exportCandidaturesPdf(this.candidatures); }

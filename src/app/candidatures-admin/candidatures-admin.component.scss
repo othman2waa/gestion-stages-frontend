@@ -26,6 +26,7 @@
 .statut-pill { display:flex; align-items:center; gap:4px; padding:3px 10px;
   border-radius:20px; font-size:11px; font-weight:700; margin-bottom:4px;
   mat-icon { font-size:13px; } }
+  
 
 .docs-badge { display:flex; align-items:center; gap:4px; font-size:11px; color:#0891B2;
   background:#EFF6FF; border-radius:8px; padding:2px 8px; margin-bottom:4px;
@@ -82,4 +83,111 @@
 
 .dialog-form { padding-top:16px; .full-width { width:100%; }
   .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+}
+
+.dept-select { padding: 7px 14px; border: 1px solid #e2e8f0; border-radius: 20px;
+  font-size: 12px; color: #475569; background: white; outline: none; cursor: pointer;
+  &:focus { border-color: #00843D; }
+}
+
+.cand-encadrant { display: flex; align-items: center; gap: 4px; font-size: 11px;
+  color: #7C3AED; margin-top: 2px;
+  mat-icon { font-size: 13px; }
+}
+
+.pill.red { &.active, &:hover { background: #DC2626; border-color: #DC2626; } }
+/* ─── KPI Cards Fix ─── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  border: 1px solid #f1f5f9;
+  mat-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+    background: #f1f5f9; color: #64748b;
+  }
+  > div { display: flex; flex-direction: column; }
+  .kpi-val { font-size: 22px; font-weight: 800; color: #1e293b; line-height: 1.1; }
+  .kpi-lbl { font-size: 11px; color: #94a3b8; font-weight: 500; }
+
+  &.purple mat-icon { background: #ede9fe; color: #7c3aed; }
+  &.blue   mat-icon { background: #dbeafe; color: #1e40af; }
+  &.green  mat-icon { background: #dcfce7; color: #00843D; }
+  &.red    mat-icon { background: #fee2e2; color: #dc2626; }
+  &.orange mat-icon { background: #fef3c7; color: #f59e0b; }
+}
+
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── Liste candidatures ─── */
+.candidatures-list { display: flex; flex-direction: column; gap: 12px; }
+
+.candidature-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-radius: 14px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  transition: transform .15s, box-shadow .15s;
+  &:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+}
+
+.card-left { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+
+.cand-avatar {
+  width: 52px; height: 52px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; flex-shrink: 0;
+}
+
+.cand-info {
+  display: flex; flex-direction: column; gap: 3px; min-width: 0;
+  h4 { margin: 0; font-size: 15px; font-weight: 700; color: #1e293b; }
+  .cand-sub { font-size: 13px; color: #64748b; }
+  .cand-etab, .cand-dept, .cand-sujet, .cand-encadrant {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; color: #94a3b8;
+    mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  }
+  .cand-dept { color: #1e40af; }
+  .cand-sujet { color: #00843D; }
+  .cand-encadrant { color: #7c3aed; }
+}
+
+.card-right {
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+  flex-wrap: wrap; justify-content: flex-end;
+}
+
+.score-badge {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 13px; font-weight: 700;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.card-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.cand-date { font-size: 11px; color: #94a3b8; }
+
+.empty-state {
+  text-align: center; padding: 40px; color: #94a3b8;
+  mat-icon { font-size: 48px; width: 48px; height: 48px; display: block; margin: 0 auto 12px; }
 }

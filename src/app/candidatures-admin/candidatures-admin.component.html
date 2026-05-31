@@ -14,49 +14,72 @@
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card orange" (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'">
-      <mat-icon>hourglass_empty</mat-icon>
-      <div><span class="kpi-val">{{ enAttente.length }}</span><span class="kpi-lbl">En attente</span></div>
-    </div>
-    <div class="kpi-card purple" (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'">
-      <mat-icon>how_to_reg</mat-icon>
-      <div><span class="kpi-val">{{ aTraiterRH.length }}</span><span class="kpi-lbl">À traiter RH</span></div>
-    </div>
-    <div class="kpi-card green" (click)="filterStatut = ''">
-      <mat-icon>check_circle</mat-icon>
-      <div><span class="kpi-val">{{ acceptees.length }}</span><span class="kpi-lbl">Acceptées</span></div>
-    </div>
-    <div class="kpi-card red" (click)="filterStatut = ''">
-      <mat-icon>cancel</mat-icon>
-      <div><span class="kpi-val">{{ refusees.length }}</span><span class="kpi-lbl">Refusées</span></div>
-    </div>
-    <div class="kpi-card blue" (click)="filterStatut = ''">
-      <mat-icon>people</mat-icon>
-      <div><span class="kpi-val">{{ candidatures.length }}</span><span class="kpi-lbl">Total</span></div>
-    </div>
+  <div class="kpi-card purple" (click)="filterStatut = 'ACCEPTEE_ENCADRANT'">
+    <mat-icon>how_to_reg</mat-icon>
+    <div><span class="kpi-val">{{ aTraiterRH.length }}</span>
+    <span class="kpi-lbl">À traiter RH</span></div>
   </div>
+  <div class="kpi-card blue" (click)="filterStatut = 'DOCUMENTS_SOUMIS'">
+    <mat-icon>upload_file</mat-icon>
+    <div><span class="kpi-val">{{ docssoumis.length }}</span>
+    <span class="kpi-lbl">Docs soumis</span></div>
+  </div>
+  <div class="kpi-card green" (click)="filterStatut = 'ACCEPTEE_RH'">
+    <mat-icon>check_circle</mat-icon>
+    <div><span class="kpi-val">{{ acceptees.length }}</span>
+    <span class="kpi-lbl">Acceptées RH</span></div>
+  </div>
+  <div class="kpi-card red" (click)="filterStatut = 'REFUSEE_RH'">
+    <mat-icon>cancel</mat-icon>
+    <div><span class="kpi-val">{{ refusees.length }}</span>
+    <span class="kpi-lbl">Refusées</span></div>
+  </div>
+  <div class="kpi-card blue" (click)="filterStatut = ''">
+    <mat-icon>people</mat-icon>
+    <div><span class="kpi-val">{{ candidatures.length }}</span>
+    <span class="kpi-lbl">Total</span></div>
+  </div>
+</div>
 
   <!-- Search + Filter -->
-  <div class="toolbar">
-    <div class="search-bar">
-      <mat-icon>search</mat-icon>
-      <input [(ngModel)]="searchTerm" placeholder="Rechercher par nom, email, filière...">
-    </div>
-    <div class="filter-pills">
-      <button class="pill" [class.active]="filterStatut === ''" (click)="filterStatut = ''">Tous</button>
-      <button class="pill orange" [class.active]="filterStatut === 'EN_ATTENTE'"
-              (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'">En attente</button>
-      <button class="pill teal" [class.active]="filterStatut === 'MEETING_PLANIFIE'"
-              (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'">Meeting</button>
-      <button class="pill purple" [class.active]="filterStatut === 'ACCEPTEE_ENCADRANT'"
-              (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'">À traiter RH</button>
-      <button class="pill blue" [class.active]="filterStatut === 'DOCUMENTS_SOUMIS'"
-              (click)="filterStatut = filterStatut === 'DOCUMENTS_SOUMIS' ? '' : 'DOCUMENTS_SOUMIS'">Docs soumis</button>
-      <button class="pill green" [class.active]="filterStatut === 'ACCEPTEE_RH'"
-              (click)="filterStatut = filterStatut === 'ACCEPTEE_RH' ? '' : 'ACCEPTEE_RH'">Validées RH</button>
-    </div>
+ <div class="toolbar">
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input [(ngModel)]="searchTerm"
+           placeholder="Rechercher par nom, email, filière...">
   </div>
 
+  <!-- Filtre département -->
+  <select class="dept-select" [(ngModel)]="filterDept">
+    <option value="">🏢 Tous les départements</option>
+    <option *ngFor="let d of departementsDisponibles" [value]="d">{{ d }}</option>
+  </select>
+
+  <div class="filter-pills">
+    <button class="pill" [class.active]="filterStatut === ''"
+            (click)="filterStatut = ''">Tous</button>
+    <button class="pill purple" [class.active]="filterStatut === 'ACCEPTEE_ENCADRANT'"
+            (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'">
+      À traiter RH
+    </button>
+    <button class="pill blue" [class.active]="filterStatut === 'DOCUMENTS_SOUMIS'"
+            (click)="filterStatut = filterStatut === 'DOCUMENTS_SOUMIS' ? '' : 'DOCUMENTS_SOUMIS'">
+      Docs soumis
+    </button>
+    <button class="pill teal" [class.active]="filterStatut === 'VERIFICATION_IA'"
+            (click)="filterStatut = filterStatut === 'VERIFICATION_IA' ? '' : 'VERIFICATION_IA'">
+      Vérification IA
+    </button>
+    <button class="pill green" [class.active]="filterStatut === 'ACCEPTEE_RH'"
+            (click)="filterStatut = filterStatut === 'ACCEPTEE_RH' ? '' : 'ACCEPTEE_RH'">
+      Validées RH
+    </button>
+    <button class="pill red" [class.active]="filterStatut === 'REFUSEE_RH'"
+            (click)="filterStatut = filterStatut === 'REFUSEE_RH' ? '' : 'REFUSEE_RH'">
+      Refusées
+    </button>
+  </div>
+</div>
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
   <!-- Liste -->
@@ -76,6 +99,9 @@
           <span class="cand-etab"><mat-icon>school</mat-icon>{{ c.etablissement }}</span>
           <span class="cand-dept" *ngIf="c.departementNom">
             <mat-icon>business</mat-icon>{{ c.departementNom }}
+          </span>
+          <span class="cand-encadrant" *ngIf="c.traitePar">
+            <mat-icon>supervisor_account</mat-icon>Validé par : {{ c.traitePar }}
           </span>
           <span class="cand-sujet" *ngIf="c.sujetSouhaite">
             <mat-icon>work</mat-icon>{{ c.sujetSouhaite }}
