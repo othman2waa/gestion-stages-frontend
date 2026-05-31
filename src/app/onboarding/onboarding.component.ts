@@ -31,6 +31,10 @@ export class OnboardingComponent implements OnInit {
   isLoading = false;
   userRole = '';
 
+  // Filtres
+  searchTerm = '';
+  filterDept = '';
+
   readonly categories = [
     { key: 'ADMINISTRATIF', label: 'Administratif', icon: 'folder', color: 'blue' },
     { key: 'INFORMATIQUE', label: 'Informatique', icon: 'computer', color: 'purple' },
@@ -54,39 +58,55 @@ export class OnboardingComponent implements OnInit {
     });
   }
 
-  onStagiaireChange(id: number): void {
-    this.selectedStagiaireId = id;
-    this.loadChecklist(id);
-    this.loadStats(id);
+  get departementsDisponibles(): string[] {
+    return [...new Set(this.stagiaires
+      .map(s => s.departementNom)
+      .filter(Boolean))].sort();
+  }
+
+  get filteredStagiaires(): any[] {
+    return this.stagiaires.filter(s => {
+      const matchSearch = !this.searchTerm ||
+        `${s.prenom} ${s.nom} ${s.email} ${s.filiere}`
+          .toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchDept = !this.filterDept || s.departementNom === this.filterDept;
+      return matchSearch && matchDept;
+    });
+  }
+
+  selectStagiaire(s: any): void {
+    this.selectedStagiaireId = s.id;
+    this.loadChecklist(s.id);
+    this.loadStats(s.id);
   }
 
   loadChecklist(stagiaireId: number): void {
-  this.isLoading = true;
-  this.checklistService.getChecklist(stagiaireId).subscribe({
-    next: (data: any[]) => { this.checklist = data; this.isLoading = false; },
-    error: () => this.isLoading = false
-  });
-}
+    this.isLoading = true;
+    this.checklistService.getChecklist(stagiaireId).subscribe({
+      next: (data: any[]) => { this.checklist = data; this.isLoading = false; },
+      error: () => this.isLoading = false
+    });
+  }
 
   loadStats(stagiaireId: number): void {
-  this.checklistService.getStats(stagiaireId).subscribe({
-    next: (data: any) => this.stats = data,
-    error: () => {}
-  });
-}
+    this.checklistService.getStats(stagiaireId).subscribe({
+      next: (data: any) => this.stats = data,
+      error: () => {}
+    });
+  }
 
-toggleItem(item: any): void {
-  this.checklistService.completer(item.id).subscribe({
-    next: (updated: any) => {
-      item.completed = updated.completed;
-      item.completedAt = updated.completedAt;
-      item.completedBy = updated.completedBy;
-      const msg = item.completed ? '✅ Étape complétée' : '↩️ Étape incomplète';
-      this.snackBar.open(msg, 'Fermer', { duration: 2000 });
-      if (this.selectedStagiaireId) this.loadStats(this.selectedStagiaireId);
-    }
-  });
-}
+  toggleItem(item: any): void {
+    this.checklistService.completer(item.id).subscribe({
+      next: (updated: any) => {
+        item.completed = updated.completed;
+        item.completedAt = updated.completedAt;
+        item.completedBy = updated.completedBy;
+        const msg = item.completed ? '✅ Étape complétée' : '↩️ Étape incomplète';
+        this.snackBar.open(msg, 'Fermer', { duration: 2000 });
+        if (this.selectedStagiaireId) this.loadStats(this.selectedStagiaireId);
+      }
+    });
+  }
 
   getByCategorie(cat: string): any[] {
     return this.checklist.filter(c => c.categorie === cat);
@@ -102,6 +122,16 @@ toggleItem(item: any): void {
 
   getCatIcon(key: string): string {
     return this.categories.find(c => c.key === key)?.icon ?? 'check';
+  }
+
+  getProgressStagiaire(s: any): number {
+    return s.onboardingProgress ?? 0;
+  }
+
+  closePanel(): void {
+    this.selectedStagiaireId = null;
+    this.checklist = [];
+    this.stats = null;
   }
 
   get selectedStagiaire(): any {

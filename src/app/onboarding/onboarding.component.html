@@ -1,122 +1,111 @@
 <div class="onboarding-container">
 
   <!-- Header -->
-  <div class="page-header">
+  <div class="ob-header">
     <div>
       <h2><mat-icon>checklist</mat-icon> Onboarding Stagiaires</h2>
       <p>Suivi de l'intégration et digitalisation du processus d'accueil</p>
     </div>
+    <div class="ob-count">{{ filteredStagiaires.length }} stagiaire(s)</div>
   </div>
 
-  <!-- Sélection stagiaire -->
-  <mat-card class="select-card">
-    <mat-card-content>
-      <div class="select-row">
-        <mat-icon>person_search</mat-icon>
-        <mat-form-field appearance="outline" class="select-field">
-          <mat-label>Sélectionner un stagiaire</mat-label>
-          <mat-select [(ngModel)]="selectedStagiaireId" (selectionChange)="onStagiaireChange($event.value)">
-            <mat-option *ngFor="let s of stagiaires" [value]="s.id">
-              {{ s.prenom }} {{ s.nom }} — {{ s.filiere ?? '' }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+  <!-- Toolbar -->
+  <div class="ob-toolbar">
+    <div class="search-bar">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="searchTerm" placeholder="Rechercher par nom, email, filière...">
+    </div>
+    <select class="dept-select" [(ngModel)]="filterDept">
+      <option value="">🏢 Tous les départements</option>
+      <option *ngFor="let d of departementsDisponibles" [value]="d">{{ d }}</option>
+    </select>
+  </div>
+
+  <div class="ob-layout">
+
+    <!-- Liste stagiaires -->
+    <div class="ob-list">
+      <div *ngFor="let s of filteredStagiaires"
+           class="stag-card"
+           [class.active]="s.id === selectedStagiaireId"
+           (click)="selectStagiaire(s)">
+        <div class="stag-avatar">{{ s.prenom?.charAt(0) }}{{ s.nom?.charAt(0) }}</div>
+        <div class="stag-info">
+          <h4>{{ s.prenom }} {{ s.nom }}</h4>
+          <span class="stag-sub">{{ s.filiere }}</span>
+          <span class="stag-dept" *ngIf="s.departementNom">
+            <mat-icon>business</mat-icon>{{ s.departementNom }}
+          </span>
+        </div>
+        <mat-icon class="stag-arrow">chevron_right</mat-icon>
       </div>
-    </mat-card-content>
-  </mat-card>
 
-  <!-- Stats globales -->
-  <div class="stats-row" *ngIf="stats">
-    <div class="stat-card blue">
-      <mat-icon>checklist</mat-icon>
-      <div><span class="stat-val">{{ stats.total }}</span><span class="stat-lbl">Total étapes</span></div>
+      <div *ngIf="filteredStagiaires.length === 0" class="empty-list">
+        <mat-icon>person_off</mat-icon>
+        <p>Aucun stagiaire trouvé</p>
+      </div>
     </div>
-    <div class="stat-card green">
-      <mat-icon>check_circle</mat-icon>
-      <div><span class="stat-val">{{ stats.completed }}</span><span class="stat-lbl">Complétées</span></div>
-    </div>
-    <div class="stat-card orange">
-      <mat-icon>pending</mat-icon>
-      <div><span class="stat-val">{{ stats.remaining }}</span><span class="stat-lbl">Restantes</span></div>
-    </div>
-    <div class="stat-card purple">
-      <mat-icon>trending_up</mat-icon>
-      <div><span class="stat-val">{{ stats.progression }}%</span><span class="stat-lbl">Progression</span></div>
-    </div>
-  </div>
 
-  <!-- Barre progression globale -->
-  <mat-card class="progress-card" *ngIf="stats">
-    <mat-card-content>
-      <div class="progress-header">
-        <div class="stagiaire-info" *ngIf="selectedStagiaire">
-          <div class="s-avatar">{{ selectedStagiaire.prenom?.charAt(0) }}{{ selectedStagiaire.nom?.charAt(0) }}</div>
+    <!-- Panneau checklist -->
+    <div class="ob-detail" *ngIf="selectedStagiaireId">
+      <div class="detail-header">
+        <div class="dh-left">
+          <div class="stag-avatar lg">{{ selectedStagiaire?.prenom?.charAt(0) }}{{ selectedStagiaire?.nom?.charAt(0) }}</div>
           <div>
-            <span class="s-name">{{ selectedStagiaire.prenom }} {{ selectedStagiaire.nom }}</span>
-            <span class="s-sub">{{ selectedStagiaire.filiere }} — {{ selectedStagiaire.niveau }}</span>
+            <h3>{{ selectedStagiaire?.prenom }} {{ selectedStagiaire?.nom }}</h3>
+            <span>{{ selectedStagiaire?.filiere }} · {{ selectedStagiaire?.departementNom }}</span>
           </div>
         </div>
-        <div class="progress-pct" [class.complete]="stats.progression === 100">
-          {{ stats.progression }}%
-          <span *ngIf="stats.progression === 100">🎉 Intégration complète !</span>
+        <button mat-icon-button (click)="closePanel()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <!-- Progress global -->
+      <div class="global-progress" *ngIf="stats">
+        <div class="gp-text">
+          <span>Progression globale</span>
+          <strong>{{ stats.pourcentage ?? 0 }}%</strong>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="stats.pourcentage ?? 0"></mat-progress-bar>
+        <span class="gp-detail">{{ stats.completes ?? 0 }} / {{ stats.total ?? 0 }} étapes complétées</span>
+      </div>
+
+      <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+      <!-- Catégories -->
+      <div class="categories" *ngIf="!isLoading">
+        <div *ngFor="let cat of categories" class="cat-block" [ngClass]="cat.color">
+          <div class="cat-head">
+            <mat-icon>{{ cat.icon }}</mat-icon>
+            <span class="cat-label">{{ cat.label }}</span>
+            <span class="cat-count">{{ getCompletedByCategorie(cat.key) }}/{{ getByCategorie(cat.key).length }}</span>
+          </div>
+          <div class="cat-items">
+            <div *ngFor="let item of getByCategorie(cat.key)"
+                 class="check-item"
+                 [class.done]="item.completed"
+                 (click)="toggleItem(item)">
+              <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <div class="ci-info">
+                <span class="ci-label">{{ item.libelle }}</span>
+                <span class="ci-meta" *ngIf="item.completed && item.completedBy">
+                  Par {{ item.completedBy }}
+                </span>
+              </div>
+            </div>
+            <div *ngIf="getByCategorie(cat.key).length === 0" class="cat-empty">
+              Aucune étape
+            </div>
+          </div>
         </div>
       </div>
-      <mat-progress-bar mode="determinate" [value]="stats.progression"
-                        [class.complete-bar]="stats.progression === 100"></mat-progress-bar>
-    </mat-card-content>
-  </mat-card>
+    </div>
 
-  <!-- Checklist par catégorie -->
-  <div class="categories-grid" *ngIf="checklist.length > 0">
-    <mat-card *ngFor="let cat of categories" class="cat-card" [class]="'cat-' + cat.color">
+    <!-- Placeholder -->
+    <div class="ob-placeholder" *ngIf="!selectedStagiaireId">
+      <mat-icon>arrow_back</mat-icon>
+      <h3>Sélectionnez un stagiaire</h3>
+      <p>Choisissez un stagiaire dans la liste pour voir et gérer sa checklist d'intégration</p>
+    </div>
 
-      <mat-card-header>
-        <div mat-card-avatar class="cat-avatar" [class]="'bg-' + cat.color">
-          <mat-icon>{{ cat.icon }}</mat-icon>
-        </div>
-        <mat-card-title>{{ cat.label }}</mat-card-title>
-        <mat-card-subtitle>
-          {{ getCompletedByCategorie(cat.key) }}/{{ getByCategorie(cat.key).length }} complétées
-        </mat-card-subtitle>
-        <mat-progress-bar mode="determinate"
-          [value]="getByCategorie(cat.key).length > 0 ?
-            (getCompletedByCategorie(cat.key) / getByCategorie(cat.key).length) * 100 : 0"
-          class="cat-progress">
-        </mat-progress-bar>
-      </mat-card-header>
-
-      <mat-card-content>
-        <div *ngFor="let item of getByCategorie(cat.key)" class="checklist-item"
-             [class.completed]="item.completed">
-          <button mat-icon-button (click)="toggleItem(item)"
-                  [matTooltip]="item.completed ? 'Marquer incomplète' : 'Marquer complète'">
-            <mat-icon [class.done-icon]="item.completed">
-              {{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}
-            </mat-icon>
-          </button>
-          <div class="item-content">
-            <span class="item-label" [class.done-text]="item.completed">{{ item.etape }}</span>
-            <span class="item-desc" *ngIf="item.description">{{ item.description }}</span>
-            <span class="item-meta" *ngIf="item.completed && item.completedBy">
-              <mat-icon>person</mat-icon>{{ item.completedBy }}
-              · {{ item.completedAt | date:'dd/MM/yyyy HH:mm' }}
-            </span>
-          </div>
-          <mat-icon class="done-check" *ngIf="item.completed">verified</mat-icon>
-        </div>
-
-        <div *ngIf="getByCategorie(cat.key).length === 0" class="empty-cat">
-          Aucune étape dans cette catégorie
-        </div>
-      </mat-card-content>
-    </mat-card>
   </div>
-
-  <!-- Empty state -->
-  <div class="empty-state" *ngIf="!selectedStagiaireId">
-    <mat-icon>person_search</mat-icon>
-    <h3>Sélectionnez un stagiaire</h3>
-    <p>Choisissez un stagiaire pour voir et gérer sa checklist d'intégration</p>
-  </div>
-
 </div>
