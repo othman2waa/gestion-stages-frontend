@@ -1,0 +1,43 @@
+.form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px;
+  .full-width { grid-column: 1 / -1; }
+}
+
+.info-note {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  padding: 10px 14px; background: #eff6ff; border-radius: 8px;
+  border: 1px solid #bfdbfe;
+  mat-icon { color: #2563eb; font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+  span { font-size: 12px; color: #1e40af; }
+}
+
+// Credentials view
+.credentials-view { padding: 8px; min-width: 400px; }
+
+.cred-header {
+  text-align: center; margin-bottom: 20px;
+  .success-icon { font-size: 48px; width: 48px; height: 48px; color: #059669; }
+  h2 { margin: 8px 0 4px; font-size: 18px; color: #1e293b; }
+  p { margin: 0; font-size: 13px; color: #64748b; }
+}
+
+.cred-card {
+  background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px;
+  padding: 16px; margin-bottom: 16px;
+  .cred-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0;
+    &:not(:last-child) { border-bottom: 1px solid #e2e8f0; }
+  }
+  .cred-label { font-size: 13px; color: #64748b; font-weight: 600; }
+  .cred-value { font-size: 15px; font-weight: 700; color: #1e293b; font-family: monospace;
+    &.password { color: #dc2626; }
+  }
+}
+
+.cred-warning {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: #fef3c7; border-radius: 8px; border: 1px solid #fbbf24;
+  mat-icon { color: #d97706; font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+  span { font-size: 12px; color: #92400e; }
+}

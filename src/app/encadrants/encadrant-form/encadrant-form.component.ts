@@ -28,6 +28,11 @@ export class EncadrantFormComponent implements OnInit {
   isEdit = false;
   departements: any[] = [];
 
+  // Credentials après création
+  showCredentials = false;
+  generatedUsername = '';
+  generatedPassword = '';
+
   constructor(
     private fb: FormBuilder,
     private encadrantService: EncadrantService,
@@ -58,13 +63,31 @@ export class EncadrantFormComponent implements OnInit {
   onSubmit(): void {
     if (this.form.invalid) return;
     this.isLoading = true;
-    const request = this.isEdit
-      ? this.encadrantService.update(this.data.id, this.form.value)
-      : this.encadrantService.create(this.form.value);
-    request.subscribe({
-      next: () => { this.isLoading = false; this.dialogRef.close(true); },
-      error: () => { this.isLoading = false; }
-    });
+    if (this.isEdit) {
+      this.encadrantService.update(this.data.id, this.form.value).subscribe({
+        next: () => { this.isLoading = false; this.dialogRef.close(true); },
+        error: () => { this.isLoading = false; }
+      });
+    } else {
+      this.encadrantService.create(this.form.value).subscribe({
+        next: (response: any) => {
+          this.isLoading = false;
+          this.generatedUsername = response.username;
+          this.generatedPassword = response.generatedPassword;
+          this.showCredentials = true;
+        },
+        error: () => { this.isLoading = false; }
+      });
+    }
+  }
+
+  copyCredentials(): void {
+    const text = `Identifiant: ${this.generatedUsername}\nMot de passe: ${this.generatedPassword}`;
+    navigator.clipboard.writeText(text);
+  }
+
+  closeAfterCreation(): void {
+    this.dialogRef.close(true);
   }
 
   onCancel(): void { this.dialogRef.close(false); }
