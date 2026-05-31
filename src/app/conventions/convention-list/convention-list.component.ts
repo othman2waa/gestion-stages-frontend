@@ -36,6 +36,7 @@ export class ConventionListComponent implements OnInit {
   isLoading = true;
   searchKeyword = '';
   selectedStatut = '';
+  selectedDept = '';
   selectedConvention: any = null;
   signatureCible: 'stagiaire' | 'encadrant' = 'stagiaire';
 
@@ -46,7 +47,8 @@ export class ConventionListComponent implements OnInit {
   get conventionsSignees(): number { return this.conventions.filter(c => c.statut === 'SIGNEE').length; }
   get conventionsBrouillon(): number { return this.conventions.filter(c => c.statut === 'BROUILLON').length; }
   get partiellementSignees(): number { return this.conventions.filter(c => c.statutSignature === 'PARTIELLEMENT_SIGNEE').length; }
-  get filtresActifs(): number { return [this.searchKeyword, this.selectedStatut].filter(v => v).length; }
+  get filtresActifs(): number { return [this.searchKeyword, this.selectedStatut, this.selectedDept].filter(v => v).length; }
+  get departementsDisponibles(): string[] { return [...new Set(this.conventions.map((c: any) => c.departementNom).filter(Boolean))].sort(); }
 
   constructor(
     private conventionService: ConventionService,
@@ -76,6 +78,7 @@ export class ConventionListComponent implements OnInit {
       );
     }
     if (this.selectedStatut) result = result.filter(c => c.statut === this.selectedStatut);
+    if (this.selectedDept) result = result.filter(c => c.departementNom === this.selectedDept);
     this.filteredConventions = result;
   }
 
@@ -83,7 +86,7 @@ export class ConventionListComponent implements OnInit {
   onFilterChange(): void { this.applyFilters(); }
 
   resetFiltres(): void {
-    this.searchKeyword = ''; this.selectedStatut = '';
+    this.searchKeyword = ''; this.selectedStatut = ''; this.selectedDept = '';
     this.filteredConventions = this.conventions;
   }
 

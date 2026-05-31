@@ -48,6 +48,13 @@
         <mat-option *ngFor="let s of statuts" [value]="s">{{ s.replace('_', ' ') }}</mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Departement</mat-label>
+      <mat-select [(ngModel)]="selectedDept" (selectionChange)="onFilterChange()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option *ngFor="let d of departementsDisponibles" [value]="d">{{ d }}</mat-option>
+      </mat-select>
+    </mat-form-field>
     <button mat-stroked-button color="warn" (click)="resetFiltres()" *ngIf="filtresActifs > 0">
       <mat-icon>filter_alt_off</mat-icon> Reset
     </button>
