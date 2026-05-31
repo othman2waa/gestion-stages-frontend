@@ -11,6 +11,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-portail-candidature',
@@ -61,7 +62,7 @@ export class PortailCandidatureComponent implements OnInit {
       message:       [''],
     });
 
-    this.http.get<any[]>('http://localhost:8080/api/departements/actifs').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/departements/actifs`).subscribe({
       next: (d) => { this.departements = d; },
       error: (err) => console.error('Erreur départements:', err)
     });
@@ -73,7 +74,7 @@ onDepartementChange(departementId: any): void {
   const id = Number(departementId);
   if (!id) return;
   console.log('Chargement spécialités pour dept:', id);
-  this.http.get<string[]>(`http://localhost:8080/api/departements/${id}/specialites`)
+  this.http.get<string[]>(`${environment.apiUrl}/departements/${id}/specialites`)
     .subscribe({
       next: (s) => { console.log('Spécialités:', s); this.specialites = s; },
       error: (err) => { console.error('Erreur:', err); this.specialites = []; }
@@ -96,7 +97,7 @@ onDepartementChange(departementId: any): void {
     const formData = new FormData();
     formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
     if (this.cvFile) formData.append('cv', this.cvFile);
-    this.http.post('http://localhost:8080/api/candidatures', formData).subscribe({
+    this.http.post(`${environment.apiUrl}/candidatures`, formData).subscribe({
       next: () => { this.submitted = true; this.isSubmitting = false; },
       error: (err) => {
         this.isSubmitting = false;

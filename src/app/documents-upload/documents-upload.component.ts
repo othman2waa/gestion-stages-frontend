@@ -6,6 +6,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 interface DocumentType {
   type: string;
@@ -78,7 +79,7 @@ export class DocumentsUploadComponent implements OnInit {
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
     // Récupérer candidatureId depuis le profil stagiaire
-    this.http.get<any>('http://localhost:8080/api/stagiaires/mon-profil').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/stagiaires/mon-profil`).subscribe({
       next: (profil) => {
         if (profil.candidatureId) {
           this.candidatureId = profil.candidatureId;
@@ -91,7 +92,7 @@ export class DocumentsUploadComponent implements OnInit {
 
   loadExistingDocs(): void {
     if (!this.candidatureId) return;
-    this.http.get<any[]>(`http://localhost:8080/api/candidatures/${this.candidatureId}/documents`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/candidatures/${this.candidatureId}/documents`).subscribe({
       next: (docs) => {
         this.existingDocs = docs;
         // Marquer les documents déjà uploadés
@@ -128,7 +129,7 @@ export class DocumentsUploadComponent implements OnInit {
     formData.append('fichier', doc.file);
 
     this.http.post(
-      `http://localhost:8080/api/candidatures/${this.candidatureId}/upload-document`,
+      `${environment.apiUrl}/candidatures/${this.candidatureId}/upload-document`,
       formData
     ).subscribe({
       next: (res: any) => {

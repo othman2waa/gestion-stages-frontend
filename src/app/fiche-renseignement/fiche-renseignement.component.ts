@@ -9,6 +9,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 
@@ -38,7 +39,7 @@ export class FicheRenseignementComponent implements OnInit, OnChanges {
   readonly niveaux = ['1ère Année', '2ème Année', '3ème Année', '4ème Année', '5ème Année'];
   readonly diplomes = ['Ingénieur', 'Master', 'Licence', 'Doctorat', 'BTS', 'Technicien Spécialisé', 'Technicien', 'Qualification'];
 
-  private api = 'http://localhost:8080/api/stagiaires';
+  private api = `${environment.apiUrl}/stagiaires`;
   readonly FORM_URL = 'https://forms.office.com/Pages/ResponsePage.aspx?id=3Jxd65d97UKC3kHby7aY-x9bJi2qZVdHsytozfGb1bBUNE1ZQ1AzRVVHUzdKMlVJVUE3T0dLRFhSWSQlQCN0PWcu&origin=QRCode';
 
   constructor(private fb: FormBuilder, private http: HttpClient, private snackBar: MatSnackBar) {}

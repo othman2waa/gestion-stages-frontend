@@ -11,6 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { ConventionService } from '../../core/services/convention.service';
 import { ConventionFormComponent } from '../convention-form/convention-form.component';
 import { SignaturePadComponent } from '../../signature-pad/signature-pad.component';
@@ -40,7 +41,7 @@ export class ConventionListComponent implements OnInit {
   selectedConvention: any = null;
   signatureCible: 'stagiaire' | 'encadrant' = 'stagiaire';
 
-  private api = 'http://localhost:8080/api/conventions';
+  private api = `${environment.apiUrl}/conventions`;
   readonly statuts = ['BROUILLON', 'EN_VALIDATION', 'SIGNEE', 'ARCHIVEE'];
 
   get totalConventions(): number { return this.conventions.length; }

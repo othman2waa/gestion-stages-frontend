@@ -21,6 +21,7 @@ import { StageFormComponent } from '../stage-form/stage-form.component';
 import { ExportService } from '../../core/services/export.service';
 import { DepartementService } from '../../core/services/departement.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-stage-list',
@@ -106,7 +107,7 @@ export class StageListComponent implements OnInit {
   }
 
   genererLettreAccord(stage: any): void {
-    this.http.get(`http://localhost:8080/api/stages/${stage.id}/lettre-accord`, { responseType: "blob" }).subscribe({
+    this.http.get(`${environment.apiUrl}/stages/${stage.id}/lettre-accord`, { responseType: "blob" }).subscribe({
       next: (blob: any) => {
         const url = window.URL.createObjectURL(blob);
         window.open(url, "_blank");

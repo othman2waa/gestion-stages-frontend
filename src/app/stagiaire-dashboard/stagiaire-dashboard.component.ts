@@ -15,6 +15,7 @@ import { EvaluationService } from '../core/services/evaluation.service';
 import { RapportService } from '../core/services/rapport.service';
 import { OnboardingChecklistService } from '../core/services/onboarding-checklist.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { DocumentsUploadComponent } from '../documents-upload/documents-upload.component';
 import { CandidatureTimelineComponent } from '../candidature-timeline/candidature-timeline.component';
 import { FicheRenseignementComponent } from '../fiche-renseignement/fiche-renseignement.component';
@@ -115,7 +116,7 @@ readonly checklistCategories = [
       },
       error: () => { this.isLoading = false; }
     });
-    this.http.get<any>('http://localhost:8080/api/stagiaires/mon-profil').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/stagiaires/mon-profil`).subscribe({
     next: (p) => { this.profil = p; },
     error: () => {}
   });
@@ -265,7 +266,7 @@ getChecklistByCategorie(cat: string): any[] {
 
 
 loadAttestation(stageId: number): void {
-  this.http.get<any>(`http://localhost:8080/api/attestations/ma-demande/${stageId}`).subscribe({
+  this.http.get<any>(`${environment.apiUrl}/attestations/ma-demande/${stageId}`).subscribe({
     next: (data: any) => this.attestation = data,
     error: () => {}
   });
@@ -274,7 +275,7 @@ loadAttestation(stageId: number): void {
 demanderAttestation(): void {
   if (!this.dashboard?.stageId) return;
   if (!confirm('Confirmer la demande d\'attestation de stage ?')) return;
-  this.http.post<any>('http://localhost:8080/api/attestations/demander',
+  this.http.post<any>(`${environment.apiUrl}/attestations/demander`,
     { stageId: this.dashboard.stageId }).subscribe({
     next: (data: any) => {
       this.attestation = data;
@@ -285,7 +286,7 @@ demanderAttestation(): void {
 }
 telechargerAttestation(): void {
   if (!this.attestation?.id) return;
-  this.http.get(`http://localhost:8080/api/attestations/${this.attestation.id}/pdf`,
+  this.http.get(`${environment.apiUrl}/attestations/${this.attestation.id}/pdf`,
     { responseType: 'blob' }).subscribe({
     next: (blob: any) => {
       const url = window.URL.createObjectURL(blob);
@@ -300,7 +301,7 @@ telechargerAttestation(): void {
 }
 telechargerDemande(): void {
   if (!this.attestation?.id) return;
-  this.http.get(`http://localhost:8080/api/attestations/${this.attestation.id}/demande-pdf`,
+  this.http.get(`${environment.apiUrl}/attestations/${this.attestation.id}/demande-pdf`,
     { responseType: 'blob' }).subscribe({
     next: (blob: any) => {
       const url = window.URL.createObjectURL(blob);

@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Subscription, filter } from 'rxjs';
 
 interface MenuItem {
@@ -110,7 +111,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   loadBadges(): void {
     if (!['ADMIN_RH','RESPONSABLE_RH'].includes(this.userRole)) return;
-    this.http.get<any>('http://localhost:8080/api/reporting/stats-completes').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/reporting/stats-completes`).subscribe({
       next: (stats) => {
         this.badges['/candidatures'] = stats.candidaturesEnAttente ?? 0;
         this.badges['/attestations'] = stats.attestationsEnAttente ?? 0;

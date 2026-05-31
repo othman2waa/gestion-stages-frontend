@@ -12,6 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
@@ -44,7 +45,7 @@ export class CandidaturesEncadrantComponent implements OnInit {
   meetingForm: FormGroup;
   decisionForm: FormGroup;
 
-  private api = 'http://localhost:8080/api/candidatures';
+  private api = `${environment.apiUrl}/candidatures`;
 
   readonly statutConf: Record<string, { label: string; color: string; icon: string }> = {
     EN_ATTENTE:         { label: 'En attente',      color: '#F59E0B', icon: 'hourglass_empty' },

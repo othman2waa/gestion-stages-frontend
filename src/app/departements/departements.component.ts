@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { DepartementService } from '../core/services/departement.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-departements',
   standalone: true,
@@ -151,11 +152,11 @@ export class DepartementsComponent implements OnInit {
 loadMembres(dept: any): void {
   this.selectedDept = dept;
   this.loadingMembers = true;
-  this.http.get<any[]>(`http://localhost:8080/api/departements/${dept.id}/stagiaires`).subscribe({
+  this.http.get<any[]>(`${environment.apiUrl}/departements/${dept.id}/stagiaires`).subscribe({
     next: (data) => { this.stagiairesByDept = data; this.loadingMembers = false; },
     error: () => this.loadingMembers = false
   });
-  this.http.get<any[]>(`http://localhost:8080/api/departements/${dept.id}/encadrants`).subscribe({
+  this.http.get<any[]>(`${environment.apiUrl}/departements/${dept.id}/encadrants`).subscribe({
     next: (data) => this.encadrantsByDept = data,
     error: () => {}
   });

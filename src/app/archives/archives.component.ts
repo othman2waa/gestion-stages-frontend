@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-archives',
@@ -30,7 +31,7 @@ export class ArchivesComponent implements OnInit {
   filterDept = '';
   filterType = '';
 
-  private api = 'http://localhost:8080/api/archives';
+  private api = `${environment.apiUrl}/archives`;
 
   readonly mentions: Record<string, { color: string; bg: string }> = {
     'Très Bien':   { color: '#00843D', bg: '#DCFCE7' },

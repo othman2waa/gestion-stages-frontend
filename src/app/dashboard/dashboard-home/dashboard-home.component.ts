@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -17,7 +18,7 @@ export class DashboardHomeComponent implements OnInit {
   isLoading = true;
   userRole = '';
   readonly today = new Date();
-  private apiBase = 'http://localhost:8080/api/reporting';
+  private apiBase = `${environment.apiUrl}/reporting`;
 
   constructor(private http: HttpClient, private router: Router) {}
 

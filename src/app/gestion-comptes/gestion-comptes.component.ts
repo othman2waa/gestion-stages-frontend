@@ -12,6 +12,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { StagiaireService } from '../core/services/stagiaire.service';
 import { ExportService } from '../core/services/export.service';
 
@@ -37,7 +38,7 @@ export class GestionComptesComponent implements OnInit {
   resetPasswordResult: any = null;
   selectedStagiaire: any = null;
 
-  private api = 'http://localhost:8080/api/stagiaires';
+  private api = `${environment.apiUrl}/stagiaires`;
 
   constructor(
     private stagiaireService: StagiaireService,

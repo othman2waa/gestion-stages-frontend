@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 interface TimelineStep {
@@ -28,7 +29,7 @@ interface TimelineStep {
 export class CandidatureTimelineComponent implements OnInit {
   @Input() profil: any = null;
 
-  private api = 'http://localhost:8080/api/candidatures';
+  private api = `${environment.apiUrl}/candidatures`;
 
   readonly steps: TimelineStep[] = [
     {

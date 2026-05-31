@@ -8,6 +8,7 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 
@@ -28,7 +29,7 @@ export class AttestationsAdminComponent implements OnInit {
   searchTerm = '';
   filterDept = '';
   filterStatut = '';
-  private api = 'http://localhost:8080/api/attestations';
+  private api = `${environment.apiUrl}/attestations`;
 
   get enAttente(): number { return this.attestations.filter(a => a.statut === 'EN_ATTENTE').length; }
   get approuvees(): number { return this.attestations.filter(a => a.statut === 'APPROUVEE').length; }

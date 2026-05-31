@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RapportService {
-  private api = 'http://localhost:8080/api/rapports';
+  private api = `${environment.apiUrl}/rapports`;
   constructor(private http: HttpClient) {}
 
   upload(stageId: number, file: File): Observable<any> {

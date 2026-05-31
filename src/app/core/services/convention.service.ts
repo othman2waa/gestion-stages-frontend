@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ConventionService {
-  private api = 'http://localhost:8080/api/conventions';
+  private api = `${environment.apiUrl}/conventions`;
 
   constructor(private http: HttpClient) {}
 

@@ -17,6 +17,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { CandidatureService } from '../core/services/candidature.service';
 import { EncadrantService } from '../core/services/encadrant.service';
 import { DepartementService } from '../core/services/departement.service';
@@ -137,7 +138,7 @@ get departementsDisponibles(): string[] {
 
   loadCandidatures(): void {
     this.isLoading = true;
-    this.http.get<any[]>('http://localhost:8080/api/candidatures/rh').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/candidatures/rh`).subscribe({
   next: (data) => { this.candidatures = data; this.isLoading = false; },
       error: () => this.isLoading = false
     });
@@ -165,7 +166,7 @@ get departementsDisponibles(): string[] {
     this.selectedCandidature = c;
     this.documents = [];
     this.iaResult = null;
-    this.http.get<any[]>(`http://localhost:8080/api/candidatures/${c.id}/documents`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/candidatures/${c.id}/documents`).subscribe({
       next: (docs) => this.documents = docs,
       error: () => {}
     });
@@ -175,7 +176,7 @@ get departementsDisponibles(): string[] {
   lancerVerificationIa(): void {
     if (!this.selectedCandidature) return;
     this.isVerifyingIa = true;
-    this.http.post(`http://localhost:8080/api/candidatures/${this.selectedCandidature.id}/verifier-ia`, {})
+    this.http.post(`${environment.apiUrl}/candidatures/${this.selectedCandidature.id}/verifier-ia`, {})
       .subscribe({
         next: (result: any) => {
           this.iaResult = result;
@@ -189,7 +190,7 @@ get departementsDisponibles(): string[] {
 
   validerDossier(decision: string): void {
     if (!this.selectedCandidature) return;
-    this.http.patch(`http://localhost:8080/api/candidatures/${this.selectedCandidature.id}/valider-final`,
+    this.http.patch(`${environment.apiUrl}/candidatures/${this.selectedCandidature.id}/valider-final`,
       { decision, commentaire: '' }
     ).subscribe({
       next: () => {
