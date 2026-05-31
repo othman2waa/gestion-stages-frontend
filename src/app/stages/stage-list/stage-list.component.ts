@@ -99,7 +99,6 @@ export class StageListComponent implements OnInit {
     if (this.selectedTypeStage) params['typeStage'] = this.selectedTypeStage;
     if (this.selectedDepartement) params['departementId'] = this.selectedDepartement;
 
-    console.log('loadStages params:', params);
     this.stageService.rechercher(params).subscribe({
       next: (data) => { this.stages = data.content; this.totalElements = data.totalElements; this.isLoading = false; },
       error: () => this.isLoading = false
@@ -124,11 +123,7 @@ export class StageListComponent implements OnInit {
   }
 
   onSearch(): void { this.searchSubject.next(); }
-  onFilterChange(): void {
-    console.log('onFilterChange called', { statut: this.selectedStatut, type: this.selectedTypeStage, dep: this.selectedDepartement });
-    this.pageIndex = 0;
-    this.loadStages();
-  }
+  onFilterChange(): void { this.pageIndex = 0; this.loadStages(); }
   onPageChange(event: PageEvent): void { this.pageIndex = event.pageIndex; this.pageSize = event.pageSize; this.loadStages(); }
 
   resetFiltres(): void {
