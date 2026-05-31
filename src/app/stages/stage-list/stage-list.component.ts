@@ -19,6 +19,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { StageService } from '../../core/services/stage.service';
 import { StageFormComponent } from '../stage-form/stage-form.component';
 import { ExportService } from '../../core/services/export.service';
+import { DepartementService } from '../../core/services/departement.service';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -44,6 +45,10 @@ export class StageListComponent implements OnInit {
   keyword = '';
   selectedStatut = '';
   selectedTypeStage = '';
+  selectedDepartement: any = '';
+  sortBy = 'created_at';
+  sortDir = 'desc';
+  departements: any[] = [];
   private searchSubject = new Subject<void>();
 
   totalElements = 0;
@@ -52,7 +57,7 @@ export class StageListComponent implements OnInit {
   pageSizeOptions = [12, 24, 48];
 
   get filtresActifs(): number {
-    return [this.keyword, this.selectedStatut, this.selectedTypeStage].filter(v => v).length;
+    return [this.keyword, this.selectedStatut, this.selectedTypeStage, this.selectedDepartement].filter(v => v).length;
   }
 
   readonly statuts = [
@@ -72,6 +77,7 @@ export class StageListComponent implements OnInit {
 
   constructor(
     private stageService: StageService,
+    private departementService: DepartementService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private exportService: ExportService,
@@ -81,16 +87,19 @@ export class StageListComponent implements OnInit {
   ngOnInit(): void {
     this.searchSubject.pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => { this.pageIndex = 0; this.loadStages(); });
+    this.departementService.getAll().subscribe(d => this.departements = d);
     this.loadStages();
   }
 
   loadStages(): void {
     this.isLoading = true;
-    const params: any = { page: this.pageIndex, size: this.pageSize, sortBy: 'createdAt', sortDir: 'desc' };
+    const params: any = { page: this.pageIndex, size: this.pageSize, sortBy: this.sortBy, sortDir: this.sortDir };
     if (this.keyword) params['keyword'] = this.keyword;
     if (this.selectedStatut) params['statut'] = this.selectedStatut;
     if (this.selectedTypeStage) params['typeStage'] = this.selectedTypeStage;
+    if (this.selectedDepartement) params['departementId'] = this.selectedDepartement;
 
+    console.log('loadStages params:', params);
     this.stageService.rechercher(params).subscribe({
       next: (data) => { this.stages = data.content; this.totalElements = data.totalElements; this.isLoading = false; },
       error: () => this.isLoading = false
@@ -115,12 +124,26 @@ export class StageListComponent implements OnInit {
   }
 
   onSearch(): void { this.searchSubject.next(); }
-  onFilterChange(): void { this.pageIndex = 0; this.loadStages(); }
+  onFilterChange(): void {
+    console.log('onFilterChange called', { statut: this.selectedStatut, type: this.selectedTypeStage, dep: this.selectedDepartement });
+    this.pageIndex = 0;
+    this.loadStages();
+  }
   onPageChange(event: PageEvent): void { this.pageIndex = event.pageIndex; this.pageSize = event.pageSize; this.loadStages(); }
 
   resetFiltres(): void {
     this.keyword = ''; this.selectedStatut = ''; this.selectedTypeStage = '';
+    this.selectedDepartement = ''; this.sortBy = 'created_at'; this.sortDir = 'desc';
     this.pageIndex = 0; this.loadStages();
+  }
+
+  toggleSortDir(): void {
+    this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.loadStages();
+  }
+
+  getDepartementNom(id: any): string {
+    return this.departements.find(d => d.id === id)?.nom ?? '';
   }
 
   voirDetail(stage: any): void {

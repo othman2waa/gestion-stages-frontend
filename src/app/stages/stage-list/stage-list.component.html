@@ -44,28 +44,67 @@
     <div class="search-input">
       <mat-icon>search</mat-icon>
       <input [(ngModel)]="keyword" (ngModelChange)="onSearch()"
-             placeholder="Rechercher par sujet, stagiaire...">
+             placeholder="Rechercher par sujet, stagiaire, encadrant...">
       <button *ngIf="keyword" mat-icon-button (click)="keyword=''; onFilterChange()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Statut</mat-label>
-      <mat-select [(ngModel)]="selectedStatut" (selectionChange)="onFilterChange()">
+      <mat-select name="statut" [(ngModel)]="selectedStatut" (selectionChange)="onFilterChange()">
         <mat-option value="">Tous</mat-option>
         <mat-option *ngFor="let s of statuts" [value]="s">{{ s.replace('_', ' ') }}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Type</mat-label>
-      <mat-select [(ngModel)]="selectedTypeStage" (selectionChange)="onFilterChange()">
+      <mat-select name="typeStage" [(ngModel)]="selectedTypeStage" (selectionChange)="onFilterChange()">
         <mat-option value="">Tous</mat-option>
         <mat-option *ngFor="let t of typesStage" [value]="t">{{ t.replace('_', ' ') }}</mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Département</mat-label>
+      <mat-select name="departement" [(ngModel)]="selectedDepartement" (selectionChange)="onFilterChange()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option *ngFor="let d of departements" [value]="d.id">{{ d.nom }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Trier par</mat-label>
+      <mat-select name="sortBy" [(ngModel)]="sortBy" (selectionChange)="onFilterChange()">
+        <mat-option value="created_at">Date de création</mat-option>
+        <mat-option value="date_debut">Date de début</mat-option>
+        <mat-option value="date_fin">Date de fin</mat-option>
+        <mat-option value="sujet">Sujet (A-Z)</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-icon-button matTooltip="Inverser le tri" (click)="toggleSortDir()">
+      <mat-icon>{{ sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+    </button>
     <button mat-stroked-button color="warn" *ngIf="filtresActifs > 0" (click)="resetFiltres()">
       <mat-icon>filter_alt_off</mat-icon> Reset ({{ filtresActifs }})
     </button>
+  </div>
+
+  <!-- Active filters pills -->
+  <div class="active-filters" *ngIf="filtresActifs > 0">
+    <span class="filter-pill" *ngIf="keyword">
+      <mat-icon>search</mat-icon> « {{ keyword }} »
+      <button mat-icon-button (click)="keyword=''; onFilterChange()"><mat-icon>close</mat-icon></button>
+    </span>
+    <span class="filter-pill" *ngIf="selectedStatut">
+      <mat-icon>flag</mat-icon> {{ selectedStatut.replace('_', ' ') }}
+      <button mat-icon-button (click)="selectedStatut=''; onFilterChange()"><mat-icon>close</mat-icon></button>
+    </span>
+    <span class="filter-pill" *ngIf="selectedTypeStage">
+      <mat-icon>category</mat-icon> {{ selectedTypeStage.replace('_', ' ') }}
+      <button mat-icon-button (click)="selectedTypeStage=''; onFilterChange()"><mat-icon>close</mat-icon></button>
+    </span>
+    <span class="filter-pill" *ngIf="selectedDepartement">
+      <mat-icon>business</mat-icon> {{ getDepartementNom(selectedDepartement) }}
+      <button mat-icon-button (click)="selectedDepartement=''; onFilterChange()"><mat-icon>close</mat-icon></button>
+    </span>
   </div>
 
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
@@ -130,8 +169,7 @@
         <button mat-icon-button matTooltip="Modifier" (click)="openForm(s)">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button matTooltip="Lettre d'accord PFE"
-                *ngIf="s.typeStage === 'PFE'"
+        <button mat-icon-button matTooltip="Lettre d'accord"
                 (click)="genererLettreAccord(s)">
           <mat-icon>description</mat-icon>
         </button>

@@ -39,6 +39,19 @@
   .filter-field { min-width: 160px; }
 }
 
+.active-filters {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+  .filter-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 20px;
+    padding: 4px 8px 4px 12px; font-size: 12px; font-weight: 600; color: #1e40af;
+    mat-icon { font-size: 14px; width: 14px; height: 14px; }
+    button { width: 20px; height: 20px; line-height: 20px;
+      mat-icon { font-size: 12px; width: 12px; height: 12px; }
+    }
+  }
+}
+
 .stages-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;
   margin-bottom: 20px;

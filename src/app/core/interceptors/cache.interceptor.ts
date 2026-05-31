@@ -10,7 +10,8 @@ export const cacheInterceptor: HttpInterceptorFn = (req, next) => {
   const skip = ['/auth/', '/reporting/', '/stats'];
   if (skip.some(s => req.url.includes(s))) return next(req);
 
-  const cached = cache.get(req.url);
+  const cacheKey = req.urlWithParams;
+  const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.time < TTL) {
     return of(cached.data.clone());
   }
@@ -18,7 +19,7 @@ export const cacheInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     tap(event => {
       if (event instanceof HttpResponse) {
-        cache.set(req.url, { data: event, time: Date.now() });
+        cache.set(cacheKey, { data: event, time: Date.now() });
       }
     })
   );
