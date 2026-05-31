@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { StagiaireDashboardService } from '../core/services/stagiaire-dashboard.service';
 import { ConventionService } from '../core/services/convention.service';
@@ -18,6 +19,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { DocumentsUploadComponent } from '../documents-upload/documents-upload.component';
 import { CandidatureTimelineComponent } from '../candidature-timeline/candidature-timeline.component';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { FicheRenseignementComponent } from '../fiche-renseignement/fiche-renseignement.component';
 
 
@@ -28,7 +30,7 @@ import { FicheRenseignementComponent } from '../fiche-renseignement/fiche-rensei
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatChipsModule, MatTooltipModule,
-    MatSnackBarModule, MatTabsModule,DocumentsUploadComponent,CandidatureTimelineComponent,FicheRenseignementComponent,
+    MatSnackBarModule, MatDialogModule, MatTabsModule,DocumentsUploadComponent,CandidatureTimelineComponent,FicheRenseignementComponent,
 
 
   ],
@@ -95,8 +97,7 @@ readonly checklistCategories = [
     private snackBar: MatSnackBar,
     private checklistService: OnboardingChecklistService,
     private http: HttpClient,
-
-
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -274,14 +275,20 @@ loadAttestation(stageId: number): void {
 
 demanderAttestation(): void {
   if (!this.dashboard?.stageId) return;
-  if (!confirm('Confirmer la demande d\'attestation de stage ?')) return;
-  this.http.post<any>(`${environment.apiUrl}/attestations/demander`,
-    { stageId: this.dashboard.stageId }).subscribe({
-    next: (data: any) => {
-      this.attestation = data;
-      this.snackBar.open('✅ Demande envoyée au RH', 'Fermer', { duration: 3000 });
-    },
-    error: (err) => this.snackBar.open(err.error?.message ?? 'Erreur', 'Fermer', { duration: 3000 })
+  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    width: '420px',
+    data: { title: 'Demande d\'attestation', message: 'Confirmer la demande d\'attestation de stage ?', confirmText: 'Confirmer' }
+  });
+  dialogRef.afterClosed().subscribe(result => {
+    if (!result) return;
+    this.http.post<any>(`${environment.apiUrl}/attestations/demander`,
+      { stageId: this.dashboard.stageId }).subscribe({
+      next: (data: any) => {
+        this.attestation = data;
+        this.snackBar.open('✅ Demande envoyée au RH', 'Fermer', { duration: 3000 });
+      },
+      error: (err) => this.snackBar.open(err.error?.message ?? 'Erreur', 'Fermer', { duration: 3000 })
+    });
   });
 }
 telechargerAttestation(): void {

@@ -7,7 +7,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RapportService } from '../core/services/rapport.service';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { StagiaireDashboardService } from '../core/services/stagiaire-dashboard.service';
 
 @Component({
@@ -15,7 +17,7 @@ import { StagiaireDashboardService } from '../core/services/stagiaire-dashboard.
   standalone: true,
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
-    MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule
+    MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule, MatDialogModule
   ],
   templateUrl: './rapport-stage.component.html',
   styleUrls: ['./rapport-stage.component.scss']
@@ -30,7 +32,8 @@ export class RapportStageComponent implements OnInit {
   constructor(
     private rapportService: RapportService,
     private dashService: StagiaireDashboardService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -98,13 +101,19 @@ export class RapportStageComponent implements OnInit {
   }
 
   supprimer(): void {
-    if (!confirm('Supprimer le rapport ?')) return;
-    this.rapportService.delete(this.dashboard.stageId).subscribe({
-      next: () => {
-        this.rapport = null;
-        this.snackBar.open('Rapport supprimé', 'Fermer', { duration: 3000 });
-      },
-      error: () => this.snackBar.open('Erreur suppression', 'Fermer', { duration: 3000 })
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Supprimer le rapport ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.rapportService.delete(this.dashboard.stageId).subscribe({
+        next: () => {
+          this.rapport = null;
+          this.snackBar.open('Rapport supprimé', 'Fermer', { duration: 3000 });
+        },
+        error: () => this.snackBar.open('Erreur suppression', 'Fermer', { duration: 3000 })
+      });
     });
   }
 

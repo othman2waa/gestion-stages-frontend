@@ -6,7 +6,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -14,7 +16,7 @@ import { environment } from '../../environments/environment';
   standalone: true,
   imports: [
     CommonModule, FormsModule, MatIconModule, MatButtonModule,
-    MatProgressBarModule, MatTooltipModule, MatSnackBarModule
+    MatProgressBarModule, MatTooltipModule, MatSnackBarModule, MatDialogModule
   ],
   templateUrl: './archives.component.html',
   styleUrls: ['./archives.component.scss']
@@ -53,7 +55,7 @@ export class ArchivesComponent implements OnInit {
     return [...new Set(this.archives.map(a => a.typeStage).filter(Boolean))].sort();
   }
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
+  constructor(private http: HttpClient, private snackBar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.loadArchives();
@@ -91,16 +93,22 @@ export class ArchivesComponent implements OnInit {
   onFilterChange(): void { this.loadArchives(); }
 
   archiverTous(): void {
-    if (!confirm('Archiver tous les stages terminés ?')) return;
-    this.isArchiving = true;
-    this.http.post(`${this.api}/archiver-tous`, {}).subscribe({
-      next: (res: any) => {
-        this.isArchiving = false;
-        this.snackBar.open(`✅ ${res.total} stage(s) archivé(s)`, 'Fermer', { duration: 4000 });
-        this.loadArchives();
-        this.loadStats();
-      },
-      error: () => { this.isArchiving = false; }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '420px',
+      data: { title: 'Archivage', message: 'Archiver tous les stages terminés ?', confirmText: 'Archiver' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.isArchiving = true;
+      this.http.post(`${this.api}/archiver-tous`, {}).subscribe({
+        next: (res: any) => {
+          this.isArchiving = false;
+          this.snackBar.open(`✅ ${res.total} stage(s) archivé(s)`, 'Fermer', { duration: 4000 });
+          this.loadArchives();
+          this.loadStats();
+        },
+        error: () => { this.isArchiving = false; }
+      });
     });
   }
 

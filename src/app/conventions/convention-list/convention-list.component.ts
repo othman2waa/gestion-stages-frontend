@@ -14,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ConventionService } from '../../core/services/convention.service';
 import { ConventionFormComponent } from '../convention-form/convention-form.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { SignaturePadComponent } from '../../signature-pad/signature-pad.component';
 
 @Component({
@@ -124,14 +125,20 @@ export class ConventionListComponent implements OnInit {
   }
 
   delete(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.conventionService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Convention supprimée', 'Fermer', { duration: 3000 });
-          this.loadConventions();
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Confirmer la suppression ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.conventionService.delete(id).subscribe({
+          next: () => {
+            this.snackBar.open('Convention supprimée', 'Fermer', { duration: 3000 });
+            this.loadConventions();
+          }
+        });
+      }
+    });
   }
 
   telechargerPdf(id: number): void {

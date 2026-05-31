@@ -17,6 +17,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatBadgeModule } from '@angular/material/badge';
 import { AnnonceService } from '../core/services/annonce.service';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { CandidatureService } from '../core/services/candidature.service';
 
 @Component({
@@ -124,9 +125,15 @@ export class AnnoncesAdminComponent implements OnInit {
   }
 
   delete(id: number): void {
-    if (!confirm('Supprimer cette annonce ?')) return;
-    this.annonceService.delete(id).subscribe({
-      next: () => { this.snackBar.open('Annonce supprimée', 'Fermer', { duration: 3000 }); this.loadAnnonces(); }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Supprimer cette annonce ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.annonceService.delete(id).subscribe({
+        next: () => { this.snackBar.open('Annonce supprimée', 'Fermer', { duration: 3000 }); this.loadAnnonces(); }
+      });
     });
   }
 

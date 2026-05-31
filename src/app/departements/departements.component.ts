@@ -12,6 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { DepartementService } from '../core/services/departement.service';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 @Component({
@@ -135,13 +136,19 @@ export class DepartementsComponent implements OnInit {
   }
 
   delete(id: number): void {
-    if (!confirm('Supprimer ce département ?')) return;
-    this.deptService.delete(id).subscribe({
-      next: () => {
-        this.snackBar.open('Département supprimé', 'Fermer', { duration: 3000 });
-        this.loadDepartements();
-      },
-      error: () => this.snackBar.open('Erreur — des encadrants ou stages sont liés', 'Fermer', { duration: 4000 })
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Supprimer ce département ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.deptService.delete(id).subscribe({
+        next: () => {
+          this.snackBar.open('Département supprimé', 'Fermer', { duration: 3000 });
+          this.loadDepartements();
+        },
+        error: () => this.snackBar.open('Erreur — des encadrants ou stages sont liés', 'Fermer', { duration: 4000 })
+      });
     });
   }
 

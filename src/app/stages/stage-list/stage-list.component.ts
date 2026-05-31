@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,8 +15,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { StageService } from '../../core/services/stage.service';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { StageFormComponent } from '../stage-form/stage-form.component';
 import { ExportService } from '../../core/services/export.service';
 import { DepartementService } from '../../core/services/departement.service';
@@ -37,6 +39,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./stage-list.component.scss']
 })
 export class StageListComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   @ViewChild('detailDialog') detailDialog!: TemplateRef<any>;
 
   stages: any[] = [];
@@ -86,7 +89,7 @@ export class StageListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.searchSubject.pipe(debounceTime(400), distinctUntilChanged())
+    this.searchSubject.pipe(debounceTime(400), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => { this.pageIndex = 0; this.loadStages(); });
     this.departementService.getAll().subscribe(d => this.departements = d);
     this.loadStages();
@@ -159,11 +162,17 @@ export class StageListComponent implements OnInit {
   }
 
   delete(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.stageService.delete(id).subscribe({
-        next: () => { this.snackBar.open('Stage supprimé', 'Fermer', { duration: 3000 }); this.loadStages(); }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Confirmer la suppression ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.stageService.delete(id).subscribe({
+          next: () => { this.snackBar.open('Stage supprimé', 'Fermer', { duration: 3000 }); this.loadStages(); }
+        });
+      }
+    });
   }
 
   getStatutClass(statut: string): string {

@@ -7,10 +7,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-attestations-admin',
@@ -18,7 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule,
-    FormsModule, MatSelectModule
+    FormsModule, MatSelectModule, MatDialogModule
   ],
   templateUrl: './attestations-admin.component.html',
   styleUrls: ['./attestations-admin.component.scss']
@@ -48,7 +50,7 @@ export class AttestationsAdminComponent implements OnInit {
     });
   }
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
+  constructor(private http: HttpClient, private snackBar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit(): void { this.loadAttestations(); }
 
@@ -72,13 +74,26 @@ export class AttestationsAdminComponent implements OnInit {
   }
 
   refuser(att: any): void {
-    const commentaire = prompt('Motif du refus (optionnel) :') ?? '';
-    this.http.patch(`${this.api}/${att.id}/refuser`, { commentaire }).subscribe({
-      next: () => {
-        att.statut = 'REFUSEE';
-        att.commentaire = commentaire;
-        this.snackBar.open('❌ Attestation refusée', 'Fermer', { duration: 3000 });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '420px',
+      data: {
+        title: 'Refuser l\'attestation',
+        message: 'Veuillez indiquer le motif du refus (optionnel) :',
+        inputLabel: 'Motif du refus',
+        confirmText: 'Refuser',
+        cancelText: 'Annuler'
       }
+    });
+
+    dialogRef.afterClosed().subscribe((commentaire: string | null) => {
+      if (commentaire === null) return;
+      this.http.patch(`${this.api}/${att.id}/refuser`, { commentaire }).subscribe({
+        next: () => {
+          att.statut = 'REFUSEE';
+          att.commentaire = commentaire;
+          this.snackBar.open('❌ Attestation refusée', 'Fermer', { duration: 3000 });
+        }
+      });
     });
   }
 

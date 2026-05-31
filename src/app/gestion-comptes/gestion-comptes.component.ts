@@ -14,6 +14,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { StagiaireService } from '../core/services/stagiaire.service';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../core/services/export.service';
 
 @Component({
@@ -94,13 +95,23 @@ export class GestionComptesComponent implements OnInit {
   }
 
   resetPassword(stagiaire: any): void {
-    if (!confirm(`Réinitialiser le mot de passe de ${stagiaire.prenom} ${stagiaire.nom} ?`)) return;
-    this.http.patch<any>(`${this.api}/${stagiaire.id}/reset-password`, {}).subscribe({
-      next: (data) => {
-        this.resetPasswordResult = { stagiaire, password: data.password };
-        this.snackBar.open('✅ Mot de passe réinitialisé — email envoyé', 'Fermer', { duration: 4000 });
-      },
-      error: () => this.snackBar.open('Erreur reset password', 'Fermer', { duration: 3000 })
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '420px',
+      data: {
+        title: 'Réinitialisation',
+        message: `Réinitialiser le mot de passe de ${stagiaire.prenom} ${stagiaire.nom} ?`,
+        confirmText: 'Réinitialiser'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.http.patch<any>(`${this.api}/${stagiaire.id}/reset-password`, {}).subscribe({
+        next: (data) => {
+          this.resetPasswordResult = { stagiaire, password: data.password };
+          this.snackBar.open('✅ Mot de passe réinitialisé — email envoyé', 'Fermer', { duration: 4000 });
+        },
+        error: () => this.snackBar.open('Erreur reset password', 'Fermer', { duration: 3000 })
+      });
     });
   }
 

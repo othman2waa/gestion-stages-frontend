@@ -15,6 +15,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { SujetStageService } from '../core/services/sujet-stage.service';
 import { EncadrantService } from '../core/services/encadrant.service';
 import { StageService } from '../core/services/stage.service';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-sujets-admin',
@@ -145,9 +146,15 @@ export class SujetsAdminComponent implements OnInit {
   }
 
   supprimer(id: number): void {
-    if (!confirm('Supprimer ce sujet ?')) return;
-    this.sujetService.supprimer(id).subscribe({
-      next: () => { this.sujets = this.sujets.filter(s => s.id !== id); }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Supprimer ce sujet ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.sujetService.supprimer(id).subscribe({
+        next: () => { this.sujets = this.sujets.filter(s => s.id !== id); }
+      });
     });
   }
 

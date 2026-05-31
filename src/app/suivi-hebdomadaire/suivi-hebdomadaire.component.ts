@@ -15,6 +15,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { SuiviService } from '../core/services/suivi.service';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { StageService } from '../core/services/stage.service';
 
 @Component({
@@ -198,14 +199,20 @@ if (suivi?.joursPresents !== undefined) {
   }
 
   delete(id: number): void {
-    if (!confirm('Supprimer ce suivi ?')) return;
-    this.suiviService.delete(id).subscribe({
-      next: () => {
-        this.snackBar.open('Suivi supprimé', 'Fermer', { duration: 3000 });
-        this.suivis = this.suivis.filter(s => s.id !== id);
-        this.filteredSuivis = this.filteredSuivis.filter(s => s.id !== id);
-        this.dialog.closeAll();
-      }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Supprimer ce suivi ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.suiviService.delete(id).subscribe({
+        next: () => {
+          this.snackBar.open('Suivi supprimé', 'Fermer', { duration: 3000 });
+          this.suivis = this.suivis.filter(s => s.id !== id);
+          this.filteredSuivis = this.filteredSuivis.filter(s => s.id !== id);
+          this.dialog.closeAll();
+        }
+      });
     });
   }
 

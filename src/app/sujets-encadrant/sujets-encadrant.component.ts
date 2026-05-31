@@ -13,6 +13,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SujetStageService } from '../core/services/sujet-stage.service';
 import { DepartementService } from '../core/services/departement.service';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-sujets-encadrant',
@@ -89,12 +90,18 @@ export class SujetsEncadrantComponent implements OnInit {
   }
 
   supprimer(id: number): void {
-    if (!confirm('Supprimer ce sujet ?')) return;
-    this.sujetService.supprimer(id).subscribe({
-      next: () => {
-        this.sujets = this.sujets.filter(s => s.id !== id);
-        this.snackBar.open('Sujet supprimé', 'Fermer', { duration: 2000 });
-      }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Supprimer ce sujet ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.sujetService.supprimer(id).subscribe({
+        next: () => {
+          this.sujets = this.sujets.filter(s => s.id !== id);
+          this.snackBar.open('Sujet supprimé', 'Fermer', { duration: 2000 });
+        }
+      });
     });
   }
 

@@ -11,6 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { EncadrantService } from '../../core/services/encadrant.service';
 import { EncadrantFormComponent } from '../encadrant-form/encadrant-form.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { StageService } from '../../core/services/stage.service';
 
 @Component({
@@ -98,14 +99,20 @@ export class EncadrantListComponent implements OnInit {
   }
 
   delete(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.encadrantService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Encadrant supprimé', 'Fermer', { duration: 3000 });
-          this.loadEncadrants();
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Confirmer la suppression ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.encadrantService.delete(id).subscribe({
+          next: () => {
+            this.snackBar.open('Encadrant supprimé', 'Fermer', { duration: 3000 });
+            this.loadEncadrants();
+          }
+        });
+      }
+    });
   }
 
   getInitials(e: any): string {

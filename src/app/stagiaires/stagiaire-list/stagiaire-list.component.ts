@@ -16,6 +16,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatBadgeModule } from '@angular/material/badge';
 import { StagiaireService } from '../../core/services/stagiaire.service';
 import { StagiaireFormComponent } from '../stagiaire-form/stagiaire-form.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../../core/services/export.service';
 
 @Component({
@@ -128,15 +129,21 @@ loadStagiaires(): void {
   }
 
   delete(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.stagiaireService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Stagiaire supprimé', 'Fermer', { duration: 3000 });
-          this.loadStagiaires();
-        },
-        error: () => this.snackBar.open('Erreur suppression', 'Fermer', { duration: 3000 })
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Confirmer la suppression ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.stagiaireService.delete(id).subscribe({
+          next: () => {
+            this.snackBar.open('Stagiaire supprimé', 'Fermer', { duration: 3000 });
+            this.loadStagiaires();
+          },
+          error: () => this.snackBar.open('Erreur suppression', 'Fermer', { duration: 3000 })
+        });
+      }
+    });
   }
 
   exportExcel(): void { this.exportService.exportStagiaires(this.filteredStagiaires); }

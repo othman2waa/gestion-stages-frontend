@@ -12,6 +12,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../../core/services/export.service';
 
 @Component({
@@ -113,11 +114,17 @@ export class EvaluationListComponent implements OnInit {
   }
 
   delete(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.evaluationService.delete(id).subscribe({
-        next: () => { this.snackBar.open('Évaluation supprimée', 'Fermer', { duration: 3000 }); this.loadEvaluations(); }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { title: 'Suppression', message: 'Confirmer la suppression ?', confirmText: 'Supprimer' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.evaluationService.delete(id).subscribe({
+          next: () => { this.snackBar.open('Évaluation supprimée', 'Fermer', { duration: 3000 }); this.loadEvaluations(); }
+        });
+      }
+    });
   }
 
   getNoteClass(note: number): string {

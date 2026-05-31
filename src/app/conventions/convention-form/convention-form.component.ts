@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConventionService } from '../../core/services/convention.service';
 import { StageService } from '../../core/services/stage.service';
 
@@ -27,6 +28,7 @@ import { StageService } from '../../core/services/stage.service';
   styleUrls: ['./convention-form.component.scss']
 })
 export class ConventionFormComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   form: FormGroup;
   isLoading = false;
   isEdit = false;
@@ -59,7 +61,7 @@ export class ConventionFormComponent implements OnInit {
     });
 
     // Filtrage en temps réel
-    this.stageSearchCtrl.valueChanges.subscribe(value => {
+    this.stageSearchCtrl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(value => {
       this.filterStages(value || '');
     });
 
