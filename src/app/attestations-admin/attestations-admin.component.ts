@@ -8,13 +8,16 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-attestations-admin',
   standalone: true,
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
-    MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule
+    MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule,
+    FormsModule, MatSelectModule
   ],
   templateUrl: './attestations-admin.component.html',
   styleUrls: ['./attestations-admin.component.scss']
@@ -22,11 +25,27 @@ import { HttpClient } from '@angular/common/http';
 export class AttestationsAdminComponent implements OnInit {
   attestations: any[] = [];
   isLoading = true;
+  searchTerm = '';
+  filterDept = '';
+  filterStatut = '';
   private api = 'http://localhost:8080/api/attestations';
 
   get enAttente(): number { return this.attestations.filter(a => a.statut === 'EN_ATTENTE').length; }
   get approuvees(): number { return this.attestations.filter(a => a.statut === 'APPROUVEE').length; }
   get refusees(): number { return this.attestations.filter(a => a.statut === 'REFUSEE').length; }
+
+  get departementsDisponibles(): string[] {
+    return [...new Set(this.attestations.map((a: any) => a.departementNom).filter(Boolean))].sort();
+  }
+
+  get filtered(): any[] {
+    return this.attestations.filter((a: any) => {
+      const s = !this.searchTerm || (a.stagiaireNom + " " + a.stagiairePrenom + " " + a.sujet).toLowerCase().includes(this.searchTerm.toLowerCase());
+      const d = !this.filterDept || a.departementNom === this.filterDept;
+      const st = !this.filterStatut || a.statut === this.filterStatut;
+      return s && d && st;
+    });
+  }
 
   constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
 

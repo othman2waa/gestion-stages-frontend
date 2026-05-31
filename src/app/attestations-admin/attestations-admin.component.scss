@@ -66,3 +66,29 @@
 .empty-state { text-align: center; padding: 60px; color: #94a3b8;
   mat-icon { font-size: 56px; display: block; margin-bottom: 12px; }
 }
+/* ─── Toolbar filtres ─── */
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+  .search-bar { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 220px;
+    background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px;
+    mat-icon { color: #94a3b8; }
+    input { border: none; outline: none; flex: 1; font-size: 13px; background: transparent; }
+  }
+  .dept-select { padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 10px;
+    font-size: 13px; color: #475569; background: white; outline: none; cursor: pointer; min-width: 200px;
+    &:focus { border-color: #00843D; }
+  }
+  .filter-pills { display: flex; gap: 6px; flex-wrap: wrap;
+    .pill { padding: 7px 16px; border-radius: 20px; border: 1px solid #e2e8f0;
+      background: white; font-size: 12px; cursor: pointer; color: #475569; transition: all .15s;
+      &.active, &:hover { color: white; }
+      &.orange { &.active, &:hover { background: #f59e0b; border-color: #f59e0b; } }
+      &.green  { &.active, &:hover { background: #00843D; border-color: #00843D; } }
+      &.red    { &.active, &:hover { background: #dc2626; border-color: #dc2626; } }
+      &:not(.orange):not(.green):not(.red) { &.active, &:hover { background: #475569; border-color: #475569; } }
+    }
+  }
+}
+
+.att-dept { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #1e40af; margin-top: 2px;
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+}
