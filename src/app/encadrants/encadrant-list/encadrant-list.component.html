@@ -35,8 +35,15 @@
 
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredEncadrants.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <h3>Aucun encadrant trouvé</h3>
+    <p>Essayez de modifier vos filtres de recherche</p>
+  </div>
+
   <!-- Cards Grid -->
-  <div class="encadrants-grid" *ngIf="!isLoading">
+  <div class="encadrants-grid" *ngIf="!isLoading && filteredEncadrants.length > 0">
     <div *ngFor="let e of filteredEncadrants; trackBy: trackById" class="encadrant-card">
 
       <div class="card-header">

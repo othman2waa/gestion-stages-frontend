@@ -72,8 +72,15 @@
   <!-- Loading -->
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredStagiaires.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <h3>Aucun stagiaire trouvé</h3>
+    <p>Essayez de modifier vos filtres de recherche</p>
+  </div>
+
   <!-- Cards Grid -->
-  <div class="stagiaires-grid" *ngIf="!isLoading">
+  <div class="stagiaires-grid" *ngIf="!isLoading && filteredStagiaires.length > 0">
     <div *ngFor="let s of filteredStagiaires; trackBy: trackById" class="stagiaire-card">
 
       <div class="card-top">

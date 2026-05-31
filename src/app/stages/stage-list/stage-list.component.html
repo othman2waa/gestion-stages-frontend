@@ -109,8 +109,16 @@
 
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && stages.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <h3>Aucun stage trouvé</h3>
+    <p *ngIf="filtresActifs > 0">Essayez de modifier vos filtres de recherche</p>
+    <p *ngIf="filtresActifs === 0">Aucun stage n'a encore été créé</p>
+  </div>
+
   <!-- Cards Grid -->
-  <div class="stages-grid" *ngIf="!isLoading">
+  <div class="stages-grid" *ngIf="!isLoading && stages.length > 0">
     <div *ngFor="let s of stages; trackBy: trackById" class="stage-card">
 
       <!-- Card Top -->

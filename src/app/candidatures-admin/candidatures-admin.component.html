@@ -82,8 +82,15 @@
 </div>
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filtered.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <h3>Aucune candidature trouvée</h3>
+    <p>Essayez de modifier vos filtres de recherche</p>
+  </div>
+
   <!-- Liste -->
-  <div class="candidatures-list" *ngIf="!isLoading">
+  <div class="candidatures-list" *ngIf="!isLoading && filtered.length > 0">
     <div *ngFor="let c of filtered; trackBy: trackById" class="candidature-card"
          [style.border-left]="'4px solid ' + getConf(c.statut).color">
 

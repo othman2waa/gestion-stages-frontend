@@ -44,8 +44,15 @@
 
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filtered.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <h3>Aucune attestation trouvée</h3>
+    <p>Essayez de modifier vos filtres de recherche</p>
+  </div>
+
   <!-- Liste -->
-  <div class="attestations-list" *ngIf="!isLoading">
+  <div class="attestations-list" *ngIf="!isLoading && filtered.length > 0">
 
     <div *ngFor="let a of filtered; trackBy: trackById" class="attestation-card" [class]="'border-' + getStatutClass(a.statut)">
 
