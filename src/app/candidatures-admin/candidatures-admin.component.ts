@@ -253,4 +253,6 @@ get departementsDisponibles(): string[] {
 
   exportExcel(): void { this.exportService.exportCandidatures(this.candidatures); }
   exportPdf():   void { this.exportService.exportCandidaturesPdf(this.candidatures); }
+
+  trackById(_: number, item: any): number { return item.id; }
 }

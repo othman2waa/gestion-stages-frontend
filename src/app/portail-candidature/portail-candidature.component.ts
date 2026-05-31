@@ -63,8 +63,7 @@ export class PortailCandidatureComponent implements OnInit {
     });
 
     this.http.get<any[]>(`${environment.apiUrl}/departements/actifs`).subscribe({
-      next: (d) => { this.departements = d; },
-      error: (err) => console.error('Erreur départements:', err)
+      next: (d) => { this.departements = d; }
     });
   }
 
@@ -73,11 +72,10 @@ onDepartementChange(departementId: any): void {
   this.step2Form.patchValue({ specialite: '' });
   const id = Number(departementId);
   if (!id) return;
-  console.log('Chargement spécialités pour dept:', id);
   this.http.get<string[]>(`${environment.apiUrl}/departements/${id}/specialites`)
     .subscribe({
-      next: (s) => { console.log('Spécialités:', s); this.specialites = s; },
-      error: (err) => { console.error('Erreur:', err); this.specialites = []; }
+      next: (s) => { this.specialites = s; },
+      error: () => { this.specialites = []; }
     });
 }
 

@@ -74,7 +74,7 @@
 
   <!-- Cards Grid -->
   <div class="stagiaires-grid" *ngIf="!isLoading">
-    <div *ngFor="let s of filteredStagiaires" class="stagiaire-card">
+    <div *ngFor="let s of filteredStagiaires; trackBy: trackById" class="stagiaire-card">
 
       <div class="card-top">
         <div class="avatar-section">

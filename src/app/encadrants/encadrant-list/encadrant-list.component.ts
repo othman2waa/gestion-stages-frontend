@@ -126,4 +126,6 @@ export class EncadrantListComponent implements OnInit {
     };
     return map[statut] ?? 'status-gray';
   }
+
+  trackById(_: number, item: any): number { return item.id; }
 }

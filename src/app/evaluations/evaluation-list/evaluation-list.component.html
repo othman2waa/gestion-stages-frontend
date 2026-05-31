@@ -70,7 +70,7 @@
 
   <!-- Cards Grid -->
   <div class="evaluations-grid" *ngIf="!isLoading">
-    <div *ngFor="let e of filteredEvaluations" class="evaluation-card">
+    <div *ngFor="let e of filteredEvaluations; trackBy: trackById" class="evaluation-card">
 
       <div class="card-top">
         <div class="note-circle" [class]="getNoteClass(e.note)">

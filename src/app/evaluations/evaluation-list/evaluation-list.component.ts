@@ -143,4 +143,6 @@ export class EvaluationListComponent implements OnInit {
 
   exportExcel(): void { this.exportService.exportEvaluations(this.evaluations); }
   exportPdf(): void { this.exportService.exportEvaluationsPdf(this.evaluations); }
+
+  trackById(_: number, item: any): number { return item.id; }
 }

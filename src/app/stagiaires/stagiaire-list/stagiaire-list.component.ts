@@ -164,5 +164,5 @@ loadStagiaires(): void {
 
 closeDialog(): void { this.dialog.closeAll(); }
 
-
+  trackById(_: number, item: any): number { return item.id; }
 }

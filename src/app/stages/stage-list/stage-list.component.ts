@@ -197,6 +197,8 @@ export class StageListComponent implements OnInit {
   exportExcel(): void { this.exportService.exportStages(this.stages); }
   exportPdf(): void { this.exportService.exportStagesPdf(this.stages); }
 
+  trackById(_: number, item: any): number { return item.id; }
+
   get stagesEnCours(): number { return this.stages.filter(s => s.statut === 'EN_COURS').length; }
   get stagesTermines(): number { return this.stages.filter(s => s.statut === 'TERMINE').length; }
   get stagesEnAttente(): number { return this.stages.filter(s => s.statut === 'EN_ATTENTE').length; }

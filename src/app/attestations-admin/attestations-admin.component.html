@@ -47,7 +47,7 @@
   <!-- Liste -->
   <div class="attestations-list" *ngIf="!isLoading">
 
-    <div *ngFor="let a of filtered" class="attestation-card" [class]="'border-' + getStatutClass(a.statut)">
+    <div *ngFor="let a of filtered; trackBy: trackById" class="attestation-card" [class]="'border-' + getStatutClass(a.statut)">
 
       <div class="card-left">
         <div class="att-avatar" [class]="getStatutClass(a.statut)">

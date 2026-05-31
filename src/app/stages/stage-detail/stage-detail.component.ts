@@ -60,12 +60,10 @@ export class StageDetailComponent implements OnInit {
 
   loadData(): void {
     this.workflowService.getHistorique(this.stageId).subscribe({
-      next: (h) => this.historique = h,
-      error: (e) => console.error(e)
+      next: (h) => this.historique = h
     });
     this.workflowService.getTransitionsPossibles(this.stageId).subscribe({
-      next: (t) => this.transitionsPossibles = t,
-      error: (e) => console.error(e)
+      next: (t) => this.transitionsPossibles = t
     });
   }
 

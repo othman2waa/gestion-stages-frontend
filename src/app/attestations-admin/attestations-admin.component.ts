@@ -116,4 +116,6 @@ export class AttestationsAdminComponent implements OnInit {
     const map: any = { EN_ATTENTE: 'status-orange', APPROUVEE: 'status-green', REFUSEE: 'status-red' };
     return map[statut] ?? 'status-gray';
   }
+
+  trackById(_: number, item: any): number { return item.id; }
 }

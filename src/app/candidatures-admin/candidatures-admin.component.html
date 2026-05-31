@@ -84,7 +84,7 @@
 
   <!-- Liste -->
   <div class="candidatures-list" *ngIf="!isLoading">
-    <div *ngFor="let c of filtered" class="candidature-card"
+    <div *ngFor="let c of filtered; trackBy: trackById" class="candidature-card"
          [style.border-left]="'4px solid ' + getConf(c.statut).color">
 
       <div class="card-left">

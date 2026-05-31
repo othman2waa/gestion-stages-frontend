@@ -54,11 +54,7 @@ typesEval = ['MI_PARCOURS', 'FIN_STAGE'];
   }
 
   ngOnInit(): void {
-     this.stageService.getAll().subscribe(d => this.stages = d);
-     this.encadrantService.getAll().subscribe(d => {
-     this.encadrants = d;
-    console.log('Encadrants:', d);
-    });    ;
+    this.stageService.getAll().subscribe(d => this.stages = d);
     this.encadrantService.getAll().subscribe(d => this.encadrants = d);
 
     // Quand on change le stage, on met à jour les infos

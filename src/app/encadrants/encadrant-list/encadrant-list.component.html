@@ -37,7 +37,7 @@
 
   <!-- Cards Grid -->
   <div class="encadrants-grid" *ngIf="!isLoading">
-    <div *ngFor="let e of filteredEncadrants" class="encadrant-card">
+    <div *ngFor="let e of filteredEncadrants; trackBy: trackById" class="encadrant-card">
 
       <div class="card-header">
         <div class="avatar">{{ getInitials(e) }}</div>

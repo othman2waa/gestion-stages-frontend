@@ -111,7 +111,7 @@
 
   <!-- Cards Grid -->
   <div class="stages-grid" *ngIf="!isLoading">
-    <div *ngFor="let s of stages" class="stage-card">
+    <div *ngFor="let s of stages; trackBy: trackById" class="stage-card">
 
       <!-- Card Top -->
       <div class="card-top">
