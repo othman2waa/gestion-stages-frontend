@@ -14,3 +14,4 @@ export * from './onboarding.model';
 export * from './sujet-stage.model';
 export * from './rapport.model';
 export * from './auth.model';
+export * from './pointage.model';

@@ -1,268 +1,291 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatChipsModule } from '@angular/material/chips';
-import { SuiviService } from '../core/services/suivi.service';
-import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { PointageService } from '../core/services/pointage.service';
 import { StageService } from '../core/services/stage.service';
 import { AuthService } from '../core/services/auth.service';
+
+interface CalendarDay {
+  date: Date;
+  dateStr: string;
+  dayNum: number;
+  isWeekend: boolean;
+  isToday: boolean;
+  isFuture: boolean;
+}
+
+interface CalendarMonth {
+  label: string;
+  weeks: CalendarDay[][];
+}
+
+interface StagiaireInfo {
+  stageId: number;
+  stagiaireNom: string;
+  sujet: string;
+  dateDebut: string;
+  dateFin: string;
+  departementNom: string;
+  typeStage: string;
+  statut: string;
+}
 
 @Component({
   selector: 'app-suivi-hebdomadaire',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, ReactiveFormsModule,
+    CommonModule, FormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
-    MatFormFieldModule, MatInputModule, MatDialogModule,
-    MatSnackBarModule, MatProgressBarModule, MatSelectModule,
-    MatDatepickerModule, MatNativeDateModule, MatTooltipModule, MatChipsModule
+    MatFormFieldModule, MatInputModule,
+    MatSnackBarModule, MatProgressBarModule, MatTooltipModule
   ],
   templateUrl: './suivi-hebdomadaire.component.html',
   styleUrls: ['./suivi-hebdomadaire.component.scss']
 })
 export class SuiviHebdomadaireComponent implements OnInit {
-  @ViewChild('formDialog') formDialog!: TemplateRef<any>;
-  @ViewChild('detailDialog') detailDialog!: TemplateRef<any>;
 
-  suivis: any[] = [];
-  filteredSuivis: any[] = [];
-  mesStages: any[] = [];
-  selectedStageId: number | null = null;
+  // Data
+  stagiaires: StagiaireInfo[] = [];
   isLoading = false;
-  editingId: number | null = null;
-  selectedSuivi: any = null;
   userRole = '';
 
-  form: FormGroup;
+  // Search
+  searchTerm = '';
 
-  get moyenneProgression(): number {
-    if (!this.suivis.length) return 0;
-    return Math.round(this.suivis.reduce((s, v) => s + (v.progression ?? 0), 0) / this.suivis.length);
+  // Selected stagiaire & calendar
+  selectedStagiaire: StagiaireInfo | null = null;
+  calendarMonths: CalendarMonth[] = [];
+  pointageMap = new Map<string, { present: boolean; motif: string }>();
+  savingPointage = false;
+
+  // Computed
+  get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
+
+  get filteredStagiaires(): StagiaireInfo[] {
+    if (!this.searchTerm) return this.stagiaires;
+    const kw = this.searchTerm.toLowerCase();
+    return this.stagiaires.filter(s =>
+      s.stagiaireNom.toLowerCase().includes(kw) ||
+      s.sujet.toLowerCase().includes(kw)
+    );
   }
 
-  get moyenneNote(): number {
-    const avecNote = this.suivis.filter(s => s.note);
-    if (!avecNote.length) return 0;
-    return Math.round(avecNote.reduce((s, v) => s + v.note, 0) / avecNote.length * 10) / 10;
-  }
-
-  get dernierSuivi(): any {
-    return this.suivis.sort((a, b) => b.semaineNumero - a.semaineNumero)[0];
+  get pointageStats(): { presents: number; absents: number; total: number; rate: number } {
+    let presents = 0;
+    let absents = 0;
+    this.pointageMap.forEach(v => {
+      if (v.present) presents++;
+      else absents++;
+    });
+    const total = presents + absents;
+    const rate = total > 0 ? Math.round((presents / total) * 100) : 0;
+    return { presents, absents, total, rate };
   }
 
   constructor(
-    private suiviService: SuiviService,
+    private pointageService: PointageService,
     private stageService: StageService,
     private authService: AuthService,
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar,
-    public dialog: MatDialog
-  ) {
-    this.form = this.fb.group({
-  stageId: [null, Validators.required],
-  semaineNumero: [null, [Validators.required, Validators.min(1), Validators.max(52)]],
-  dateSuivi: [null, Validators.required],
-  progression: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
-  note: [null, [Validators.min(0), Validators.max(20)]],
-  commentaire: [''],
-  pointsPositifs: [''],
-  axesAmelioration: [''],
-  joursPresents: [5, [Validators.min(0), Validators.max(5)]],
-  joursAbsences: [0, [Validators.min(0), Validators.max(5)]],
-  motifAbsence: [''],
-  tachesAssignees: [''],
-  tachesCompletees: [''],
-  tauxCompletionTaches: [0, [Validators.min(0), Validators.max(100)]]
-});
-
-
-  }
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.userRole = this.authService.getRole() ?? '';
-    this.loadMesStages();
-    this.loadMesSuivis();
+    this.loadStagiaires();
   }
 
-  get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
-  get isAdmin(): boolean { return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole); }
-
-  loadMesStages(): void {
-    this.stageService.getMesStages().subscribe({
-      next: (data) => this.mesStages = data,
-      error: () => {}
-    });
-  }
-
-  loadMesSuivis(): void {
+  loadStagiaires(): void {
     this.isLoading = true;
-    this.suiviService.getMesSuivis().subscribe({
-      next: (data) => {
-        this.suivis = data.sort((a: any, b: any) => b.semaineNumero - a.semaineNumero);
-        this.filteredSuivis = this.suivis;
-        this.isLoading = false;
-      },
-      error: () => this.isLoading = false
-    });
-  }
+    const obs = this.isEncadrant
+      ? this.stageService.getMesStages()
+      : this.stageService.getAll();
 
-  loadByStage(stageId: number): void {
-    this.isLoading = true;
-    this.suiviService.getByStage(stageId).subscribe({
-      next: (data) => {
-        this.suivis = data.sort((a: any, b: any) => b.semaineNumero - a.semaineNumero);
-        this.filteredSuivis = this.suivis;
-        this.isLoading = false;
-      },
-      error: () => this.isLoading = false
-    });
-  }
-
-  onStageFilter(stageId: number): void {
-    this.selectedStageId = stageId;
-    if (stageId) this.loadByStage(stageId);
-    else this.loadMesSuivis();
-  }
-
-  openForm(suivi?: any): void {
-    if (suivi) {
-      this.editingId = suivi.id;
-      this.form.patchValue({
-        stageId: suivi.stageId,
-        semaineNumero: suivi.semaineNumero,
-        dateSuivi: new Date(suivi.dateSuivi),
-        progression: suivi.progression,
-        note: suivi.note,
-        commentaire: suivi.commentaire,
-        pointsPositifs: suivi.pointsPositifs,
-        axesAmelioration: suivi.axesAmelioration,
-        joursPresents: suivi.joursPresents ?? 5,
-        joursAbsences: suivi.joursAbsences ?? 0,
-        motifAbsence: suivi.motifAbsence,
-        tachesAssignees: suivi.tachesAssignees,
-        tachesCompletees: suivi.tachesCompletees,
-        tauxCompletionTaches: suivi.tauxCompletionTaches ?? 0
-      }
-    
-    );
-if (suivi?.joursPresents !== undefined) {
-  this.joursPresentsSet = new Set(
-    Array.from({length: suivi.joursPresents}, (_, i) => i + 1)
-  );
-} else {
-  this.joursPresentsSet = new Set([1, 2, 3, 4, 5]);
-}
-    } else {
-      this.editingId = null;
-      this.form.reset({ progression: 0 });
-    }
-    this.dialog.open(this.formDialog, { width: '680px' });
-
-    
-
-
-  }
-
-  voirDetail(suivi: any): void {
-    this.selectedSuivi = suivi;
-    this.dialog.open(this.detailDialog, { width: '560px' });
-  }
-
-  submit(): void {
-    if (this.form.invalid) return;
-    const payload = {
-      ...this.form.value,
-      dateSuivi: this.form.value.dateSuivi?.toISOString?.()?.split('T')[0] ?? this.form.value.dateSuivi
-    };
-    const obs = this.editingId
-      ? this.suiviService.update(this.editingId, payload)
-      : this.suiviService.create(payload);
     obs.subscribe({
-      next: () => {
-        this.snackBar.open(this.editingId ? '✅ Suivi mis à jour' : '✅ Suivi créé', 'Fermer', { duration: 3000 });
-        this.dialog.closeAll();
-        this.loadMesSuivis();
+      next: (data: any[]) => {
+        this.stagiaires = data
+          .filter((s: any) => s.stagiaireNom)
+          .map((s: any) => ({
+            stageId: s.id,
+            stagiaireNom: s.stagiaireNom ?? 'Stagiaire',
+            sujet: s.sujet ?? '',
+            dateDebut: s.dateDebut,
+            dateFin: s.dateFin,
+            departementNom: s.departementNom ?? '',
+            typeStage: s.typeStage ?? '',
+            statut: s.statut ?? ''
+          }));
+        this.isLoading = false;
       },
-      error: () => this.snackBar.open('Erreur sauvegarde', 'Fermer', { duration: 3000 })
+      error: () => this.isLoading = false
     });
   }
 
-  delete(id: number): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: { title: 'Suppression', message: 'Supprimer ce suivi ?', confirmText: 'Supprimer' }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (!result) return;
-      this.suiviService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Suivi supprimé', 'Fermer', { duration: 3000 });
-          this.suivis = this.suivis.filter(s => s.id !== id);
-          this.filteredSuivis = this.filteredSuivis.filter(s => s.id !== id);
-          this.dialog.closeAll();
+  // ─── Stagiaire selection ───
+
+  selectStagiaire(s: StagiaireInfo): void {
+    this.selectedStagiaire = s;
+    if (!s.dateDebut || !s.dateFin) {
+      this.calendarMonths = [];
+      return;
+    }
+    this.generateCalendar(new Date(s.dateDebut), new Date(s.dateFin));
+    this.loadPointages(s.stageId);
+  }
+
+  backToList(): void {
+    this.selectedStagiaire = null;
+    this.calendarMonths = [];
+    this.pointageMap.clear();
+  }
+
+  // ─── Calendar ───
+
+  generateCalendar(start: Date, end: Date): void {
+    this.calendarMonths = [];
+    this.pointageMap.clear();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    const current = new Date(start);
+    let currentMonthIdx = -1;
+    let currentWeek: CalendarDay[] = [];
+
+    while (current <= end) {
+      const dayOfWeek = current.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      const dateStr = this.formatDate(current);
+
+      const day: CalendarDay = {
+        date: new Date(current),
+        dateStr,
+        dayNum: current.getDate(),
+        isWeekend,
+        isToday: current.getTime() === today.getTime(),
+        isFuture: current > today
+      };
+
+      // New month
+      if (current.getMonth() !== currentMonthIdx) {
+        // Push remaining week to previous month
+        if (currentWeek.length > 0 && this.calendarMonths.length > 0) {
+          this.calendarMonths[this.calendarMonths.length - 1].weeks.push(currentWeek);
+          currentWeek = [];
         }
-      });
+        currentMonthIdx = current.getMonth();
+        this.calendarMonths.push({
+          label: current.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }),
+          weeks: []
+        });
+      }
+
+      currentWeek.push(day);
+
+      // Default work days as present (not future)
+      if (!isWeekend && !day.isFuture) {
+        this.pointageMap.set(dateStr, { present: true, motif: '' });
+      }
+
+      // End of week (Sunday) or end of range
+      if (dayOfWeek === 0 || current.getTime() === end.getTime()) {
+        if (this.calendarMonths.length > 0 && currentWeek.length > 0) {
+          this.calendarMonths[this.calendarMonths.length - 1].weeks.push(currentWeek);
+          currentWeek = [];
+        }
+      }
+
+      current.setDate(current.getDate() + 1);
+    }
+
+    if (currentWeek.length > 0 && this.calendarMonths.length > 0) {
+      this.calendarMonths[this.calendarMonths.length - 1].weeks.push(currentWeek);
+    }
+  }
+
+  loadPointages(stageId: number): void {
+    this.pointageService.getByStage(stageId).subscribe({
+      next: (data) => {
+        data.forEach(p => {
+          this.pointageMap.set(p.date, { present: p.present, motif: p.motif ?? '' });
+        });
+      }
     });
   }
 
-  getNoteClass(note: number): string {
-    if (note >= 16) return 'note-excellent';
-    if (note >= 12) return 'note-bien';
-    if (note >= 10) return 'note-passable';
-    return 'note-insuffisant';
+  toggleDay(day: CalendarDay): void {
+    if (day.isWeekend || day.isFuture) return;
+    const existing = this.pointageMap.get(day.dateStr);
+    if (existing) {
+      existing.present = !existing.present;
+      if (existing.present) existing.motif = '';
+    } else {
+      this.pointageMap.set(day.dateStr, { present: false, motif: '' });
+    }
   }
 
-  getNoteLabel(note: number): string {
-    if (note >= 16) return 'Excellent';
-    if (note >= 12) return 'Bien';
-    if (note >= 10) return 'Passable';
-    return 'Insuffisant';
+  getDayStatus(dateStr: string): string {
+    const entry = this.pointageMap.get(dateStr);
+    if (!entry) return 'unmarked';
+    return entry.present ? 'present' : 'absent';
   }
 
-  getProgClass(prog: number): string {
-    if (prog >= 75) return 'prog-high';
-    if (prog >= 50) return 'prog-mid';
-    return 'prog-low';
+  getEmptySlots(week: CalendarDay[]): number[] {
+    if (!week.length) return [];
+    const firstDay = week[0].date.getDay();
+    const offset = firstDay === 0 ? 6 : firstDay - 1; // Monday=0
+    return new Array(offset).fill(0);
   }
 
-  joursSemaine = [
-  { num: 1, label: 'Lun' },
-  { num: 2, label: 'Mar' },
-  { num: 3, label: 'Mer' },
-  { num: 4, label: 'Jeu' },
-  { num: 5, label: 'Ven' }
-];
+  savePointages(): void {
+    if (!this.selectedStagiaire) return;
+    this.savingPointage = true;
 
-joursPresentsSet = new Set<number>([1, 2, 3, 4, 5]);
+    const pointages: { date: string; present: boolean; motif: string }[] = [];
+    this.pointageMap.forEach((value, key) => {
+      pointages.push({ date: key, present: value.present, motif: value.motif });
+    });
 
-isPresent(num: number): boolean {
-  return this.joursPresentsSet.has(num);
-}
-
-toggleJour(num: number): void {
-  if (this.joursPresentsSet.has(num)) {
-    this.joursPresentsSet.delete(num);
-  } else {
-    this.joursPresentsSet.add(num);
+    this.pointageService.saveBulk({
+      stageId: this.selectedStagiaire.stageId,
+      pointages
+    }).subscribe({
+      next: () => {
+        this.savingPointage = false;
+        this.snackBar.open('Pointage sauvegardé avec succès', 'Fermer', { duration: 3000 });
+      },
+      error: () => {
+        this.savingPointage = false;
+        this.snackBar.open('Erreur sauvegarde pointage', 'Fermer', { duration: 3000 });
+      }
+    });
   }
-  const presents = this.joursPresentsSet.size;
-  this.form.patchValue({
-    joursPresents: presents,
-    joursAbsences: 5 - presents
-  });
-}
 
-  
+  // ─── Helpers ───
+
+  getInitials(name: string): string {
+    return name.split(' ').map(w => w.charAt(0)).join('').substring(0, 2).toUpperCase();
+  }
+
+  getTypeLabel(type: string): string {
+    const map: Record<string, string> = {
+      PFE: 'PFE', PFA: 'PFA', STAGE_ETE: 'Stage été', STAGE_OBSERVATION: 'Observation'
+    };
+    return map[type] ?? type;
+  }
+
+  private formatDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
 }
