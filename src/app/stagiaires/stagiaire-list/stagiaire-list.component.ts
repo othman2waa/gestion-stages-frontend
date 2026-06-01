@@ -18,6 +18,7 @@ import { StagiaireService } from '../../core/services/stagiaire.service';
 import { StagiaireFormComponent } from '../stagiaire-form/stagiaire-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../../core/services/export.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-stagiaire-list',
@@ -53,6 +54,7 @@ export class StagiaireListComponent implements OnInit {
 
   constructor(
     private stagiaireService: StagiaireService,
+    private authService: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private exportService: ExportService
@@ -62,10 +64,9 @@ export class StagiaireListComponent implements OnInit {
 
 loadStagiaires(): void {
   this.isLoading = true;
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  const role = currentUser.role ?? '';
-  
-  const obs = role === 'ENCADRANT' 
+  const role = this.authService.getRole() ?? '';
+
+  const obs = role === 'ENCADRANT'
     ? this.stagiaireService.getMesStagiaires()
     : this.stagiaireService.getAll();
 

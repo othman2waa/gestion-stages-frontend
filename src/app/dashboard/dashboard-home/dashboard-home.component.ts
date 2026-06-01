@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -20,7 +21,7 @@ export class DashboardHomeComponent implements OnInit {
   readonly today = new Date();
   private apiBase = `${environment.apiUrl}/reporting`;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
 
   get isAdmin(): boolean {
     return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole);
@@ -81,8 +82,7 @@ export class DashboardHomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    this.userRole = currentUser.role ?? '';
+    this.userRole = this.authService.getRole() ?? '';
     if (this.userRole === 'ENCADRANT') {
       this.router.navigate(['/encadrant-dashboard']);
       return;

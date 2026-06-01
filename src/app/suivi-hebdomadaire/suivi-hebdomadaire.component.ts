@@ -17,6 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { SuiviService } from '../core/services/suivi.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { StageService } from '../core/services/stage.service';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-suivi-hebdomadaire',
@@ -64,6 +65,7 @@ export class SuiviHebdomadaireComponent implements OnInit {
   constructor(
     private suiviService: SuiviService,
     private stageService: StageService,
+    private authService: AuthService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     public dialog: MatDialog
@@ -89,8 +91,7 @@ export class SuiviHebdomadaireComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    this.userRole = currentUser.role ?? '';
+    this.userRole = this.authService.getRole() ?? '';
     this.loadMesStages();
     this.loadMesSuivis();
   }

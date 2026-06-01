@@ -14,6 +14,7 @@ import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../../core/services/export.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-evaluation-list',
@@ -53,14 +54,14 @@ export class EvaluationListComponent implements OnInit {
 
   constructor(
     private evaluationService: EvaluationService,
+    private authService: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    this.userRole = currentUser.role ?? '';
+    this.userRole = this.authService.getRole() ?? '';
     this.loadEvaluations();
   }
 
@@ -121,7 +122,8 @@ export class EvaluationListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.evaluationService.delete(id).subscribe({
-          next: () => { this.snackBar.open('Évaluation supprimée', 'Fermer', { duration: 3000 }); this.loadEvaluations(); }
+          next: () => { this.snackBar.open('Évaluation supprimée', 'Fermer', { duration: 3000 }); this.loadEvaluations(); },
+          error: () => this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 })
         });
       }
     });

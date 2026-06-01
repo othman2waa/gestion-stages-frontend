@@ -11,6 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { OnboardingChecklistService } from '../core/services/onboarding-checklist.service';
 import { StagiaireService } from '../core/services/stagiaire.service';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-onboarding',
@@ -46,12 +47,12 @@ export class OnboardingComponent implements OnInit {
   constructor(
     private checklistService: OnboardingChecklistService,
     private stagiaireService: StagiaireService,
+    private authService: AuthService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    this.userRole = currentUser.role ?? '';
+    this.userRole = this.authService.getRole() ?? '';
     this.stagiaireService.getAll().subscribe({
       next: (data) => this.stagiaires = data
     });

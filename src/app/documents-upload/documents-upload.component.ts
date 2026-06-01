@@ -77,7 +77,6 @@ export class DocumentsUploadComponent implements OnInit {
   constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
     // Récupérer candidatureId depuis le profil stagiaire
     this.http.get<any>(`${environment.apiUrl}/stagiaires/mon-profil`).subscribe({
       next: (profil) => {

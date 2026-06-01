@@ -148,8 +148,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   getUserInfo(): { name: string; role: string; initials: string } {
-    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const name = user.username ?? 'Utilisateur';
+    const user = this.authService.getCurrentUser();
+    const name = user?.username ?? 'Utilisateur';
     const role = this.userRole.replace('_', ' ');
     const initials = name.substring(0, 2).toUpperCase();
     return { name, role, initials };
