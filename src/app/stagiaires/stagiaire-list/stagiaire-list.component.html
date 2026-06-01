@@ -6,7 +6,7 @@
       <h2><mat-icon>school</mat-icon> Gestion des Stagiaires</h2>
       <p>{{ totalStagiaires }} stagiaire(s) enregistré(s)</p>
     </div>
-    <div class="header-actions">
+    <div class="header-actions" *ngIf="!isEncadrant">
       <button mat-stroked-button (click)="exportExcel()">
         <mat-icon>table_view</mat-icon> Excel
       </button>
@@ -118,10 +118,10 @@
           <button mat-icon-button matTooltip="Voir détails" (click)="voirDetail(s)">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Modifier" (click)="openForm(s)">
+          <button mat-icon-button matTooltip="Modifier" (click)="openForm(s)" *ngIf="!isEncadrant">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" matTooltip="Supprimer" (click)="delete(s.id)">
+          <button mat-icon-button color="warn" matTooltip="Supprimer" (click)="delete(s.id)" *ngIf="!isEncadrant">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
@@ -175,7 +175,7 @@
 
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Fermer</button>
-    <button mat-raised-button color="primary" (click)="openForm(selectedStagiaire); closeDialog()">
+    <button mat-raised-button color="primary" (click)="openForm(selectedStagiaire); closeDialog()" *ngIf="!isEncadrant">
         <mat-icon>edit</mat-icon> Modifier
     </button>
   </mat-dialog-actions>

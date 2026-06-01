@@ -44,6 +44,9 @@ export class StagiaireListComponent implements OnInit {
   isLoading = true;
   selectedStagiaire: any = null;
 
+  userRole = '';
+  get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
+
   readonly niveaux = ['Bac+2', 'Bac+3', 'Bac+4', 'Bac+5', 'Master', 'Doctorat'];
 
   get totalStagiaires(): number { return this.stagiaires.length; }
@@ -60,7 +63,10 @@ export class StagiaireListComponent implements OnInit {
     private exportService: ExportService
   ) {}
 
-  ngOnInit(): void { this.loadStagiaires(); }
+  ngOnInit(): void {
+    this.userRole = this.authService.getRole() ?? '';
+    this.loadStagiaires();
+  }
 
 loadStagiaires(): void {
   this.isLoading = true;
