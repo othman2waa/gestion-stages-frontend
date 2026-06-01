@@ -125,6 +125,46 @@
   }
 }
 
+// Signature detail cards (in detail dialog)
+.sig-detail-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; border-radius: 10px; margin-bottom: 8px;
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  transition: all 0.15s;
+
+  &.signed { background: #f0fdf4; border-color: #bbf7d0; }
+
+  .sig-detail-icon {
+    width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    mat-icon { font-size: 20px; }
+  }
+
+  .sig-detail-info { flex: 1;
+    .sig-detail-role { display: block; font-size: 10px; color: #94a3b8; text-transform: uppercase;
+      letter-spacing: 0.5px; font-weight: 700; }
+    .sig-detail-name { display: block; font-size: 13px; color: #1e293b; font-weight: 600; }
+    .sig-detail-date { display: block; font-size: 11px; color: #00843D; margin-top: 2px;
+      &.pending { color: #94a3b8; font-style: italic; } }
+  }
+
+  .sig-detail-badge {
+    padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;
+    background: #f1f5f9; color: #64748b;
+    &.badge-ok { background: #dcfce7; color: #166534; }
+  }
+}
+
+.sig-progress {
+  display: flex; align-items: center; gap: 10px; margin-top: 8px;
+
+  .sig-prog-bar { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;
+    .sig-prog-fill { height: 100%; background: linear-gradient(90deg, #00843D, #10b981);
+      border-radius: 3px; transition: width 0.5s; }
+  }
+  .sig-prog-label { font-size: 11px; color: #64748b; font-weight: 600; white-space: nowrap; }
+}
+
 .sig-dialog-header {
   display: flex; align-items: center; gap: 12px; padding: 16px 20px;
   background: linear-gradient(135deg, #00843D, #10B981);

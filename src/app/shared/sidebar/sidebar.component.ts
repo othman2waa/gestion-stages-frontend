@@ -1,12 +1,13 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService, AppNotification } from '../../core/services/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Subscription, filter } from 'rxjs';
+import { Subscription, filter, interval } from 'rxjs';
 
 interface MenuItem {
   label: string;
@@ -35,6 +36,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
   userRole = '';
   currentUrl = '';
   private routerSub!: Subscription;
+  private pollSub!: Subscription;
+
+  // Notifications
+  notifOpen = false;
+  notifications: AppNotification[] = [];
+  unreadCount = 0;
 
   readonly menuGroups: MenuGroup[] = [
     {
@@ -90,7 +97,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     public router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private notifService: NotificationService
   ) {
     this.currentUrl = this.router.url;
     this.routerSub = this.router.events.pipe(
@@ -103,10 +111,79 @@ export class SidebarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userRole = this.authService.getRole() ?? '';
     this.loadBadges();
+    this.loadNotifications();
+    // Poll notifications every 60 seconds
+    this.pollSub = interval(60000).subscribe(() => this.loadNotifications());
   }
 
   ngOnDestroy(): void {
     this.routerSub?.unsubscribe();
+    this.pollSub?.unsubscribe();
+  }
+
+  // ── Notifications ──
+
+  loadNotifications(): void {
+    this.notifService.refreshCount();
+    this.notifService.unreadCount.subscribe(c => this.unreadCount = c);
+  }
+
+  toggleNotif(event: Event): void {
+    event.stopPropagation();
+    this.notifOpen = !this.notifOpen;
+    if (this.notifOpen) {
+      this.notifService.getAll().subscribe(n => this.notifications = n.slice(0, 20));
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.notif-dropdown') && !target.closest('.notif-bell')) {
+      this.notifOpen = false;
+    }
+  }
+
+  markAsRead(notif: AppNotification): void {
+    if (!notif.lue) {
+      this.notifService.marquerLue(notif.id).subscribe();
+      notif.lue = true;
+    }
+    if (notif.lien) this.router.navigate([notif.lien]);
+    this.notifOpen = false;
+  }
+
+  markAllRead(): void {
+    this.notifService.marquerToutesLues().subscribe(() => {
+      this.notifications.forEach(n => n.lue = true);
+    });
+  }
+
+  getNotifIcon(type: string): string {
+    const icons: Record<string, string> = {
+      STAGE: 'work', CANDIDATURE: 'inbox', CONVENTION: 'description',
+      EVALUATION: 'star_rate', ATTESTATION: 'workspace_premium', SYSTEME: 'info'
+    };
+    return icons[type] ?? 'notifications';
+  }
+
+  getNotifColor(type: string): string {
+    const colors: Record<string, string> = {
+      STAGE: '#00843D', CANDIDATURE: '#1E40AF', CONVENTION: '#7C3AED',
+      EVALUATION: '#F47920', ATTESTATION: '#0891B2', SYSTEME: '#64748B'
+    };
+    return colors[type] ?? '#64748B';
+  }
+
+  getTimeAgo(dateStr: string): string {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diff < 60) return 'À l\'instant';
+    if (diff < 3600) return Math.floor(diff / 60) + ' min';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' h';
+    if (diff < 604800) return Math.floor(diff / 86400) + ' j';
+    return date.toLocaleDateString('fr-FR');
   }
 
   loadBadges(): void {

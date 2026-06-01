@@ -43,6 +43,22 @@
     </div>
   </div>
 
+  <!-- Graphiques -->
+  <div class="charts-row" *ngIf="evaluations.length > 0">
+    <div class="chart-panel">
+      <div class="chart-title"><mat-icon>donut_large</mat-icon> Répartition des notes</div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas baseChart [data]="distributionChartData" [options]="distributionChartOptions" type="doughnut"></canvas>
+      </div>
+    </div>
+    <div class="chart-panel wide">
+      <div class="chart-title"><mat-icon>timeline</mat-icon> Évolution des notes</div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas baseChart [data]="timelineChartData" [options]="timelineChartOptions" type="line"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- Filtres -->
   <div class="filtres-bar">
     <div class="search-input">

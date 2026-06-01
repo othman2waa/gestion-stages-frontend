@@ -20,7 +20,7 @@
 // Section titles
 .section-title { display: flex; align-items: center; gap: 6px; font-size: 12px;
   font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;
-  margin: 20px 0 10px; mat-icon { font-size: 16px; color: #00843D; } }
+  margin: 24px 0 12px; mat-icon { font-size: 16px; color: #00843D; } }
 
 // KPIs
 .kpis { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin-bottom: 20px;
@@ -38,7 +38,7 @@
 }
 
 // Alertes
-.alertes { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;
+.alertes { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 4px;
   .alerte { display: flex; align-items: center; gap: 10px; border-radius: 12px;
     padding: 12px 18px; flex: 1; min-width: 160px;
     &.clickable { cursor: pointer; transition: opacity 0.15s; &:hover { opacity: 0.85; } }
@@ -48,8 +48,8 @@
   }
 }
 
-// Insights
-.insights { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;
+// Insights (indicateurs)
+.insights { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 4px;
   .insight { background: white; border-radius: 12px; padding: 14px 16px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #F1F5F9;
     .ins-header { display: flex; justify-content: space-between; align-items: center;
@@ -65,55 +65,193 @@
   }
 }
 
-// Two cols
-.two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+// Charts
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 4px;
 
-.panel { background: white; border-radius: 14px; padding: 18px 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #F1F5F9;
-  .panel-title { display: flex; align-items: center; gap: 6px; font-size: 13px;
-    font-weight: 700; color: #1E293B; margin-bottom: 14px;
-    mat-icon { font-size: 18px; color: #00843D; } }
+  &.two {
+    grid-template-columns: 1.5fr 1fr;
+  }
 }
 
-// Statuts
-.statuts { display: flex; flex-direction: column; gap: 10px;
-  .statut-row { display: flex; align-items: center; gap: 10px;
-    .st-icon { width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+.chart-panel {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border: 1px solid #F1F5F9;
+  position: relative;
+
+  &.wide {
+    // already handled by grid
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.chart-wrap {
+  position: relative;
+
+  &.doughnut-wrap {
+    height: 260px;
+  }
+
+  &.polar-wrap {
+    height: 260px;
+  }
+
+  &.bar-wrap {
+    height: 280px;
+  }
+}
+
+// Center label for doughnut
+.chart-center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+
+  .ccl-val {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1E293B;
+    line-height: 1;
+  }
+  .ccl-lbl {
+    font-size: 11px;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Quick summary
+.quick-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+
+  .qs-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #F1F5F9;
+
+    mat-icon {
+      font-size: 28px;
+      color: #00843D;
+      margin-bottom: 8px;
+    }
+
+    .qs-val {
+      display: block;
+      font-size: 28px;
+      font-weight: 800;
+      color: #1E293B;
+    }
+
+    .qs-lbl {
+      font-size: 11px;
+      color: #64748B;
+    }
+  }
+}
+
+// Compliance
+.compliance-section {
+  background: white; border-radius: 14px; padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.compliance-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;
+
+  .compliance-stat {
+    display: flex; align-items: center; gap: 14px;
+
+    .compliance-circle {
+      width: 56px; height: 56px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      mat-icon { font-size: 15px; } }
-    .st-body { flex: 1;
-      .st-top { display: flex; justify-content: space-between; font-size: 12px;
-        color: #1E293B; margin-bottom: 4px; }
-      .st-track { height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden;
-        .st-fill { height: 100%; border-radius: 3px; transition: width 0.6s; } }
+      font-size: 16px; font-weight: 800; color: white;
+      &.ok { background: linear-gradient(135deg, #00843D, #10b981); }
+      &.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+      &.danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
     }
-    .st-pct { font-size: 11px; color: #94A3B8; min-width: 30px; text-align: right; }
+
+    .cs-label { display: block; font-size: 14px; font-weight: 700; color: #1e293b; }
+    .cs-detail { display: block; font-size: 12px; color: #64748b; }
   }
-}
 
-// Candidatures panel
-.cand-total { text-align: center; margin-bottom: 16px;
-  .ct-val { display: block; font-size: 36px; font-weight: 800; color: #1E293B; }
-  .ct-lbl { font-size: 12px; color: #64748B; }
-}
-
-.cand-bars { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;
-  .cand-row { display: flex; align-items: center; gap: 10px;
-    .cr-left { display: flex; align-items: center; gap: 6px; min-width: 90px;
-      font-size: 12px; color: #475569;
-      .cr-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; } }
-    .cr-track { flex: 1; height: 8px; background: #F1F5F9; border-radius: 4px; overflow: hidden;
-      .cr-fill { height: 100%; border-radius: 4px; transition: width 0.6s; } }
-    .cr-right { min-width: 60px; text-align: right;
-      .cr-val { display: block; font-size: 14px; font-weight: 700; }
-      .cr-pct { font-size: 10px; color: #94A3B8; }
+  .compliance-badges { display: flex; gap: 10px;
+    .cb { display: flex; align-items: center; gap: 4px; padding: 6px 12px;
+      border-radius: 8px; font-size: 12px; font-weight: 600;
+      mat-icon { font-size: 16px; }
+      &.ok { background: #f0fdf4; color: #166534; }
+      &.warning { background: #fef3c7; color: #92400e; }
     }
   }
 }
 
-.quick-nums { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; border-top: 1px solid #F1F5F9; padding-top: 14px;
-  .qn { text-align: center;
-    .qnv { display: block; font-size: 20px; font-weight: 800; color: #1E293B; }
-    .qnl { font-size: 10px; color: #64748B; }
+.compliance-list {
+  display: flex; flex-direction: column; gap: 8px;
+
+  .cl-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 12px; border-radius: 8px; background: #f8fafc;
+    border: 1px solid #f1f5f9;
+
+    .cl-info { min-width: 180px;
+      .cl-name { display: block; font-size: 13px; font-weight: 600; color: #1e293b; }
+      .cl-email { display: block; font-size: 11px; color: #94a3b8; }
+    }
+
+    .cl-missing { flex: 1; display: flex; gap: 4px; flex-wrap: wrap;
+      .cl-tag { background: #fef2f2; color: #dc2626; padding: 2px 8px;
+        border-radius: 4px; font-size: 10px; font-weight: 600; }
+    }
+
+    .cl-progress { display: flex; align-items: center; gap: 8px; min-width: 120px;
+      mat-progress-bar { flex: 1; height: 6px; border-radius: 3px;
+        &.ok ::ng-deep .mdc-linear-progress__bar-inner { border-color: #00843D; }
+        &.warning ::ng-deep .mdc-linear-progress__bar-inner { border-color: #f59e0b; }
+        &.danger ::ng-deep .mdc-linear-progress__bar-inner { border-color: #dc2626; }
+      }
+      span { font-size: 11px; font-weight: 600; color: #64748b; }
+    }
   }
+}
+
+// Responsive
+@media (max-width: 1200px) {
+  .kpis { grid-template-columns: repeat(4, 1fr); }
+  .charts-row { grid-template-columns: 1fr 1fr; &.two { grid-template-columns: 1fr 1fr; } }
+  .insights { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .charts-row { grid-template-columns: 1fr; &.two { grid-template-columns: 1fr; } }
+  .insights { grid-template-columns: 1fr; }
+  .quick-summary { grid-template-columns: repeat(2, 1fr); }
 }

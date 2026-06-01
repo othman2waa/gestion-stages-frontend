@@ -15,6 +15,10 @@ import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.comp
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../../core/services/export.service';
 import { AuthService } from '../../core/services/auth.service';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartData, ChartConfiguration, Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-evaluation-list',
@@ -22,7 +26,8 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
-    MatTooltipModule, MatProgressBarModule, MatChipsModule, MatSelectModule
+    MatTooltipModule, MatProgressBarModule, MatChipsModule, MatSelectModule,
+    BaseChartDirective
   ],
   templateUrl: './evaluation-list.component.html',
   styleUrls: ['./evaluation-list.component.scss']
@@ -164,4 +169,63 @@ export class EvaluationListComponent implements OnInit {
   exportPdf(): void { this.exportService.exportEvaluationsPdf(this.evaluations); }
 
   trackById(_: number, item: any): number { return item.id; }
+
+  // ── Charts ──
+
+  get distributionChartData(): ChartData<'doughnut'> {
+    return {
+      labels: ['Excellent (≥16)', 'Bien (12-15)', 'Passable (10-11)', 'Insuffisant (<10)'],
+      datasets: [{
+        data: [
+          this.evaluations.filter(e => e.note >= 16).length,
+          this.evaluations.filter(e => e.note >= 12 && e.note < 16).length,
+          this.evaluations.filter(e => e.note >= 10 && e.note < 12).length,
+          this.evaluations.filter(e => e.note < 10).length
+        ],
+        backgroundColor: ['#00843D', '#1E40AF', '#F59E0B', '#DC2626'],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    };
+  }
+
+  distributionChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+    responsive: true, maintainAspectRatio: false, cutout: '60%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } } } }
+  };
+
+  get timelineChartData(): ChartData<'line'> {
+    const sorted = [...this.evaluations]
+      .filter(e => e.dateEval)
+      .sort((a, b) => new Date(a.dateEval).getTime() - new Date(b.dateEval).getTime());
+    const labels = sorted.map(e => {
+      const d = new Date(e.dateEval);
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    });
+    const data = sorted.map(e => e.note);
+    return {
+      labels,
+      datasets: [{
+        label: 'Note /20',
+        data,
+        borderColor: '#00843D',
+        backgroundColor: 'rgba(0,132,61,0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: data.map(n => n >= 16 ? '#00843D' : n >= 12 ? '#1E40AF' : n >= 10 ? '#F59E0B' : '#DC2626'),
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2
+      }]
+    };
+  }
+
+  timelineChartOptions: ChartConfiguration<'line'>['options'] = {
+    responsive: true, maintainAspectRatio: false,
+    scales: {
+      y: { min: 0, max: 20, ticks: { stepSize: 4, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+      x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+    },
+    plugins: { legend: { display: false } }
+  };
 }

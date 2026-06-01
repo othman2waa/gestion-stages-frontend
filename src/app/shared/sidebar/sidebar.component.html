@@ -16,6 +16,42 @@
     </button>
   </div>
 
+  <!-- Notification bell -->
+  <div class="notif-section">
+    <button class="notif-bell" (click)="toggleNotif($event)"
+            [matTooltip]="isCollapsed ? 'Notifications' : ''" matTooltipPosition="right">
+      <mat-icon>notifications</mat-icon>
+      <span class="notif-count" *ngIf="unreadCount > 0">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+    </button>
+    <span class="notif-label" *ngIf="!isCollapsed" (click)="toggleNotif($event)">Notifications</span>
+
+    <!-- Dropdown -->
+    <div class="notif-dropdown" *ngIf="notifOpen" (click)="$event.stopPropagation()">
+      <div class="notif-dd-header">
+        <span>Notifications</span>
+        <button *ngIf="unreadCount > 0" (click)="markAllRead()">Tout marquer lu</button>
+      </div>
+      <div class="notif-dd-list" *ngIf="notifications.length > 0">
+        <div class="notif-dd-item" *ngFor="let n of notifications"
+             [class.unread]="!n.lue" (click)="markAsRead(n)">
+          <div class="ndi-icon" [style.background]="getNotifColor(n.type) + '18'" [style.color]="getNotifColor(n.type)">
+            <mat-icon>{{ getNotifIcon(n.type) }}</mat-icon>
+          </div>
+          <div class="ndi-body">
+            <span class="ndi-title">{{ n.titre }}</span>
+            <span class="ndi-msg">{{ n.message }}</span>
+            <span class="ndi-time">{{ getTimeAgo(n.createdAt) }}</span>
+          </div>
+          <div class="ndi-dot" *ngIf="!n.lue"></div>
+        </div>
+      </div>
+      <div class="notif-dd-empty" *ngIf="notifications.length === 0">
+        <mat-icon>notifications_none</mat-icon>
+        <span>Aucune notification</span>
+      </div>
+    </div>
+  </div>
+
   <!-- User card -->
   <div class="user-card" *ngIf="!isCollapsed">
     <div class="user-avatar">{{ getUserInfo().initials }}</div>

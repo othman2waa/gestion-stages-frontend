@@ -46,95 +46,152 @@
         </div>
       </div>
 
-      <!-- INDICATEURS -->
+      <!-- INDICATEURS DE PERFORMANCE -->
       <div class="section-title"><mat-icon>insights</mat-icon> Indicateurs de performance</div>
       <div class="insights">
-        <div class="insight">
+        <div class="insight" *ngFor="let ind of indicateurs">
           <div class="ins-header">
-            <span>Taux d'acceptation</span>
-            <span class="ins-val green">{{ stats.tauxAcceptation }}%</span>
+            <span>{{ ind.label }}</span>
+            <span class="ins-val" [ngClass]="ind.cls">{{ ind.value }}</span>
           </div>
-          <div class="bar-track"><div class="bar-fill green" [style.width]="stats.tauxAcceptation + '%'"></div></div>
-        </div>
-        <div class="insight">
-          <div class="ins-header">
-            <span>Moyenne évaluations</span>
-            <span class="ins-val orange">{{ stats.moyenneEvaluations | number:'1.1-1' }}/20</span>
-          </div>
-          <div class="bar-track"><div class="bar-fill orange" [style.width]="(stats.moyenneEvaluations / 20 * 100) + '%'"></div></div>
-        </div>
-        <div class="insight">
-          <div class="ins-header">
-            <span>Score moyen IA matching</span>
-            <span class="ins-val purple">{{ stats.scoreMoyenMatching }}%</span>
-          </div>
-          <div class="bar-track"><div class="bar-fill purple" [style.width]="stats.scoreMoyenMatching + '%'"></div></div>
-        </div>
-        <div class="insight">
-          <div class="ins-header">
-            <span>Stages en cours / total</span>
-            <span class="ins-val blue">{{ stats.stagesEnCours }}/{{ stats.totalStages }}</span>
-          </div>
-          <div class="bar-track"><div class="bar-fill blue" [style.width]="(stats.totalStages > 0 ? stats.stagesEnCours / stats.totalStages * 100 : 0) + '%'"></div></div>
+          <div class="bar-track"><div class="bar-fill" [ngClass]="ind.cls" [style.width]="ind.pct + '%'"></div></div>
         </div>
       </div>
 
-      <!-- DEUX COLONNES -->
-      <div class="two-cols">
-
-        <!-- Statuts stages -->
-        <div class="panel">
-          <div class="panel-title"><mat-icon>donut_large</mat-icon> Statuts des stages</div>
-          <div class="statuts">
-            <div class="statut-row" *ngFor="let st of statutsList">
-              <div class="st-icon" [style.background]="st.color + '18'" [style.color]="st.color">
-                <mat-icon>{{ st.icon }}</mat-icon>
-              </div>
-              <div class="st-body">
-                <div class="st-top">
-                  <span>{{ st.label }}</span>
-                  <span [style.color]="st.color" style="font-weight:700">{{ st.value }}</span>
-                </div>
-                <div class="st-track">
-                  <div class="st-fill" [style.width]="st.pct + '%'" [style.background]="st.color"></div>
-                </div>
-              </div>
-              <span class="st-pct">{{ st.pct }}%</span>
-            </div>
+      <!-- GRAPHIQUES ROW 1 : Statuts + Candidatures (doughnut) -->
+      <div class="section-title"><mat-icon>donut_large</mat-icon> Répartition visuelle</div>
+      <div class="charts-row">
+        <div class="chart-panel">
+          <div class="chart-title">Statuts des stages</div>
+          <div class="chart-center-label">
+            <span class="ccl-val">{{ stats.totalStages }}</span>
+            <span class="ccl-lbl">stages</span>
+          </div>
+          <div class="chart-wrap doughnut-wrap">
+            <canvas baseChart
+              [data]="stageStatusChartData"
+              [options]="stageStatusChartOptions"
+              type="doughnut">
+            </canvas>
           </div>
         </div>
 
-        <!-- Candidatures -->
-        <div class="panel">
-          <div class="panel-title"><mat-icon>people</mat-icon> Candidatures</div>
-          <div class="cand-total">
-            <span class="ct-val">{{ stats.totalCandidatures }}</span>
-            <span class="ct-lbl">Total candidatures</span>
+        <div class="chart-panel">
+          <div class="chart-title">Candidatures</div>
+          <div class="chart-center-label">
+            <span class="ccl-val">{{ stats.totalCandidatures }}</span>
+            <span class="ccl-lbl">total</span>
           </div>
-          <div class="cand-bars">
-            <div class="cand-row" *ngFor="let c of candidaturesDonut">
-              <div class="cr-left">
-                <div class="cr-dot" [style.background]="c.color"></div>
-                <span>{{ c.label }}</span>
-              </div>
-              <div class="cr-track">
-                <div class="cr-fill" [style.width]="c.pct + '%'" [style.background]="c.color"></div>
-              </div>
-              <div class="cr-right">
-                <span class="cr-val" [style.color]="c.color">{{ c.value }}</span>
-                <span class="cr-pct">{{ c.pct }}%</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Résumé rapide -->
-          <div class="quick-nums">
-            <div class="qn"><span class="qnv">{{ stats.stagesEnCours }}</span><span class="qnl">Stages actifs</span></div>
-            <div class="qn"><span class="qnv">{{ stats.totalSuivis }}</span><span class="qnl">Suivis total</span></div>
-            <div class="qn"><span class="qnv">{{ stats.totalEncadrants }}</span><span class="qnl">Encadrants</span></div>
+          <div class="chart-wrap doughnut-wrap">
+            <canvas baseChart
+              [data]="candidatureChartData"
+              [options]="candidatureChartOptions"
+              type="doughnut">
+            </canvas>
           </div>
         </div>
 
+        <div class="chart-panel">
+          <div class="chart-title">Performance globale</div>
+          <div class="chart-wrap polar-wrap">
+            <canvas baseChart
+              [data]="performanceChartData"
+              [options]="performanceChartOptions"
+              type="polarArea">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRAPHIQUES ROW 2 : Départements + Types -->
+      <div class="section-title"><mat-icon>bar_chart</mat-icon> Analyse détaillée</div>
+      <div class="charts-row two">
+        <div class="chart-panel wide">
+          <div class="chart-title">Stages par département</div>
+          <div class="chart-wrap bar-wrap">
+            <canvas baseChart
+              [data]="deptChartData"
+              [options]="deptChartOptions"
+              type="bar">
+            </canvas>
+          </div>
+        </div>
+
+        <div class="chart-panel">
+          <div class="chart-title">Stages par type</div>
+          <div class="chart-wrap bar-wrap">
+            <canvas baseChart
+              [data]="typeChartData"
+              [options]="typeChartOptions"
+              type="bar">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPLIANCE DOCUMENTS -->
+      <div class="section-title" *ngIf="compliance"><mat-icon>fact_check</mat-icon> Conformité dossiers stagiaires</div>
+      <div class="compliance-section" *ngIf="compliance">
+        <div class="compliance-header">
+          <div class="compliance-stat">
+            <div class="compliance-circle" [class.ok]="compliance.tauxConformite >= 80"
+                 [class.warning]="compliance.tauxConformite >= 50 && compliance.tauxConformite < 80"
+                 [class.danger]="compliance.tauxConformite < 50">
+              <span>{{ compliance.tauxConformite }}%</span>
+            </div>
+            <div>
+              <span class="cs-label">Taux de conformité</span>
+              <span class="cs-detail">{{ compliance.dossierComplet }}/{{ compliance.totalStagiaires }} dossiers complets</span>
+            </div>
+          </div>
+          <div class="compliance-badges">
+            <span class="cb ok"><mat-icon>check_circle</mat-icon> {{ compliance.dossierComplet }} complets</span>
+            <span class="cb warning"><mat-icon>warning</mat-icon> {{ compliance.dossierIncomplet }} incomplets</span>
+          </div>
+        </div>
+
+        <div class="compliance-list" *ngIf="compliance.stagiairesIncomplets?.length > 0">
+          <div class="cl-item" *ngFor="let s of compliance.stagiairesIncomplets.slice(0, 8)">
+            <div class="cl-info">
+              <span class="cl-name">{{ s.nom }}</span>
+              <span class="cl-email">{{ s.email }}</span>
+            </div>
+            <div class="cl-missing">
+              <span class="cl-tag" *ngFor="let doc of s.documentsManquants">{{ doc }}</span>
+            </div>
+            <div class="cl-progress">
+              <mat-progress-bar mode="determinate" [value]="s.progression"
+                [class.ok]="s.progression >= 75" [class.warning]="s.progression >= 50 && s.progression < 75"
+                [class.danger]="s.progression < 50">
+              </mat-progress-bar>
+              <span>{{ s.progression }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RÉSUMÉ RAPIDE -->
+      <div class="quick-summary">
+        <div class="qs-card">
+          <mat-icon>play_circle</mat-icon>
+          <span class="qs-val">{{ stats.stagesEnCours }}</span>
+          <span class="qs-lbl">Stages actifs</span>
+        </div>
+        <div class="qs-card">
+          <mat-icon>event_note</mat-icon>
+          <span class="qs-val">{{ stats.totalSuivis }}</span>
+          <span class="qs-lbl">Suivis total</span>
+        </div>
+        <div class="qs-card">
+          <mat-icon>supervisor_account</mat-icon>
+          <span class="qs-val">{{ stats.totalEncadrants }}</span>
+          <span class="qs-lbl">Encadrants</span>
+        </div>
+        <div class="qs-card">
+          <mat-icon>check_circle</mat-icon>
+          <span class="qs-val">{{ stats.stagesTermines }}</span>
+          <span class="qs-lbl">Terminés</span>
+        </div>
       </div>
 
     </ng-container>

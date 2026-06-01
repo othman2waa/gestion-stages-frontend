@@ -186,17 +186,54 @@
       </div>
       <div class="detail-section">
         <p class="section-title">Signatures</p>
-        <div class="detail-row">
-          <mat-icon [style.color]="selectedConvention?.stagiaireSigne ? '#00843D' : '#94A3B8'">
-            {{ selectedConvention?.stagiaireSigne ? 'verified' : 'pending' }}
-          </mat-icon>
-          <span>Stagiaire : {{ selectedConvention?.stagiaireSigne ? 'Signé ✅' : 'En attente ⏳' }}</span>
+        <div class="sig-detail-card" [class.signed]="selectedConvention?.stagiaireSigne">
+          <div class="sig-detail-icon" [style.background]="selectedConvention?.stagiaireSigne ? '#dcfce7' : '#f1f5f9'"
+               [style.color]="selectedConvention?.stagiaireSigne ? '#00843D' : '#94A3B8'">
+            <mat-icon>{{ selectedConvention?.stagiaireSigne ? 'verified' : 'pending' }}</mat-icon>
+          </div>
+          <div class="sig-detail-info">
+            <span class="sig-detail-role">Stagiaire</span>
+            <span class="sig-detail-name">{{ selectedConvention?.stagiaireNom }}</span>
+            <span class="sig-detail-date" *ngIf="selectedConvention?.dateSignatureStagiaire">
+              Signé le {{ selectedConvention.dateSignatureStagiaire | date:'dd/MM/yyyy à HH:mm' }}
+            </span>
+            <span class="sig-detail-date pending" *ngIf="!selectedConvention?.stagiaireSigne">
+              En attente de signature
+            </span>
+          </div>
+          <div class="sig-detail-badge" [class.badge-ok]="selectedConvention?.stagiaireSigne">
+            {{ selectedConvention?.stagiaireSigne ? 'Signé' : 'En attente' }}
+          </div>
         </div>
-        <div class="detail-row">
-          <mat-icon [style.color]="selectedConvention?.encadrantSigne ? '#00843D' : '#94A3B8'">
-            {{ selectedConvention?.encadrantSigne ? 'verified' : 'pending' }}
-          </mat-icon>
-          <span>Encadrant : {{ selectedConvention?.encadrantSigne ? 'Signé ✅' : 'En attente ⏳' }}</span>
+        <div class="sig-detail-card" [class.signed]="selectedConvention?.encadrantSigne">
+          <div class="sig-detail-icon" [style.background]="selectedConvention?.encadrantSigne ? '#dcfce7' : '#f1f5f9'"
+               [style.color]="selectedConvention?.encadrantSigne ? '#00843D' : '#94A3B8'">
+            <mat-icon>{{ selectedConvention?.encadrantSigne ? 'verified' : 'pending' }}</mat-icon>
+          </div>
+          <div class="sig-detail-info">
+            <span class="sig-detail-role">Encadrant</span>
+            <span class="sig-detail-name">{{ selectedConvention?.encadrantNom }}</span>
+            <span class="sig-detail-date" *ngIf="selectedConvention?.dateSignatureEncadrant">
+              Signé le {{ selectedConvention.dateSignatureEncadrant | date:'dd/MM/yyyy à HH:mm' }}
+            </span>
+            <span class="sig-detail-date pending" *ngIf="!selectedConvention?.encadrantSigne">
+              En attente de signature
+            </span>
+          </div>
+          <div class="sig-detail-badge" [class.badge-ok]="selectedConvention?.encadrantSigne">
+            {{ selectedConvention?.encadrantSigne ? 'Signé' : 'En attente' }}
+          </div>
+        </div>
+        <!-- Progression globale -->
+        <div class="sig-progress">
+          <div class="sig-prog-bar">
+            <div class="sig-prog-fill"
+                 [style.width]="((selectedConvention?.stagiaireSigne ? 1 : 0) + (selectedConvention?.encadrantSigne ? 1 : 0)) * 50 + '%'">
+            </div>
+          </div>
+          <span class="sig-prog-label">
+            {{ (selectedConvention?.stagiaireSigne ? 1 : 0) + (selectedConvention?.encadrantSigne ? 1 : 0) }}/2 signatures
+          </span>
         </div>
       </div>
     </div>
