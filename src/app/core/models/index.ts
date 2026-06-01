@@ -15,3 +15,5 @@ export * from './sujet-stage.model';
 export * from './rapport.model';
 export * from './auth.model';
 export * from './pointage.model';
+export * from './fiche-appreciation.model';
+export * from './document-stagiaire.model';

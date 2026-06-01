@@ -35,10 +35,9 @@ export class EvaluationListComponent implements OnInit {
   isLoading = true;
   searchKeyword = '';
   selectedType = '';
+  selectedNiveau = '';
   selectedEvaluation: any = null;
   userRole = '';
-
-  readonly types = ['FIN_STAGE', 'MI_PARCOURS'];
 
   get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
   get isStagiaire(): boolean { return this.userRole === 'STAGIAIRE'; }
@@ -91,6 +90,18 @@ export class EvaluationListComponent implements OnInit {
     if (this.selectedType) {
       result = result.filter(e => e.typeEvaluation === this.selectedType);
     }
+    if (this.selectedNiveau) {
+      result = result.filter(e => {
+        const n = e.note ?? 0;
+        switch (this.selectedNiveau) {
+          case 'excellent': return n >= 16;
+          case 'bien': return n >= 12 && n < 16;
+          case 'passable': return n >= 10 && n < 12;
+          case 'insuffisant': return n < 10;
+          default: return true;
+        }
+      });
+    }
     this.filteredEvaluations = result;
   }
 
@@ -98,7 +109,7 @@ export class EvaluationListComponent implements OnInit {
   onFilterChange(): void { this.applyFilters(); }
 
   resetFiltres(): void {
-    this.searchKeyword = ''; this.selectedType = '';
+    this.searchKeyword = ''; this.selectedType = ''; this.selectedNiveau = '';
     this.filteredEvaluations = this.evaluations;
   }
 
@@ -141,6 +152,12 @@ export class EvaluationListComponent implements OnInit {
     if (note >= 12) return 'Bien';
     if (note >= 10) return 'Passable';
     return 'Insuffisant';
+  }
+
+  getTypeLabel(type: string): string {
+    if (type === 'FIN_STAGE') return 'Fin de stage';
+    if (type === 'MI_PARCOURS') return 'Mi-parcours';
+    return type?.replace('_', ' ') ?? '—';
   }
 
   exportExcel(): void { this.exportService.exportEvaluations(this.evaluations); }

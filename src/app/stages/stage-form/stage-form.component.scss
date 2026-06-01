@@ -1,0 +1,38 @@
+.form-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 24px; margin: -24px -24px 0;
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  mat-icon { font-size: 24px; color: white; }
+  h2 { margin: 0; font-size: 17px; color: white; flex: 1; font-weight: 700; }
+  button { color: rgba(255,255,255,0.8); }
+}
+
+.stage-form {
+  padding-top: 12px;
+}
+
+.section-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 700; color: #1e40af;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin: 16px 0 8px; padding-bottom: 6px;
+  border-bottom: 2px solid #dbeafe;
+  mat-icon { font-size: 16px; }
+}
+
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+
+.full-width { width: 100%; }
+
+.option-sub {
+  color: #64748b; font-size: 12px;
+}
+
+mat-dialog-actions {
+  padding: 12px 24px;
+  button {
+    display: flex; align-items: center; gap: 6px;
+  }
+}

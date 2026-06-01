@@ -24,6 +24,7 @@ import { ExportService } from '../../core/services/export.service';
 import { DepartementService } from '../../core/services/departement.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-stage-list',
@@ -79,9 +80,13 @@ export class StageListComponent implements OnInit {
     REJETEE: 0, ANNULE: 0
   };
 
+  userRole = '';
+  get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
+
   constructor(
     private stageService: StageService,
     private departementService: DepartementService,
+    private authService: AuthService,
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private exportService: ExportService,
@@ -89,6 +94,7 @@ export class StageListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.userRole = this.authService.getRole() ?? '';
     this.searchSubject.pipe(debounceTime(400), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => { this.pageIndex = 0; this.loadStages(); });
     this.departementService.getAll().subscribe(d => this.departements = d);

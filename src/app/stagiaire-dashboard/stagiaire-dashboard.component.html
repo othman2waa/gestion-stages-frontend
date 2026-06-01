@@ -7,6 +7,24 @@
 
   <ng-container *ngIf="!isLoading && dashboard">
 
+    <!-- Bannière désactivation compte -->
+    <div *ngIf="showDeactivationWarning" class="deactivation-banner" [class]="'deactivation-' + deactivationUrgency">
+      <div class="deactivation-content">
+        <mat-icon>{{ deactivationUrgency === 'critical' ? 'error' : 'warning' }}</mat-icon>
+        <div class="deactivation-text">
+          <strong *ngIf="joursRestants > 0">
+            Votre accès sera désactivé dans {{ joursRestants }} jour{{ joursRestants > 1 ? 's' : '' }}
+          </strong>
+          <strong *ngIf="joursRestants === 0">
+            Votre accès sera désactivé aujourd'hui
+          </strong>
+          <span>
+            Votre stage est terminé. Pensez à télécharger vos documents (rapport, attestation, fiches) avant la désactivation prévue le {{ dashboard.dateDesactivationPrevue | date:'dd/MM/yyyy' }}.
+          </span>
+        </div>
+      </div>
+    </div>
+
     <!-- En-tête -->
     <!-- Remplace le dashboard-header par : -->
 <div class="dashboard-header">
@@ -437,6 +455,123 @@
           </div>
         </div>
       </mat-tab>
+<!-- Tab Fiches d'appréciation -->
+<mat-tab>
+  <ng-template mat-tab-label>
+    <mat-icon>rate_review</mat-icon>&nbsp; Fiches d'appréciation
+  </ng-template>
+  <div class="tab-content">
+
+    <div *ngIf="!ficheStage && !ficheStagiaire" class="empty-tab">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Les fiches d'appréciation n'ont pas encore été remplies par votre encadrant</p>
+    </div>
+
+    <!-- Fiche Stage -->
+    <mat-card *ngIf="ficheStage" class="fiche-card">
+      <mat-card-header>
+        <div mat-card-avatar class="fiche-avatar blue"><mat-icon>rate_review</mat-icon></div>
+        <mat-card-title>Appréciation du Stage</mat-card-title>
+        <mat-card-subtitle>Remplie par {{ ficheStage.encadrantNom }} · Moyenne {{ ficheStage.moyenneGenerale }}/5</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="fiche-criteres">
+          <div class="fiche-critere">
+            <span class="crit-label">Note globale</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStage.noteGlobale * 20" [style.background]="getFicheNoteColor(ficheStage.noteGlobale)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStage.noteGlobale)">{{ ficheStage.noteGlobale }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Qualité du travail</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStage.qualiteTravail * 20" [style.background]="getFicheNoteColor(ficheStage.qualiteTravail)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStage.qualiteTravail)">{{ ficheStage.qualiteTravail }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Respect des délais</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStage.respectDelais * 20" [style.background]="getFicheNoteColor(ficheStage.respectDelais)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStage.respectDelais)">{{ ficheStage.respectDelais }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Initiative</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStage.initiative * 20" [style.background]="getFicheNoteColor(ficheStage.initiative)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStage.initiative)">{{ ficheStage.initiative }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Qualité du rapport</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStage.qualiteRapport * 20" [style.background]="getFicheNoteColor(ficheStage.qualiteRapport)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStage.qualiteRapport)">{{ ficheStage.qualiteRapport }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Compétences techniques</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStage.competencesTechniques * 20" [style.background]="getFicheNoteColor(ficheStage.competencesTechniques)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStage.competencesTechniques)">{{ ficheStage.competencesTechniques }}/5</span>
+          </div>
+        </div>
+        <div class="fiche-reco">
+          <mat-icon>recommend</mat-icon>
+          <span>Recommandation : <strong>{{ ficheStage.recommandation?.replace('_', ' ') }}</strong></span>
+        </div>
+        <div *ngIf="ficheStage.commentaires" class="fiche-comment">
+          <mat-icon>format_quote</mat-icon>
+          <p>{{ ficheStage.commentaires }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Fiche Stagiaire -->
+    <mat-card *ngIf="ficheStagiaire" class="fiche-card" style="margin-top: 16px;">
+      <mat-card-header>
+        <div mat-card-avatar class="fiche-avatar green"><mat-icon>person_pin</mat-icon></div>
+        <mat-card-title>Appréciation du Stagiaire</mat-card-title>
+        <mat-card-subtitle>Remplie par {{ ficheStagiaire.encadrantNom }} · Moyenne {{ ficheStagiaire.moyenneGenerale }}/5</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="fiche-criteres">
+          <div class="fiche-critere">
+            <span class="crit-label">Assiduité</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStagiaire.assiduite * 20" [style.background]="getFicheNoteColor(ficheStagiaire.assiduite)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStagiaire.assiduite)">{{ ficheStagiaire.assiduite }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Ponctualité</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStagiaire.ponctualite * 20" [style.background]="getFicheNoteColor(ficheStagiaire.ponctualite)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStagiaire.ponctualite)">{{ ficheStagiaire.ponctualite }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Comportement professionnel</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStagiaire.comportementProfessionnel * 20" [style.background]="getFicheNoteColor(ficheStagiaire.comportementProfessionnel)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStagiaire.comportementProfessionnel)">{{ ficheStagiaire.comportementProfessionnel }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Esprit d'équipe</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStagiaire.espritEquipe * 20" [style.background]="getFicheNoteColor(ficheStagiaire.espritEquipe)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStagiaire.espritEquipe)">{{ ficheStagiaire.espritEquipe }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Communication</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStagiaire.communication * 20" [style.background]="getFicheNoteColor(ficheStagiaire.communication)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStagiaire.communication)">{{ ficheStagiaire.communication }}/5</span>
+          </div>
+          <div class="fiche-critere">
+            <span class="crit-label">Adaptation</span>
+            <div class="crit-bar"><div class="crit-fill" [style.width.%]="ficheStagiaire.adaptation * 20" [style.background]="getFicheNoteColor(ficheStagiaire.adaptation)"></div></div>
+            <span class="crit-val" [style.color]="getFicheNoteColor(ficheStagiaire.adaptation)">{{ ficheStagiaire.adaptation }}/5</span>
+          </div>
+        </div>
+        <div class="fiche-reco">
+          <mat-icon>work</mat-icon>
+          <span>Recommandation embauche : <strong>{{ ficheStagiaire.recommandationEmbauche?.replace('_', ' ') }}</strong></span>
+        </div>
+        <div *ngIf="ficheStagiaire.commentaires" class="fiche-comment">
+          <mat-icon>format_quote</mat-icon>
+          <p>{{ ficheStagiaire.commentaires }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</mat-tab>
+
 <!-- Tab Rapport -->
 <mat-tab>
   <ng-template mat-tab-label>
@@ -569,13 +704,82 @@
   </div>
 </mat-tab>
 
-<!-- Tab Documents -->
+<!-- Tab Documents candidature -->
 <mat-tab>
   <ng-template mat-tab-label><mat-icon>upload_file</mat-icon>&nbsp; Mes Documents</ng-template>
   <div class="tab-content">
     <app-documents-upload></app-documents-upload>
   </div>
-</mat-tab>    </mat-tab-group>
+</mat-tab>
+
+<!-- Tab Mon Dossier Personnel -->
+<mat-tab>
+  <ng-template mat-tab-label>
+    <mat-icon>folder_shared</mat-icon>&nbsp; Mon Dossier
+    <span class="tab-badge-docs" *ngIf="missingDocsCount > 0">{{ missingDocsCount }}</span>
+  </ng-template>
+  <div class="tab-content">
+
+    <!-- Progress -->
+    <div class="dossier-progress">
+      <div class="dossier-prog-info">
+        <span><mat-icon>folder_shared</mat-icon> Dossier personnel</span>
+        <span class="dossier-prog-pct">{{ dossierCompletionPct }}% complet</span>
+      </div>
+      <mat-progress-bar mode="determinate" [value]="dossierCompletionPct"
+                        [class.complete-bar]="dossierCompletionPct === 100"></mat-progress-bar>
+      <p class="dossier-hint">Veuillez uploader tous les documents requis pour compléter votre dossier</p>
+    </div>
+
+    <!-- Document cards grid -->
+    <div class="docs-grid">
+      <div *ngFor="let docType of typesDocuments" class="doc-card"
+           [class.doc-uploaded]="getDocByType(docType.value)"
+           [class.doc-missing]="!getDocByType(docType.value)">
+
+        <div class="doc-card-header">
+          <div class="doc-icon" [class.uploaded]="getDocByType(docType.value)">
+            <mat-icon>{{ getDocByType(docType.value) ? 'check_circle' : docType.icon }}</mat-icon>
+          </div>
+          <div class="doc-info">
+            <h4>{{ docType.label }}</h4>
+            <p *ngIf="getDocByType(docType.value) as doc">
+              {{ doc.nomFichier }} · {{ formatDocSize(doc.taille) }}
+            </p>
+            <p *ngIf="!getDocByType(docType.value)" class="doc-missing-hint">Non uploadé</p>
+          </div>
+        </div>
+
+        <div class="doc-card-actions">
+          <!-- Upload / Replace -->
+          <button mat-stroked-button class="btn-doc-upload"
+                  (click)="docInput.click()">
+            <mat-icon>{{ getDocByType(docType.value) ? 'refresh' : 'upload' }}</mat-icon>
+            {{ getDocByType(docType.value) ? 'Remplacer' : 'Uploader' }}
+          </button>
+          <input #docInput type="file" [accept]="docType.accept" hidden
+                 (change)="onDocSelected($event, docType.value)">
+
+          <!-- Download -->
+          <button mat-icon-button *ngIf="getDocByType(docType.value)"
+                  (click)="downloadDoc(getDocByType(docType.value)!.id, getDocByType(docType.value)!.nomFichier)"
+                  matTooltip="Télécharger">
+            <mat-icon>download</mat-icon>
+          </button>
+
+          <!-- Delete -->
+          <button mat-icon-button *ngIf="getDocByType(docType.value)"
+                  (click)="deleteDoc(getDocByType(docType.value)!.id)"
+                  matTooltip="Supprimer" class="btn-doc-delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</mat-tab>
+    </mat-tab-group>
 
   </ng-container>
 

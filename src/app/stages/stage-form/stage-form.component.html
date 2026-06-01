@@ -1,40 +1,92 @@
-<h2 mat-dialog-title>
-  <mat-icon>{{ isEdit ? 'edit' : 'add' }}</mat-icon>
-  {{ isEdit ? 'Modifier le Stage' : 'Nouveau Stage' }}
-</h2>
+<!-- Header -->
+<div class="form-header">
+  <mat-icon>{{ isEdit ? 'edit' : 'add_circle' }}</mat-icon>
+  <h2>{{ isEdit ? 'Modifier le Stage' : 'Nouveau Stage' }}</h2>
+  <button mat-icon-button (click)="onCancel()"><mat-icon>close</mat-icon></button>
+</div>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="form-grid">
+  <form [formGroup]="form" class="stage-form">
+
+    <!-- Section: Informations -->
+    <div class="section-title">
+      <mat-icon>info</mat-icon> Informations du stage
+    </div>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Sujet *</mat-label>
-      <input matInput formControlName="sujet">
-      <mat-error *ngIf="form.get('sujet')?.hasError('required')">Requis</mat-error>
+      <mat-label>Sujet du stage *</mat-label>
+      <input matInput formControlName="sujet" placeholder="Ex: Développement d'une application web...">
+      <mat-icon matPrefix>subject</mat-icon>
+      <mat-error *ngIf="form.get('sujet')?.hasError('required')">Le sujet est obligatoire</mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Type de stage *</mat-label>
+        <mat-select formControlName="typeStage">
+          <mat-option *ngFor="let t of typeStages" [value]="t.value">{{ t.label }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>category</mat-icon>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="statut">
+          <mat-option *ngFor="let s of statuts" [value]="s.value">{{ s.label }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>flag</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Section: Personnes -->
+    <div class="section-title">
+      <mat-icon>people</mat-icon> Affectation
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Stagiaire *</mat-label>
-      <mat-select formControlName="stagiaireId">
-        <mat-option *ngFor="let s of stagiaires" [value]="s.id">
+      <input matInput
+             [(ngModel)]="stagiaireSearch"
+             [ngModelOptions]="{standalone: true}"
+             [matAutocomplete]="autoStagiaire"
+             placeholder="Rechercher par nom, prénom, filière, CIN...">
+      <mat-icon matPrefix>school</mat-icon>
+      <button mat-icon-button matSuffix *ngIf="stagiaireSearch" (click)="clearStagiaire()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete #autoStagiaire="matAutocomplete" (optionSelected)="selectStagiaire($event.option.value)">
+        <mat-option *ngFor="let s of filteredStagiaires" [value]="s">
           {{ s.nom }} {{ s.prenom }}
+          <span class="option-sub" *ngIf="s.filiere"> — {{ s.filiere }}</span>
         </mat-option>
-      </mat-select>
+      </mat-autocomplete>
+      <mat-error>Veuillez sélectionner un stagiaire</mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="full-width" *ngIf="!isEncadrant">
       <mat-label>Encadrant</mat-label>
-      <mat-select formControlName="encadrantId">
+      <input matInput
+             [(ngModel)]="encadrantSearch"
+             [ngModelOptions]="{standalone: true}"
+             [matAutocomplete]="autoEncadrant"
+             placeholder="Rechercher par nom, prénom...">
+      <mat-icon matPrefix>supervisor_account</mat-icon>
+      <button mat-icon-button matSuffix *ngIf="encadrantSearch" (click)="clearEncadrant()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete #autoEncadrant="matAutocomplete" (optionSelected)="selectEncadrant($event.option.value)">
         <mat-option [value]="null">— Aucun —</mat-option>
-        <mat-option *ngFor="let e of encadrants" [value]="e.id">
+        <mat-option *ngFor="let e of filteredEncadrants" [value]="e">
           {{ e.nom }} {{ e.prenom }}
         </mat-option>
-      </mat-select>
+      </mat-autocomplete>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Département OCP</mat-label>
       <mat-select formControlName="departementId">
-        <mat-option [value]="null">— Aucun département —</mat-option>
+        <mat-option [value]="null">— Aucun —</mat-option>
         <mat-option *ngFor="let d of departements" [value]="d.id">
           {{ d.code }} — {{ d.nom }}
         </mat-option>
@@ -42,33 +94,28 @@
       <mat-icon matPrefix>business</mat-icon>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Type de Stage *</mat-label>
-      <mat-select formControlName="typeStage">
-        <mat-option *ngFor="let t of typeStages" [value]="t">{{ t }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <!-- Section: Dates -->
+    <div class="section-title">
+      <mat-icon>date_range</mat-icon> Période du stage
+    </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Statut</mat-label>
-      <mat-select formControlName="statut">
-        <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Date début *</mat-label>
+        <input matInput [matDatepicker]="pickerDebut" formControlName="dateDebut">
+        <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDebut></mat-datepicker>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Date Début</mat-label>
-      <input matInput [matDatepicker]="pickerDebut" formControlName="dateDebut">
-      <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
-      <mat-datepicker #pickerDebut></mat-datepicker>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Date Fin</mat-label>
-      <input matInput [matDatepicker]="pickerFin" formControlName="dateFin">
-      <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-      <mat-datepicker #pickerFin></mat-datepicker>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Date fin *</mat-label>
+        <input matInput [matDatepicker]="pickerFin" formControlName="dateFin">
+        <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFin></mat-datepicker>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
+    </div>
 
   </form>
 </mat-dialog-content>
@@ -78,6 +125,7 @@
   <button mat-raised-button color="primary" (click)="onSubmit()"
           [disabled]="form.invalid || isLoading">
     <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+    <mat-icon *ngIf="!isLoading">{{ isEdit ? 'save' : 'add' }}</mat-icon>
     <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
   </button>
 </mat-dialog-actions>

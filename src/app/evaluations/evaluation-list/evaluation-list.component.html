@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="page-header">
     <div>
-      <h2><mat-icon>star</mat-icon> Gestion des Évaluations</h2>
+      <h2><mat-icon>star</mat-icon> {{ isEncadrant ? 'Mes Évaluations' : 'Gestion des Évaluations' }}</h2>
       <p>{{ evaluations.length }} évaluation(s) au total</p>
     </div>
     <div class="header-actions">
@@ -57,19 +57,46 @@
       <mat-label>Type</mat-label>
       <mat-select [(ngModel)]="selectedType" (selectionChange)="onFilterChange()">
         <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let t of types" [value]="t">{{ t.replace('_', ' ') }}</mat-option>
+        <mat-option value="MI_PARCOURS">Mi-parcours</mat-option>
+        <mat-option value="FIN_STAGE">Fin de stage</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Niveau</mat-label>
+      <mat-select [(ngModel)]="selectedNiveau" (selectionChange)="onFilterChange()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option value="excellent">Excellent (≥16)</mat-option>
+        <mat-option value="bien">Bien (12-15)</mat-option>
+        <mat-option value="passable">Passable (10-11)</mat-option>
+        <mat-option value="insuffisant">Insuffisant (&lt;10)</mat-option>
       </mat-select>
     </mat-form-field>
     <button mat-stroked-button color="warn" (click)="resetFiltres()"
-            *ngIf="searchKeyword || selectedType">
+            *ngIf="searchKeyword || selectedType || selectedNiveau">
       <mat-icon>filter_alt_off</mat-icon> Reset
     </button>
   </div>
 
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredEvaluations.length === 0" class="empty-state">
+    <mat-icon>star_border</mat-icon>
+    <h3>Aucune évaluation trouvée</h3>
+    <p *ngIf="evaluations.length === 0 && isEncadrant">
+      Commencez par évaluer vos stagiaires
+    </p>
+    <p *ngIf="evaluations.length > 0">
+      Essayez de modifier vos filtres
+    </p>
+    <button mat-raised-button color="primary" (click)="openForm()"
+            *ngIf="evaluations.length === 0 && !isStagiaire">
+      <mat-icon>add</mat-icon> Créer une évaluation
+    </button>
+  </div>
+
   <!-- Cards Grid -->
-  <div class="evaluations-grid" *ngIf="!isLoading">
+  <div class="evaluations-grid" *ngIf="!isLoading && filteredEvaluations.length > 0">
     <div *ngFor="let e of filteredEvaluations; trackBy: trackById" class="evaluation-card">
 
       <div class="card-top">
@@ -80,7 +107,7 @@
         <div class="card-top-info">
           <h4 class="stage-sujet">{{ e.stageSujet ?? '—' }}</h4>
           <span class="type-badge" [class]="e.typeEvaluation === 'FIN_STAGE' ? 'type-fin' : 'type-mi'">
-            {{ e.typeEvaluation?.replace('_', ' ') }}
+            {{ getTypeLabel(e.typeEvaluation) }}
           </span>
         </div>
       </div>
@@ -92,13 +119,13 @@
       </div>
 
       <div class="card-persons">
-        <div class="person-item" *ngIf="e.encadrantNom">
-          <mat-icon>supervisor_account</mat-icon>
-          <span>{{ e.encadrantNom }}</span>
-        </div>
         <div class="person-item" *ngIf="e.stagiaireNom">
           <mat-icon>person</mat-icon>
           <span>{{ e.stagiaireNom }}</span>
+        </div>
+        <div class="person-item" *ngIf="e.encadrantNom && !isEncadrant">
+          <mat-icon>supervisor_account</mat-icon>
+          <span>{{ e.encadrantNom }}</span>
         </div>
       </div>
 
@@ -122,11 +149,6 @@
         </div>
       </div>
     </div>
-
-    <div *ngIf="filteredEvaluations.length === 0" class="empty-state">
-      <mat-icon>star_border</mat-icon>
-      <p>Aucune évaluation trouvée</p>
-    </div>
   </div>
 </div>
 
@@ -138,7 +160,7 @@
     </div>
     <div class="detail-title">
       <h3>{{ selectedEvaluation?.stageSujet }}</h3>
-      <span>{{ selectedEvaluation?.typeEvaluation?.replace('_', ' ') }}</span>
+      <span>{{ getTypeLabel(selectedEvaluation?.typeEvaluation) }}</span>
     </div>
     <button mat-icon-button mat-dialog-close style="color:white"><mat-icon>close</mat-icon></button>
   </div>
@@ -158,9 +180,11 @@
     <div class="detail-sections">
       <div class="detail-section">
         <p class="section-title">Personnes</p>
-        <div class="detail-row"><mat-icon>supervisor_account</mat-icon><span>{{ selectedEvaluation?.encadrantNom }}</span></div>
         <div class="detail-row" *ngIf="selectedEvaluation?.stagiaireNom">
           <mat-icon>person</mat-icon><span>{{ selectedEvaluation?.stagiaireNom }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedEvaluation?.encadrantNom">
+          <mat-icon>supervisor_account</mat-icon><span>{{ selectedEvaluation?.encadrantNom }}</span>
         </div>
         <div class="detail-row"><mat-icon>calendar_today</mat-icon>
           <span>{{ selectedEvaluation?.dateEval | date:'dd/MM/yyyy' }}</span>

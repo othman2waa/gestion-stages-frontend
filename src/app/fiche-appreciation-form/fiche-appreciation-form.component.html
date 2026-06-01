@@ -1,0 +1,93 @@
+<!-- Header -->
+<div class="form-header" [class]="isStage ? 'header-stage' : 'header-stagiaire'">
+  <mat-icon>{{ isStage ? 'rate_review' : 'person_pin' }}</mat-icon>
+  <h2>{{ isStage ? 'Appréciation du Stage' : 'Appréciation du Stagiaire' }}</h2>
+  <button mat-icon-button (click)="onCancel()"><mat-icon>close</mat-icon></button>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="fiche-form">
+
+    <!-- Stagiaire info -->
+    <div class="stagiaire-banner">
+      <mat-icon>person</mat-icon>
+      <span>{{ data.stagiaireNom }}</span>
+    </div>
+
+    <!-- Section: Critères -->
+    <div class="section-title">
+      <mat-icon>assessment</mat-icon> Critères d'évaluation (1 à 5)
+    </div>
+
+    <div class="criteres-grid">
+      <div *ngFor="let c of criteres" class="critere-item">
+        <div class="critere-label">
+          <mat-icon>{{ c.icon }}</mat-icon>
+          <span>{{ c.label }}</span>
+        </div>
+        <div class="stars-row">
+          <button *ngFor="let n of notes" type="button"
+                  class="star-btn" [class.active]="getNoteValue(c.key) >= n"
+                  (click)="setNote(c.key, n)"
+                  [matTooltip]="noteLabels[n]">
+            <mat-icon>{{ getNoteValue(c.key) >= n ? 'star' : 'star_border' }}</mat-icon>
+          </button>
+          <span class="note-text" *ngIf="getNoteValue(c.key) > 0">
+            {{ noteLabels[getNoteValue(c.key)] }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moyenne preview -->
+    <div class="moyenne-preview" *ngIf="moyennePreview > 0">
+      <div class="moyenne-circle" [class]="getMoyenneClass()">
+        {{ moyennePreview }}
+      </div>
+      <span>Moyenne : {{ moyennePreview }}/5</span>
+    </div>
+
+    <!-- Section: Recommandation -->
+    <div class="section-title">
+      <mat-icon>thumb_up</mat-icon> Recommandation
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="isStage">
+      <mat-label>Recommandation globale *</mat-label>
+      <mat-select formControlName="recommandation">
+        <mat-option *ngFor="let r of recommandations" [value]="r.value">{{ r.label }}</mat-option>
+      </mat-select>
+      <mat-icon matPrefix>recommend</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="!isStage">
+      <mat-label>Recommandation pour embauche *</mat-label>
+      <mat-select formControlName="recommandationEmbauche">
+        <mat-option *ngFor="let r of recommandationsEmbauche" [value]="r.value">{{ r.label }}</mat-option>
+      </mat-select>
+      <mat-icon matPrefix>work</mat-icon>
+    </mat-form-field>
+
+    <!-- Section: Commentaires -->
+    <div class="section-title">
+      <mat-icon>comment</mat-icon> Commentaires
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Commentaires / Observations</mat-label>
+      <textarea matInput formControlName="commentaires" rows="4"
+                placeholder="Points forts, axes d'amélioration, observations..."></textarea>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()"
+          [disabled]="form.invalid || isLoading">
+    <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
+    <mat-icon *ngIf="!isLoading">save</mat-icon>
+    <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Enregistrer' }}</span>
+  </button>
+</mat-dialog-actions>

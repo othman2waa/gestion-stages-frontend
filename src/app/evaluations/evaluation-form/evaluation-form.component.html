@@ -1,72 +1,123 @@
-<h2 mat-dialog-title>
+<!-- Header -->
+<div class="form-header">
   <mat-icon>{{ isEdit ? 'edit' : 'star' }}</mat-icon>
-  {{ isEdit ? 'Modifier Évaluation' : 'Nouvelle Évaluation' }}
-</h2>
+  <h2>{{ isEdit ? 'Modifier l\'évaluation' : 'Nouvelle Évaluation' }}</h2>
+  <button mat-icon-button (click)="onCancel()"><mat-icon>close</mat-icon></button>
+</div>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="form-grid">
+  <form [formGroup]="form" class="eval-form">
 
-    <!-- Sélection du stage -->
+    <!-- Section: Stage -->
+    <div class="section-title">
+      <mat-icon>work</mat-icon> Stage à évaluer
+    </div>
+
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Stage</mat-label>
-      <mat-select formControlName="stageId">
-        <mat-option *ngFor="let s of stages" [value]="s.id">
-          {{ s.sujet }} — {{ s.stagiaireNom }}
+      <mat-label>Stage *</mat-label>
+      <input matInput
+             [(ngModel)]="stageSearch"
+             [ngModelOptions]="{standalone: true}"
+             [matAutocomplete]="autoStage"
+             placeholder="Rechercher par sujet, stagiaire, filière...">
+      <mat-icon matPrefix>work</mat-icon>
+      <button mat-icon-button matSuffix *ngIf="stageSearch" (click)="clearStage()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete #autoStage="matAutocomplete" (optionSelected)="selectStage($event.option.value)">
+        <mat-option *ngFor="let s of filteredStages" [value]="s">
+          <span class="autocomplete-main">{{ s.sujet }}</span>
+          <span class="autocomplete-sub">{{ s.stagiairePrenom }} {{ s.stagiaireNom }} <span *ngIf="s.stagiaireFiliere">— {{ s.stagiaireFiliere }}</span></span>
         </mat-option>
-      </mat-select>
+      </mat-autocomplete>
+      <mat-error>Veuillez sélectionner un stage</mat-error>
     </mat-form-field>
 
-    <!-- Info stagiaire auto-remplie -->
+    <!-- Stagiaire info -->
     <div *ngIf="selectedStage" class="stagiaire-info">
-      <mat-icon>person</mat-icon>
-      <div>
-        <span class="label">Stagiaire</span>
-        <span class="value">{{ selectedStage.stagiaireNom }}</span>
+      <div class="info-left">
+        <mat-icon>person</mat-icon>
+        <div>
+          <span class="label">Stagiaire</span>
+          <span class="value">{{ selectedStage.stagiairePrenom ?? '' }} {{ selectedStage.stagiaireNom ?? selectedStage.stagiaireNom }}</span>
+        </div>
       </div>
-      <div *ngIf="selectedStage.stagiaireFiliere">
-        <span class="label">Filière</span>
-        <span class="value">{{ selectedStage.stagiaireFiliere }}</span>
+      <div class="info-right" *ngIf="selectedStage.stagiaireFiliere">
+        <mat-icon>school</mat-icon>
+        <div>
+          <span class="label">Filière</span>
+          <span class="value">{{ selectedStage.stagiaireFiliere }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- Encadrant auto-rempli -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Encadrant évaluateur</mat-label>
+    <!-- Encadrant (hidden for encadrant role) -->
+    <mat-form-field appearance="outline" class="full-width" *ngIf="!isEncadrant">
+      <mat-label>Encadrant évaluateur *</mat-label>
       <mat-select formControlName="encadrantId">
         <mat-option *ngFor="let e of encadrants" [value]="e.id">
           {{ e.prenom }} {{ e.nom }}
         </mat-option>
       </mat-select>
+      <mat-icon matPrefix>supervisor_account</mat-icon>
     </mat-form-field>
 
-    <!-- Type + Note -->
-    <mat-form-field appearance="outline">
-      <mat-label>Type d'évaluation</mat-label>
-      <mat-select formControlName="typeEvaluation">
-        <mat-option value="MI_PARCOURS">Mi-parcours</mat-option>
-        <mat-option value="FINALE">Finale</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <!-- Section: Notation -->
+    <div class="section-title">
+      <mat-icon>grade</mat-icon> Notation
+    </div>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Note (/20)</mat-label>
-      <input matInput formControlName="note" type="number" min="0" max="20" step="0.5">
-      <mat-hint>Entre 0 et 20</mat-hint>
-    </mat-form-field>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Type d'évaluation *</mat-label>
+        <mat-select formControlName="typeEvaluation">
+          <mat-option *ngFor="let t of typesEval" [value]="t.value">{{ t.label }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>category</mat-icon>
+        <mat-error>Requis</mat-error>
+      </mat-form-field>
 
-    <!-- Date -->
+      <mat-form-field appearance="outline">
+        <mat-label>Note (/20) *</mat-label>
+        <input matInput formControlName="note" type="number" min="0" max="20" step="0.5">
+        <mat-icon matPrefix>star</mat-icon>
+        <mat-error>Note entre 0 et 20</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Note preview -->
+    <div *ngIf="form.get('note')?.value != null && form.get('note')?.valid" class="note-preview" [class]="noteClass">
+      <div class="note-circle">
+        <span class="note-val">{{ notePreview }}</span>
+        <span class="note-max">/20</span>
+      </div>
+      <div class="note-info">
+        <span class="note-label-text">{{ noteLabel }}</span>
+        <div class="note-bar">
+          <div class="note-bar-fill" [style.width.%]="(notePreview / 20) * 100"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Détails -->
+    <div class="section-title">
+      <mat-icon>description</mat-icon> Détails
+    </div>
+
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Date d'évaluation</mat-label>
+      <mat-label>Date d'évaluation *</mat-label>
       <input matInput [matDatepicker]="picker" formControlName="dateEval">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
+      <mat-icon matPrefix>calendar_today</mat-icon>
+      <mat-error>Requis</mat-error>
     </mat-form-field>
 
-    <!-- Commentaire -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Commentaire / Appréciation</mat-label>
       <textarea matInput formControlName="commentaire" rows="4"
-                placeholder="Décrivez les points forts, axes d'amélioration..."></textarea>
+                placeholder="Points forts, axes d'amélioration, recommandations..."></textarea>
+      <mat-icon matPrefix>format_quote</mat-icon>
     </mat-form-field>
 
   </form>
@@ -74,11 +125,10 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Annuler</button>
-  <button mat-raised-button color="primary"
-          (click)="onSubmit()"
+  <button mat-raised-button color="primary" (click)="onSubmit()"
           [disabled]="form.invalid || isLoading">
     <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
     <mat-icon *ngIf="!isLoading">{{ isEdit ? 'save' : 'add' }}</mat-icon>
-    <span>{{ isEdit ? 'Modifier' : 'Créer l\'évaluation' }}</span>
+    <span *ngIf="!isLoading">{{ isEdit ? 'Modifier' : 'Créer' }}</span>
   </button>
 </mat-dialog-actions>

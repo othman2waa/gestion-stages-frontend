@@ -31,41 +31,71 @@
       </div>
     </div>
 
+    <!-- ═══ NOTIFICATION BAR ═══ -->
+    <div class="notif-bar" *ngIf="pendingFiches.length > 0 && !notifDismissed">
+      <div class="notif-content">
+        <div class="notif-icon">
+          <mat-icon>rate_review</mat-icon>
+        </div>
+        <div class="notif-text">
+          <strong>Fiches d'appréciation en attente</strong>
+          <span>Vous avez {{ pendingFiches.length }} stagiaire(s) terminé(s) avec des fiches à remplir :</span>
+          <div class="notif-list">
+            <span class="notif-item" *ngFor="let p of pendingFiches">
+              <mat-icon>person</mat-icon> {{ p.nom }}
+              <span class="notif-missing" *ngIf="p.missingStage">Fiche stage</span>
+              <span class="notif-missing" *ngIf="p.missingStagiaire">Fiche stagiaire</span>
+            </span>
+          </div>
+        </div>
+        <button mat-icon-button class="notif-close" (click)="dismissNotif()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
     <!-- ═══ KPI ROW ═══ -->
+    <div class="kpi-header">
+      <span class="kpi-title">Statistiques</span>
+      <div class="year-pills" *ngIf="availableYears.length > 0">
+        <button class="yr-pill" [class.active]="selectedYear === null" (click)="selectedYear = null">Tout</button>
+        <button class="yr-pill" *ngFor="let y of availableYears" [class.active]="selectedYear === y" (click)="selectedYear = y">{{ y }}</button>
+      </div>
+    </div>
     <div class="kpi-row">
       <div class="kpi-card">
         <div class="kpi-icon blue"><mat-icon>group</mat-icon></div>
         <div class="kpi-body">
-          <span class="kpi-val">{{ profil.nombreStagiaires }}</span>
+          <span class="kpi-val">{{ yearTotal }}</span>
           <span class="kpi-lbl">Stagiaires</span>
         </div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon green"><mat-icon>play_circle</mat-icon></div>
         <div class="kpi-body">
-          <span class="kpi-val">{{ enCours }}</span>
+          <span class="kpi-val">{{ yearEnCours }}</span>
           <span class="kpi-lbl">En cours</span>
         </div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon orange"><mat-icon>star_rate</mat-icon></div>
         <div class="kpi-body">
-          <span class="kpi-val">{{ aEvaluer }}</span>
-          <span class="kpi-lbl">À évaluer</span>
+          <span class="kpi-val">{{ yearAEvaluer }}</span>
+          <span class="kpi-lbl">A evaluer</span>
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon teal"><mat-icon>event_note</mat-icon></div>
+        <div class="kpi-icon teal"><mat-icon>handshake</mat-icon></div>
         <div class="kpi-body">
-          <span class="kpi-val">{{ profil.nombreSuivis }}</span>
-          <span class="kpi-lbl">Suivis créés</span>
+          <span class="kpi-val">{{ yearConventionSignee }}</span>
+          <span class="kpi-lbl">Convention signee</span>
         </div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon purple"><mat-icon>check_circle</mat-icon></div>
         <div class="kpi-body">
-          <span class="kpi-val">{{ termines }}</span>
-          <span class="kpi-lbl">Terminés</span>
+          <span class="kpi-val">{{ yearTermines }}</span>
+          <span class="kpi-lbl">Termines</span>
         </div>
       </div>
     </div>
@@ -189,6 +219,42 @@
                   <div class="detail-item">
                     <span class="detail-lbl">Niveau</span>
                     <span class="detail-val">{{ s.stagiaireNiveau }}</span>
+                  </div>
+                </div>
+
+                <!-- Rapport & Fiches (visible only for finished stages) -->
+                <div class="detail-extras" *ngIf="isStageFinished(s.statut)">
+                  <div class="detail-divider"></div>
+
+                  <!-- Rapport -->
+                  <div class="extras-section">
+                    <span class="extras-title"><mat-icon>description</mat-icon> Rapport de stage</span>
+                    <button mat-stroked-button class="btn-sm" *ngIf="rapportStatus[s.stageId]"
+                            (click)="downloadRapport(s.stageId, $event)">
+                      <mat-icon>download</mat-icon> Télécharger
+                    </button>
+                    <span class="extras-pending" *ngIf="!rapportStatus[s.stageId]">
+                      <mat-icon>hourglass_empty</mat-icon> Non déposé
+                    </span>
+                  </div>
+
+                  <!-- Fiches d'appréciation -->
+                  <div class="extras-section">
+                    <span class="extras-title"><mat-icon>rate_review</mat-icon> Fiches d'appréciation</span>
+                    <div class="fiches-btns">
+                      <button mat-stroked-button class="btn-sm"
+                              [class.btn-done]="ficheStageStatus[s.stageId]"
+                              (click)="openFicheForm(s.stageId, s.stagiairePrenom + ' ' + s.stagiaireNom, 'STAGE', $event)">
+                        <mat-icon>{{ ficheStageStatus[s.stageId] ? 'check_circle' : 'edit_note' }}</mat-icon>
+                        {{ ficheStageStatus[s.stageId] ? 'Stage (remplie)' : 'Apprécier le stage' }}
+                      </button>
+                      <button mat-stroked-button class="btn-sm"
+                              [class.btn-done]="ficheStagiaireStatus[s.stageId]"
+                              (click)="openFicheForm(s.stageId, s.stagiairePrenom + ' ' + s.stagiaireNom, 'STAGIAIRE', $event)">
+                        <mat-icon>{{ ficheStagiaireStatus[s.stageId] ? 'check_circle' : 'edit_note' }}</mat-icon>
+                        {{ ficheStagiaireStatus[s.stageId] ? 'Stagiaire (remplie)' : 'Apprécier le stagiaire' }}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

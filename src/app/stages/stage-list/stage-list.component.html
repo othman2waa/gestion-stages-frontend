@@ -178,7 +178,7 @@
           <mat-icon>edit</mat-icon>
         </button>
         <button mat-icon-button matTooltip="Lettre d'accord"
-                (click)="genererLettreAccord(s)">
+                (click)="genererLettreAccord(s)" *ngIf="!isEncadrant">
           <mat-icon>description</mat-icon>
         </button>
         <button mat-icon-button [matMenuTriggerFor]="statutMenu" matTooltip="Changer statut">
