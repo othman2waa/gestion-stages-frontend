@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluationFormComponent } from '../evaluation-form/evaluation-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
@@ -27,7 +28,7 @@ Chart.register(...registerables);
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
     MatTooltipModule, MatProgressBarModule, MatChipsModule, MatSelectModule,
-    BaseChartDirective
+    MatPaginatorModule, BaseChartDirective
   ],
   templateUrl: './evaluation-list.component.html',
   styleUrls: ['./evaluation-list.component.scss']
@@ -43,6 +44,11 @@ export class EvaluationListComponent implements OnInit {
   selectedNiveau = '';
   selectedEvaluation: any = null;
   userRole = '';
+
+  // Pagination
+  pageSize = 12;
+  pageIndex = 0;
+  pageSizeOptions = [12, 24, 48];
 
   get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
   get isStagiaire(): boolean { return this.userRole === 'STAGIAIRE'; }
@@ -110,12 +116,18 @@ export class EvaluationListComponent implements OnInit {
     this.filteredEvaluations = result;
   }
 
-  onSearch(): void { this.applyFilters(); }
-  onFilterChange(): void { this.applyFilters(); }
+  get paginatedEvaluations(): any[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredEvaluations.slice(start, start + this.pageSize);
+  }
+
+  onSearch(): void { this.pageIndex = 0; this.applyFilters(); }
+  onFilterChange(): void { this.pageIndex = 0; this.applyFilters(); }
+  onPageChange(event: PageEvent): void { this.pageIndex = event.pageIndex; this.pageSize = event.pageSize; }
 
   resetFiltres(): void {
     this.searchKeyword = ''; this.selectedType = ''; this.selectedNiveau = '';
-    this.filteredEvaluations = this.evaluations;
+    this.pageIndex = 0; this.filteredEvaluations = this.evaluations;
   }
 
   voirDetail(e: any): void {

@@ -6,9 +6,17 @@
       <h2><mat-icon>supervisor_account</mat-icon> Gestion des Encadrants</h2>
       <p>{{ encadrants.length }} encadrant(s) enregistré(s)</p>
     </div>
-    <button mat-raised-button color="primary" (click)="openForm()">
-      <mat-icon>add</mat-icon> Nouvel encadrant
-    </button>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="exportExcel()">
+        <mat-icon>table_view</mat-icon> Excel
+      </button>
+      <button mat-stroked-button color="warn" (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon> PDF
+      </button>
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add</mat-icon> Nouvel encadrant
+      </button>
+    </div>
   </div>
 
   <!-- KPIs -->

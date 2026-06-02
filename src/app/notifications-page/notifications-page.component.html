@@ -1,0 +1,85 @@
+<div class="notif-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>notifications</mat-icon> Notifications</h2>
+      <p>{{ totalCount }} notification(s) · {{ unreadCount }} non lue(s)</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="markAllRead()" *ngIf="unreadCount > 0">
+      <mat-icon>done_all</mat-icon> Tout marquer comme lu
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card blue">
+      <mat-icon>notifications</mat-icon>
+      <div><span class="kpi-val">{{ totalCount }}</span><span class="kpi-lbl">Total</span></div>
+    </div>
+    <div class="kpi-card orange">
+      <mat-icon>mark_email_unread</mat-icon>
+      <div><span class="kpi-val">{{ unreadCount }}</span><span class="kpi-lbl">Non lues</span></div>
+    </div>
+    <div class="kpi-card green">
+      <mat-icon>mark_email_read</mat-icon>
+      <div><span class="kpi-val">{{ totalCount - unreadCount }}</span><span class="kpi-lbl">Lues</span></div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <mat-chip-set>
+      <mat-chip [class.active]="selectedLu === 'non_lues'" (click)="onFilterLu('non_lues')">
+        <mat-icon matChipAvatar>mark_email_unread</mat-icon> Non lues
+      </mat-chip>
+      <mat-chip [class.active]="selectedLu === 'lues'" (click)="onFilterLu('lues')">
+        <mat-icon matChipAvatar>mark_email_read</mat-icon> Lues
+      </mat-chip>
+    </mat-chip-set>
+    <mat-chip-set>
+      <mat-chip *ngFor="let t of types" [class.active]="selectedType === t" (click)="onFilterType(t)">
+        <mat-icon matChipAvatar [style.color]="getColor(t)">{{ getIcon(t) }}</mat-icon>
+        {{ t }}
+      </mat-chip>
+    </mat-chip-set>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- List -->
+  <div class="notif-list" *ngIf="!isLoading">
+    <div class="notif-item" *ngFor="let n of paginatedNotifications"
+         [class.unread]="!n.lue" (click)="markAsRead(n)">
+      <div class="notif-icon" [style.background]="getColor(n.type) + '18'" [style.color]="getColor(n.type)">
+        <mat-icon>{{ getIcon(n.type) }}</mat-icon>
+      </div>
+      <div class="notif-body">
+        <span class="notif-title">{{ n.titre }}</span>
+        <span class="notif-msg">{{ n.message }}</span>
+        <span class="notif-time">
+          <mat-icon>schedule</mat-icon> {{ getTimeAgo(n.createdAt) }}
+          <span class="notif-type-badge" [style.color]="getColor(n.type)" [style.background]="getColor(n.type) + '18'">{{ n.type }}</span>
+        </span>
+      </div>
+      <div class="notif-dot" *ngIf="!n.lue"></div>
+      <mat-icon class="notif-arrow" *ngIf="n.lien">chevron_right</mat-icon>
+    </div>
+
+    <div *ngIf="filteredNotifications.length === 0" class="empty-state">
+      <mat-icon>notifications_none</mat-icon>
+      <h3>Aucune notification</h3>
+      <p *ngIf="selectedType || selectedLu">Essayez de modifier vos filtres</p>
+    </div>
+  </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && filteredNotifications.length > 0"
+    [length]="filteredNotifications.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

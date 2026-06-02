@@ -155,5 +155,109 @@
         <mat-icon>save</mat-icon> Sauvegarder le pointage
       </button>
     </div>
+
+    <!-- ═══ SUIVIS HEBDOMADAIRES ═══ -->
+    <div class="suivi-section">
+      <div class="suivi-header">
+        <h3><mat-icon>event_note</mat-icon> Suivis Hebdomadaires</h3>
+        <button mat-raised-button color="primary" (click)="openSuiviForm()" *ngIf="!showSuiviForm">
+          <mat-icon>add</mat-icon> Nouveau suivi
+        </button>
+      </div>
+
+      <!-- Form -->
+      <div class="suivi-form" *ngIf="showSuiviForm">
+        <h4>{{ editingSuivi ? 'Modifier le suivi' : 'Nouveau suivi hebdomadaire' }}</h4>
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Semaine N°</mat-label>
+            <input matInput type="number" [(ngModel)]="suiviForm.semaineNumero" min="1">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Date</mat-label>
+            <input matInput type="date" [(ngModel)]="suiviForm.dateSuivi">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Progression (%)</mat-label>
+            <input matInput type="number" [(ngModel)]="suiviForm.progression" min="0" max="100">
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tâches assignées</mat-label>
+          <textarea matInput [(ngModel)]="suiviForm.tachesAssignees" rows="2"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tâches complétées</mat-label>
+          <textarea matInput [(ngModel)]="suiviForm.tachesCompletees" rows="2"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Points positifs</mat-label>
+          <textarea matInput [(ngModel)]="suiviForm.pointsPositifs" rows="2"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Axes d'amélioration</mat-label>
+          <textarea matInput [(ngModel)]="suiviForm.axesAmelioration" rows="2"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Commentaire général</mat-label>
+          <textarea matInput [(ngModel)]="suiviForm.commentaire" rows="2"></textarea>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-button (click)="cancelSuiviForm()">Annuler</button>
+          <button mat-raised-button color="primary" (click)="saveSuivi()">
+            <mat-icon>save</mat-icon> {{ editingSuivi ? 'Mettre à jour' : 'Créer' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- List -->
+      <div class="suivis-list" *ngIf="suivis.length > 0 && !showSuiviForm">
+        <div class="suivi-card" *ngFor="let s of suivis">
+          <div class="suivi-card-header">
+            <span class="semaine-badge">S{{ s.semaineNumero }}</span>
+            <span class="suivi-date">{{ s.dateSuivi | date:'dd/MM/yyyy' }}</span>
+            <div class="suivi-progression">
+              <mat-progress-bar mode="determinate" [value]="s.progression"></mat-progress-bar>
+              <span>{{ s.progression }}%</span>
+            </div>
+            <div class="suivi-card-actions">
+              <button mat-icon-button matTooltip="Modifier" (click)="openSuiviForm(s)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Supprimer" (click)="deleteSuivi(s.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="suivi-card-body" *ngIf="s.tachesAssignees || s.tachesCompletees || s.commentaire">
+            <div class="suivi-field" *ngIf="s.tachesAssignees">
+              <span class="sf-label">Tâches assignées</span>
+              <p>{{ s.tachesAssignees }}</p>
+            </div>
+            <div class="suivi-field" *ngIf="s.tachesCompletees">
+              <span class="sf-label">Tâches complétées</span>
+              <p>{{ s.tachesCompletees }}</p>
+            </div>
+            <div class="suivi-field" *ngIf="s.pointsPositifs">
+              <span class="sf-label green">Points positifs</span>
+              <p>{{ s.pointsPositifs }}</p>
+            </div>
+            <div class="suivi-field" *ngIf="s.axesAmelioration">
+              <span class="sf-label orange">Axes d'amélioration</span>
+              <p>{{ s.axesAmelioration }}</p>
+            </div>
+            <div class="suivi-field" *ngIf="s.commentaire">
+              <span class="sf-label">Commentaire</span>
+              <p>{{ s.commentaire }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="suivis.length === 0 && !showSuiviForm" class="suivi-empty">
+        <mat-icon>event_note</mat-icon>
+        <p>Aucun suivi hebdomadaire pour ce stage</p>
+      </div>
+    </div>
   </div>
 </div>

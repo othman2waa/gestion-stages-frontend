@@ -16,6 +16,7 @@ import { EncadrantService } from '../../core/services/encadrant.service';
 import { EncadrantFormComponent } from '../encadrant-form/encadrant-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { StageService } from '../../core/services/stage.service';
+import { ExportService } from '../../core/services/export.service';
 
 @Component({
   selector: 'app-encadrant-list',
@@ -50,7 +51,8 @@ export class EncadrantListComponent implements OnInit {
     private encadrantService: EncadrantService,
     private stageService: StageService,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void { this.loadEncadrants(); }
@@ -170,6 +172,9 @@ export class EncadrantListComponent implements OnInit {
     };
     return map[statut] ?? 'status-gray';
   }
+
+  exportExcel(): void { this.exportService.exportEncadrants(this.encadrants); }
+  exportPdf(): void { this.exportService.exportEncadrantsPdf(this.encadrants); }
 
   trackById(_: number, item: any): number { return item.id; }
 }

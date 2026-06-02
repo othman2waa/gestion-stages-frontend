@@ -16,70 +16,82 @@
     </div>
 
     <!-- Pas de stage -->
-    <mat-card *ngIf="!dashboard?.stageId" class="empty-card">
-      <mat-card-content class="empty-state">
-        <mat-icon>work_off</mat-icon>
-        <p>Aucun stage associé à votre compte</p>
-      </mat-card-content>
-    </mat-card>
+    <div *ngIf="!dashboard?.stageId" class="empty-card">
+      <mat-icon>work_off</mat-icon>
+      <h3>Aucun stage associé à votre compte</h3>
+    </div>
 
     <ng-container *ngIf="dashboard?.stageId">
 
+      <!-- Status Banner -->
+      <div class="status-banner" [class.has-rapport]="rapport" [class.no-rapport]="!rapport">
+        <div class="status-icon">
+          <mat-icon>{{ rapport ? 'check_circle' : 'pending' }}</mat-icon>
+        </div>
+        <div class="status-info">
+          <span class="status-title">{{ rapport ? 'Rapport déposé' : 'Rapport non déposé' }}</span>
+          <span class="status-sub" *ngIf="rapport">
+            Uploadé {{ getUploadTimeAgo() }} · {{ formatSize(rapport.taille) }}
+          </span>
+          <span class="status-sub" *ngIf="!rapport">
+            Veuillez déposer votre rapport de stage au format PDF
+          </span>
+        </div>
+      </div>
+
       <!-- Rapport existant -->
-      <mat-card *ngIf="rapport" class="rapport-card">
-        <mat-card-header>
-          <mat-icon mat-card-avatar class="pdf-icon">picture_as_pdf</mat-icon>
-          <mat-card-title>{{ rapport.nomFichier }}</mat-card-title>
-          <mat-card-subtitle>
-            Uploadé le {{ rapport.uploadedAt | date:'dd/MM/yyyy à HH:mm' }}
-          </mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="rapport-meta">
-            <div class="meta-item">
-              <mat-icon>storage</mat-icon>
-              <span>{{ formatSize(rapport.taille) }}</span>
-            </div>
-            <div class="meta-item">
-              <mat-icon>description</mat-icon>
-              <span>{{ rapport.typeContenu }}</span>
+      <div *ngIf="rapport" class="rapport-detail">
+        <div class="rapport-card">
+          <div class="rapport-icon-wrap">
+            <mat-icon>picture_as_pdf</mat-icon>
+          </div>
+          <div class="rapport-info">
+            <h4>{{ rapport.nomFichier }}</h4>
+            <div class="rapport-meta">
+              <span><mat-icon>storage</mat-icon> {{ formatSize(rapport.taille) }}</span>
+              <span><mat-icon>description</mat-icon> {{ rapport.typeContenu }}</span>
+              <span><mat-icon>calendar_today</mat-icon> {{ rapport.uploadedAt | date:'dd/MM/yyyy à HH:mm' }}</span>
             </div>
           </div>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="download()">
-            <mat-icon>download</mat-icon> Télécharger
-          </button>
-          <button mat-stroked-button color="warn" (click)="supprimer()">
-            <mat-icon>delete</mat-icon> Supprimer
-          </button>
-        </mat-card-actions>
-      </mat-card>
+          <div class="rapport-actions">
+            <button mat-raised-button color="primary" (click)="download()">
+              <mat-icon>download</mat-icon> Télécharger
+            </button>
+            <button mat-stroked-button color="warn" (click)="supprimer()">
+              <mat-icon>delete</mat-icon> Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Upload zone -->
-      <mat-card class="upload-card">
-        <mat-card-header>
-          <mat-card-title>{{ rapport ? 'Remplacer le rapport' : 'Uploader votre rapport' }}</mat-card-title>
-          <mat-card-subtitle>Format PDF uniquement, taille max 10 MB</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
+      <div class="upload-section">
+        <h3>{{ rapport ? 'Remplacer le rapport' : 'Déposer votre rapport' }}</h3>
 
-          <!-- Drop zone -->
-          <div class="drop-zone" (click)="fileInput.click()"
-               [class.has-file]="selectedFile">
-            <mat-icon>{{ selectedFile ? 'check_circle' : 'cloud_upload' }}</mat-icon>
-            <p *ngIf="!selectedFile">Cliquez pour sélectionner un fichier PDF</p>
-            <p *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</p>
-            <span *ngIf="selectedFile" class="file-size">{{ formatSize(selectedFile.size) }}</span>
-            <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden>
-          </div>
+        <div class="drop-zone"
+             [class.drag-over]="dragOver"
+             [class.has-file]="selectedFile"
+             (click)="fileInput.click()"
+             (dragover)="onDragOver($event)"
+             (dragleave)="onDragLeave()"
+             (drop)="onDrop($event)">
+          <mat-icon *ngIf="!selectedFile">cloud_upload</mat-icon>
+          <mat-icon *ngIf="selectedFile" class="check-icon">check_circle</mat-icon>
+          <p *ngIf="!selectedFile" class="drop-main">Glissez-déposez votre fichier PDF ici</p>
+          <p *ngIf="!selectedFile" class="drop-sub">ou cliquez pour sélectionner</p>
+          <p *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</p>
+          <span *ngIf="selectedFile" class="file-size">{{ formatSize(selectedFile.size) }}</span>
+          <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden>
+        </div>
 
-          <!-- Progress -->
-          <mat-progress-bar *ngIf="isUploading" mode="indeterminate" class="upload-progress">
-          </mat-progress-bar>
+        <div class="upload-info">
+          <mat-icon>info</mat-icon>
+          <span>Format PDF uniquement · Taille maximale 10 MB</span>
+        </div>
 
-        </mat-card-content>
-        <mat-card-actions>
+        <mat-progress-bar *ngIf="isUploading" mode="indeterminate" class="upload-progress"></mat-progress-bar>
+
+        <div class="upload-actions">
           <button mat-raised-button color="primary"
                   [disabled]="!selectedFile || isUploading"
                   (click)="upload()">
@@ -89,11 +101,9 @@
           <button mat-button *ngIf="selectedFile" (click)="selectedFile = null">
             Annuler
           </button>
-        </mat-card-actions>
-      </mat-card>
+        </div>
+      </div>
 
     </ng-container>
-
   </ng-container>
-
 </div>

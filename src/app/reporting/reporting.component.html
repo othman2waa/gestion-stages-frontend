@@ -1,0 +1,131 @@
+<div class="reporting-container">
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="top-bar"></mat-progress-bar>
+
+  <ng-container *ngIf="!isLoading && stats">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div>
+        <h1><mat-icon>bar_chart</mat-icon> Reporting & Statistiques</h1>
+        <p>OCP Group · Vue d'ensemble · {{ today | date:'EEEE d MMMM yyyy' }}</p>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="section-title"><mat-icon>insights</mat-icon> Indicateurs clés</div>
+    <div class="kpis-grid">
+      <div class="kpi-card" *ngFor="let k of kpis" [style.borderLeftColor]="k.color">
+        <div class="kpi-icon" [style.background]="k.bg" [style.color]="k.color">
+          <mat-icon>{{ k.icon }}</mat-icon>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-val">{{ k.value }}</span>
+          <span class="kpi-lbl">{{ k.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="section-title"><mat-icon>linear_scale</mat-icon> Pipeline de recrutement</div>
+    <div class="pipeline">
+      <div class="pipeline-step" *ngFor="let step of pipelineSteps; let last = last">
+        <div class="step-circle" [style.background]="step.color">
+          <mat-icon>{{ step.icon }}</mat-icon>
+        </div>
+        <span class="step-val">{{ step.value }}</span>
+        <span class="step-lbl">{{ step.label }}</span>
+        <div class="step-arrow" *ngIf="!last">
+          <mat-icon>arrow_forward</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="section-title"><mat-icon>donut_large</mat-icon> Répartition</div>
+    <div class="charts-row three">
+      <div class="chart-panel">
+        <div class="chart-title">Statuts des stages</div>
+        <div class="chart-center-label">
+          <span class="ccl-val">{{ stats.totalStages }}</span>
+          <span class="ccl-lbl">stages</span>
+        </div>
+        <div class="chart-wrap doughnut-wrap">
+          <canvas baseChart [data]="statutsChartData" [options]="doughnutOptions" type="doughnut"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="chart-title">Candidatures</div>
+        <div class="chart-center-label">
+          <span class="ccl-val">{{ stats.totalCandidatures }}</span>
+          <span class="ccl-lbl">total</span>
+        </div>
+        <div class="chart-wrap doughnut-wrap">
+          <canvas baseChart [data]="candidaturesChartData" [options]="doughnutOptions" type="doughnut"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="chart-title">Performance globale</div>
+        <div class="chart-wrap polar-wrap">
+          <canvas baseChart [data]="performanceChartData" [options]="polarOptions" type="polarArea"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 2 -->
+    <div class="section-title"><mat-icon>bar_chart</mat-icon> Analyse détaillée</div>
+    <div class="charts-row two">
+      <div class="chart-panel wide">
+        <div class="chart-title">Stages par département</div>
+        <div class="chart-wrap bar-wrap">
+          <canvas baseChart [data]="deptChartData" [options]="deptChartOptions" type="bar"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="chart-title">Stages par type</div>
+        <div class="chart-wrap bar-wrap">
+          <canvas baseChart [data]="typesChartData" [options]="barChartOptions" type="bar"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPT TABLE -->
+    <div class="section-title" *ngIf="stats?.stagesParDepartement?.length > 0">
+      <mat-icon>domain</mat-icon> Détail par département
+    </div>
+    <div class="dept-table" *ngIf="stats?.stagesParDepartement?.length > 0">
+      <div class="dept-row header">
+        <span class="dept-name">Département</span>
+        <span class="dept-val">Total</span>
+        <span class="dept-val">En cours</span>
+        <span class="dept-val">Terminés</span>
+        <span class="dept-bar">Répartition</span>
+      </div>
+      <div class="dept-row" *ngFor="let d of stats.stagesParDepartement">
+        <span class="dept-name">{{ d[0] ?? 'N/A' }}</span>
+        <span class="dept-val bold">{{ d[1] ?? 0 }}</span>
+        <span class="dept-val green">{{ d[2] ?? 0 }}</span>
+        <span class="dept-val blue">{{ d[3] ?? 0 }}</span>
+        <span class="dept-bar">
+          <div class="dept-bar-track">
+            <div class="dept-bar-fill" [style.width]="(d[1] / stats.totalStages * 100) + '%'"></div>
+          </div>
+          <span class="dept-pct">{{ (d[1] / stats.totalStages * 100) | number:'1.0-0' }}%</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-row">
+      <div class="summary-card" *ngFor="let s of summaryCards">
+        <mat-icon [style.color]="s.color">{{ s.icon }}</mat-icon>
+        <span class="summary-val">{{ s.value }}</span>
+        <span class="summary-lbl">{{ s.label }}</span>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

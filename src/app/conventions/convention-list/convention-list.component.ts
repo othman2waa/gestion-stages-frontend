@@ -10,12 +10,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ConventionService } from '../../core/services/convention.service';
 import { ConventionFormComponent } from '../convention-form/convention-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { SignaturePadComponent } from '../../signature-pad/signature-pad.component';
+import { ExportService } from '../../core/services/export.service';
 
 @Component({
   selector: 'app-convention-list',
@@ -24,7 +26,7 @@ import { SignaturePadComponent } from '../../signature-pad/signature-pad.compone
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
     MatTooltipModule, MatProgressBarModule, MatSelectModule,
-    MatChipsModule, SignaturePadComponent
+    MatChipsModule, MatPaginatorModule, SignaturePadComponent
   ],
   templateUrl: './convention-list.component.html',
   styleUrls: ['./convention-list.component.scss']
@@ -42,6 +44,11 @@ export class ConventionListComponent implements OnInit {
   selectedConvention: any = null;
   signatureCible: 'stagiaire' | 'encadrant' = 'stagiaire';
 
+  // Pagination
+  pageSize = 12;
+  pageIndex = 0;
+  pageSizeOptions = [12, 24, 48];
+
   private api = `${environment.apiUrl}/conventions`;
   readonly statuts = ['BROUILLON', 'EN_VALIDATION', 'SIGNEE', 'ARCHIVEE'];
 
@@ -52,11 +59,17 @@ export class ConventionListComponent implements OnInit {
   get filtresActifs(): number { return [this.searchKeyword, this.selectedStatut, this.selectedDept].filter(v => v).length; }
   get departementsDisponibles(): string[] { return [...new Set(this.conventions.map((c: any) => c.departementNom).filter(Boolean))].sort(); }
 
+  get paginatedConventions(): any[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredConventions.slice(start, start + this.pageSize);
+  }
+
   constructor(
     private conventionService: ConventionService,
     private http: HttpClient,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void { this.loadConventions(); }
@@ -84,13 +97,17 @@ export class ConventionListComponent implements OnInit {
     this.filteredConventions = result;
   }
 
-  onSearch(): void { this.applyFilters(); }
-  onFilterChange(): void { this.applyFilters(); }
+  onSearch(): void { this.pageIndex = 0; this.applyFilters(); }
+  onFilterChange(): void { this.pageIndex = 0; this.applyFilters(); }
+  onPageChange(event: PageEvent): void { this.pageIndex = event.pageIndex; this.pageSize = event.pageSize; }
 
   resetFiltres(): void {
     this.searchKeyword = ''; this.selectedStatut = ''; this.selectedDept = '';
-    this.filteredConventions = this.conventions;
+    this.pageIndex = 0; this.filteredConventions = this.conventions;
   }
+
+  exportExcel(): void { this.exportService.exportConventions(this.conventions); }
+  exportPdf(): void { this.exportService.exportConventionsPdf(this.conventions); }
 
   voirDetail(c: any): void {
     this.selectedConvention = c;

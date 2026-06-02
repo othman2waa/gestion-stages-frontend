@@ -7,6 +7,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService, AppNotification } from '../../core/services/notification.service';
 import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
+import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Subscription, filter, interval } from 'rxjs';
@@ -81,6 +82,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { label:'Convocations',  icon:'description',        route:'/conventions',         roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label:'Suivi hebdo',  icon:'event_note',         route:'/suivi-hebdomadaire',  roles:['ADMIN_RH','RESPONSABLE_RH','ENCADRANT'] },
         { label:'Évaluations',  icon:'star_rate',          route:'/evaluations',         roles:['ADMIN_RH','RESPONSABLE_RH','ENCADRANT'] },
+        { label:'Fiches appréciation', icon:'fact_check',  route:'/fiches-appreciation', roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label:'Onboarding',   icon:'checklist',          route:'/onboarding',          roles:['ADMIN_RH','RESPONSABLE_RH'] },
       ]
     },
@@ -221,6 +223,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   toggleCollapse(): void {
     this.isCollapsed = !this.isCollapsed;
+  }
+
+  openProfile(): void {
+    this.dialog.open(UserProfileDialogComponent, { width: '480px' });
   }
 
   openChangePassword(): void {

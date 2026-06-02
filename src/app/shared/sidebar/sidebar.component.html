@@ -24,6 +24,10 @@
       <span class="notif-count" *ngIf="unreadCount > 0">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
     </button>
     <span class="notif-label" *ngIf="!isCollapsed" (click)="toggleNotif($event)">Notifications</span>
+    <button class="notif-page-link" *ngIf="!isCollapsed" (click)="router.navigate(['/notifications'])"
+            matTooltip="Voir toutes les notifications">
+      <mat-icon>open_in_new</mat-icon>
+    </button>
 
     <!-- Dropdown -->
     <div class="notif-dropdown" *ngIf="notifOpen" (click)="$event.stopPropagation()">
@@ -96,6 +100,14 @@
 
   <!-- Footer -->
   <div class="sidebar-footer">
+    <a class="nav-item" (click)="openProfile()"
+       [matTooltip]="isCollapsed ? 'Mon profil' : ''"
+       matTooltipPosition="right">
+      <div class="nav-icon-wrap">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+      <span class="nav-label" *ngIf="!isCollapsed">Mon profil</span>
+    </a>
     <a class="nav-item" (click)="openChangePassword()"
        [matTooltip]="isCollapsed ? 'Mot de passe' : ''"
        matTooltipPosition="right">

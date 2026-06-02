@@ -1,0 +1,140 @@
+<div class="fiches-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>fact_check</mat-icon> Fiches d'Appréciation</h2>
+      <p>{{ totalFichesStage }} fiche(s) stage · {{ totalFichesStagiaire }} fiche(s) stagiaire</p>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card purple">
+      <mat-icon>assignment</mat-icon>
+      <div><span class="kpi-val">{{ totalFichesStage }}</span><span class="kpi-lbl">Fiches Stage</span></div>
+    </div>
+    <div class="kpi-card blue">
+      <mat-icon>person</mat-icon>
+      <div><span class="kpi-val">{{ totalFichesStagiaire }}</span><span class="kpi-lbl">Fiches Stagiaire</span></div>
+    </div>
+    <div class="kpi-card green">
+      <mat-icon>grade</mat-icon>
+      <div><span class="kpi-val">{{ moyenneStage | number:'1.1-1' }}</span><span class="kpi-lbl">Moy. Stage /20</span></div>
+    </div>
+    <div class="kpi-card orange">
+      <mat-icon>emoji_events</mat-icon>
+      <div><span class="kpi-val">{{ moyenneStagiaire | number:'1.1-1' }}</span><span class="kpi-lbl">Moy. Stagiaire /20</span></div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab" [class.active]="activeTab === 'stage'" (click)="switchTab('stage')">
+      <mat-icon>assignment</mat-icon> Fiches Stage ({{ totalFichesStage }})
+    </button>
+    <button class="tab" [class.active]="activeTab === 'stagiaire'" (click)="switchTab('stagiaire')">
+      <mat-icon>person</mat-icon> Fiches Stagiaire ({{ totalFichesStagiaire }})
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
+           placeholder="Rechercher par stage, stagiaire, encadrant...">
+    <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- FICHES STAGE -->
+  <div class="fiches-grid" *ngIf="!isLoading && activeTab === 'stage'">
+    <div *ngFor="let f of paginatedList" class="fiche-card">
+      <div class="card-top">
+        <div class="note-circle" [class]="getNoteClass(f.moyenneGenerale)">
+          <span class="note-val">{{ f.moyenneGenerale | number:'1.1-1' }}</span>
+          <span class="note-max">/20</span>
+        </div>
+        <div class="card-info">
+          <h4>{{ f.stageSujet ?? '—' }}</h4>
+          <span class="card-sub">{{ f.stagiaireNom }}</span>
+          <span class="card-encadrant"><mat-icon>supervisor_account</mat-icon> {{ f.encadrantNom }}</span>
+        </div>
+      </div>
+
+      <div class="criteria-grid">
+        <div class="criteria"><span class="cl">Qualité travail</span><span class="cv">{{ f.qualiteTravail }}/20</span></div>
+        <div class="criteria"><span class="cl">Respect délais</span><span class="cv">{{ f.respectDelais }}/20</span></div>
+        <div class="criteria"><span class="cl">Initiative</span><span class="cv">{{ f.initiative }}/20</span></div>
+        <div class="criteria"><span class="cl">Qualité rapport</span><span class="cv">{{ f.qualiteRapport }}/20</span></div>
+        <div class="criteria"><span class="cl">Compétences tech.</span><span class="cv">{{ f.competencesTechniques }}/20</span></div>
+        <div class="criteria"><span class="cl">Note globale</span><span class="cv">{{ f.noteGlobale }}/20</span></div>
+      </div>
+
+      <div class="card-bottom">
+        <span class="reco-badge" [class]="getRecoClass(f.recommandation)">{{ getRecoLabel(f.recommandation) }}</span>
+        <span class="card-date">{{ f.createdAt | date:'dd/MM/yyyy' }}</span>
+      </div>
+
+      <div class="card-comment" *ngIf="f.commentaires">
+        <mat-icon>format_quote</mat-icon>
+        <p>{{ f.commentaires }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FICHES STAGIAIRE -->
+  <div class="fiches-grid" *ngIf="!isLoading && activeTab === 'stagiaire'">
+    <div *ngFor="let f of paginatedList" class="fiche-card">
+      <div class="card-top">
+        <div class="note-circle" [class]="getNoteClass(f.moyenneGenerale)">
+          <span class="note-val">{{ f.moyenneGenerale | number:'1.1-1' }}</span>
+          <span class="note-max">/20</span>
+        </div>
+        <div class="card-info">
+          <h4>{{ f.stagiaireNom }}</h4>
+          <span class="card-sub">{{ f.stageSujet ?? '—' }}</span>
+          <span class="card-encadrant"><mat-icon>supervisor_account</mat-icon> {{ f.encadrantNom }}</span>
+        </div>
+      </div>
+
+      <div class="criteria-grid">
+        <div class="criteria"><span class="cl">Assiduité</span><span class="cv">{{ f.assiduite }}/20</span></div>
+        <div class="criteria"><span class="cl">Ponctualité</span><span class="cv">{{ f.ponctualite }}/20</span></div>
+        <div class="criteria"><span class="cl">Comportement</span><span class="cv">{{ f.comportementProfessionnel }}/20</span></div>
+        <div class="criteria"><span class="cl">Esprit équipe</span><span class="cv">{{ f.espritEquipe }}/20</span></div>
+        <div class="criteria"><span class="cl">Communication</span><span class="cv">{{ f.communication }}/20</span></div>
+        <div class="criteria"><span class="cl">Adaptation</span><span class="cv">{{ f.adaptation }}/20</span></div>
+      </div>
+
+      <div class="card-bottom">
+        <span class="reco-badge" [class]="getRecoClass(f.recommandationEmbauche)">{{ getRecoLabel(f.recommandationEmbauche) }}</span>
+        <span class="card-date">{{ f.createdAt | date:'dd/MM/yyyy' }}</span>
+      </div>
+
+      <div class="card-comment" *ngIf="f.commentaires">
+        <mat-icon>format_quote</mat-icon>
+        <p>{{ f.commentaires }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!isLoading && currentList.length === 0" class="empty-state">
+    <mat-icon>fact_check</mat-icon>
+    <h3>Aucune fiche trouvée</h3>
+  </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && currentList.length > 0"
+    [length]="currentList.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

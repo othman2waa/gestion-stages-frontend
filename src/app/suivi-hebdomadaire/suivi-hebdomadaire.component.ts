@@ -9,9 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { PointageService } from '../core/services/pointage.service';
 import { StageService } from '../core/services/stage.service';
+import { SuiviService } from '../core/services/suivi.service';
 import { AuthService } from '../core/services/auth.service';
+import { SuiviResponse } from '../core/models';
 
 interface CalendarDay {
   date: Date;
@@ -45,7 +48,7 @@ interface StagiaireInfo {
     CommonModule, FormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatFormFieldModule, MatInputModule,
-    MatSnackBarModule, MatProgressBarModule, MatTooltipModule
+    MatSnackBarModule, MatProgressBarModule, MatTooltipModule, MatDialogModule
   ],
   templateUrl: './suivi-hebdomadaire.component.html',
   styleUrls: ['./suivi-hebdomadaire.component.scss']
@@ -65,6 +68,12 @@ export class SuiviHebdomadaireComponent implements OnInit {
   calendarMonths: CalendarMonth[] = [];
   pointageMap = new Map<string, { present: boolean; motif: string }>();
   savingPointage = false;
+
+  // Suivis
+  suivis: SuiviResponse[] = [];
+  showSuiviForm = false;
+  editingSuivi: SuiviResponse | null = null;
+  suiviForm = { semaineNumero: 1, dateSuivi: '', progression: 50, commentaire: '', pointsPositifs: '', axesAmelioration: '', tachesAssignees: '', tachesCompletees: '' };
 
   // Computed
   get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
@@ -93,6 +102,7 @@ export class SuiviHebdomadaireComponent implements OnInit {
   constructor(
     private pointageService: PointageService,
     private stageService: StageService,
+    private suiviService: SuiviService,
     private authService: AuthService,
     private snackBar: MatSnackBar
   ) {}
@@ -132,18 +142,83 @@ export class SuiviHebdomadaireComponent implements OnInit {
 
   selectStagiaire(s: StagiaireInfo): void {
     this.selectedStagiaire = s;
+    this.suivis = [];
+    this.showSuiviForm = false;
     if (!s.dateDebut || !s.dateFin) {
       this.calendarMonths = [];
       return;
     }
     this.generateCalendar(new Date(s.dateDebut), new Date(s.dateFin));
     this.loadPointages(s.stageId);
+    this.loadSuivis(s.stageId);
   }
 
   backToList(): void {
     this.selectedStagiaire = null;
     this.calendarMonths = [];
     this.pointageMap.clear();
+    this.suivis = [];
+    this.showSuiviForm = false;
+  }
+
+  // ─── Suivis ───
+
+  loadSuivis(stageId: number): void {
+    this.suiviService.getByStage(stageId).subscribe({
+      next: (data) => this.suivis = data.sort((a, b) => b.semaineNumero - a.semaineNumero),
+      error: () => this.suivis = []
+    });
+  }
+
+  openSuiviForm(suivi?: SuiviResponse): void {
+    this.showSuiviForm = true;
+    if (suivi) {
+      this.editingSuivi = suivi;
+      this.suiviForm = {
+        semaineNumero: suivi.semaineNumero, dateSuivi: suivi.dateSuivi,
+        progression: suivi.progression, commentaire: suivi.commentaire ?? '',
+        pointsPositifs: suivi.pointsPositifs ?? '', axesAmelioration: suivi.axesAmelioration ?? '',
+        tachesAssignees: suivi.tachesAssignees ?? '', tachesCompletees: suivi.tachesCompletees ?? ''
+      };
+    } else {
+      this.editingSuivi = null;
+      const nextWeek = this.suivis.length > 0 ? Math.max(...this.suivis.map(s => s.semaineNumero)) + 1 : 1;
+      this.suiviForm = {
+        semaineNumero: nextWeek, dateSuivi: new Date().toISOString().split('T')[0],
+        progression: 50, commentaire: '', pointsPositifs: '', axesAmelioration: '',
+        tachesAssignees: '', tachesCompletees: ''
+      };
+    }
+  }
+
+  cancelSuiviForm(): void { this.showSuiviForm = false; this.editingSuivi = null; }
+
+  saveSuivi(): void {
+    if (!this.selectedStagiaire) return;
+    const payload = { stageId: this.selectedStagiaire.stageId, ...this.suiviForm };
+
+    const obs = this.editingSuivi
+      ? this.suiviService.update(this.editingSuivi.id, payload)
+      : this.suiviService.create(payload);
+
+    obs.subscribe({
+      next: () => {
+        this.snackBar.open(this.editingSuivi ? 'Suivi mis à jour' : 'Suivi créé', 'Fermer', { duration: 3000 });
+        this.showSuiviForm = false;
+        this.editingSuivi = null;
+        this.loadSuivis(this.selectedStagiaire!.stageId);
+      },
+      error: () => this.snackBar.open('Erreur sauvegarde suivi', 'Fermer', { duration: 3000 })
+    });
+  }
+
+  deleteSuivi(id: number): void {
+    this.suiviService.delete(id).subscribe({
+      next: () => {
+        this.snackBar.open('Suivi supprimé', 'Fermer', { duration: 3000 });
+        this.loadSuivis(this.selectedStagiaire!.stageId);
+      }
+    });
   }
 
   // ─── Calendar ───

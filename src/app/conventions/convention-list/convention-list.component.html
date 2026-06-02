@@ -6,9 +6,17 @@
       <h2><mat-icon>description</mat-icon> Gestion des Convocations</h2>
       <p>{{ totalConventions }} convocation(s) au total</p>
     </div>
-    <button mat-raised-button color="primary" (click)="openForm()">
-      <mat-icon>add</mat-icon> Nouvelle convocation
-    </button>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="exportExcel()">
+        <mat-icon>table_view</mat-icon> Excel
+      </button>
+      <button mat-stroked-button color="warn" (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon> PDF
+      </button>
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add</mat-icon> Nouvelle convocation
+      </button>
+    </div>
   </div>
 
   <!-- KPIs -->
@@ -64,7 +72,7 @@
 
   <!-- Cards -->
   <div class="conventions-grid" *ngIf="!isLoading">
-    <div *ngFor="let c of filteredConventions"
+    <div *ngFor="let c of paginatedConventions"
          class="convention-card"
          [class]="'border-' + getStatutClass(c.statut)">
 
@@ -146,6 +154,16 @@
       <p>Aucune convocation trouvée</p>
     </div>
   </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && filteredConventions.length > 0"
+    [length]="filteredConventions.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
 </div>
 
 <!-- ═══ DIALOG DÉTAIL ═══ -->

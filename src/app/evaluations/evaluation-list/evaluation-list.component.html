@@ -113,7 +113,7 @@
 
   <!-- Cards Grid -->
   <div class="evaluations-grid" *ngIf="!isLoading && filteredEvaluations.length > 0">
-    <div *ngFor="let e of filteredEvaluations; trackBy: trackById" class="evaluation-card">
+    <div *ngFor="let e of paginatedEvaluations; trackBy: trackById" class="evaluation-card">
 
       <div class="card-top">
         <div class="note-circle" [class]="getNoteClass(e.note)">
@@ -166,6 +166,16 @@
       </div>
     </div>
   </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && filteredEvaluations.length > 0"
+    [length]="filteredEvaluations.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
 </div>
 
 <!-- Dialog détail -->

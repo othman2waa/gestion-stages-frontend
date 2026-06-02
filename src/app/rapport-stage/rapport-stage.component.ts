@@ -28,6 +28,7 @@ export class RapportStageComponent implements OnInit {
   isLoading = true;
   isUploading = false;
   selectedFile: File | null = null;
+  dragOver = false;
 
   constructor(
     private rapportService: RapportService,
@@ -56,16 +57,7 @@ export class RapportStageComponent implements OnInit {
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-    if (!file) return;
-    if (file.type !== 'application/pdf') {
-      this.snackBar.open('Seuls les fichiers PDF sont acceptés', 'Fermer', { duration: 3000 });
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      this.snackBar.open('Fichier trop volumineux (max 10 MB)', 'Fermer', { duration: 3000 });
-      return;
-    }
-    this.selectedFile = file;
+    if (file) this.processFile(file);
   }
 
   upload(): void {
@@ -115,6 +107,43 @@ export class RapportStageComponent implements OnInit {
         error: () => this.snackBar.open('Erreur suppression', 'Fermer', { duration: 3000 })
       });
     });
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.dragOver = true;
+  }
+
+  onDragLeave(): void { this.dragOver = false; }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.dragOver = false;
+    const file = event.dataTransfer?.files[0];
+    if (file) this.processFile(file);
+  }
+
+  processFile(file: File): void {
+    if (file.type !== 'application/pdf') {
+      this.snackBar.open('Seuls les fichiers PDF sont acceptés', 'Fermer', { duration: 3000 });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      this.snackBar.open('Fichier trop volumineux (max 10 MB)', 'Fermer', { duration: 3000 });
+      return;
+    }
+    this.selectedFile = file;
+  }
+
+  getUploadTimeAgo(): string {
+    if (!this.rapport?.uploadedAt) return '';
+    const date = new Date(this.rapport.uploadedAt);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diff < 3600) return 'il y a ' + Math.floor(diff / 60) + ' min';
+    if (diff < 86400) return 'il y a ' + Math.floor(diff / 3600) + ' h';
+    if (diff < 604800) return 'il y a ' + Math.floor(diff / 86400) + ' jour(s)';
+    return date.toLocaleDateString('fr-FR');
   }
 
   formatSize(bytes: number): string {

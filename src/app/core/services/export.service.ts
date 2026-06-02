@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { CandidatureResponse, StageResponse, EvaluationResponse, StagiaireResponse } from '../models';
+import { CandidatureResponse, StageResponse, EvaluationResponse, StagiaireResponse, EncadrantResponse, ConventionResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ExportService {
@@ -251,6 +251,96 @@ exportStagiairesPdf(stagiaires: StagiaireResponse[]): void {
       'Créé le': s.createdAt ? new Date(s.createdAt).toLocaleDateString('fr-FR') : ''
     }));
     this.exportExcel(data, 'stagiaires', 'Stagiaires');
+  }
+
+  exportEncadrants(encadrants: EncadrantResponse[]): void {
+    const data = encadrants.map(e => ({
+      'Prénom': e.prenom,
+      'Nom': e.nom,
+      'Email': e.email,
+      'Fonction': e.fonction ?? '',
+      'Département': e.departementNom ?? '',
+      'Créé le': e.createdAt ? new Date(e.createdAt).toLocaleDateString('fr-FR') : ''
+    }));
+    this.exportExcel(data, 'encadrants', 'Encadrants');
+  }
+
+  exportEncadrantsPdf(encadrants: EncadrantResponse[]): void {
+    const doc = new jsPDF();
+
+    doc.setFillColor(30, 64, 175);
+    doc.rect(0, 0, 210, 25, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('OCP Group — Liste des Encadrants', 14, 16);
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} | Total : ${encadrants.length}`, 14, 33);
+
+    autoTable(doc, {
+      startY: 40,
+      head: [['Prénom', 'Nom', 'Email', 'Fonction', 'Département']],
+      body: encadrants.map(e => [
+        e.prenom, e.nom, e.email,
+        e.fonction ?? '—', e.departementNom ?? '—'
+      ]),
+      headStyles: { fillColor: [30, 64, 175], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [239, 246, 255] },
+      styles: { fontSize: 9, cellPadding: 3 }
+    });
+
+    doc.save(`encadrants_${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  exportConventions(conventions: ConventionResponse[]): void {
+    const data = conventions.map(c => ({
+      'Numéro': c.numero ?? '',
+      'Stage': c.stageSujet ?? '',
+      'Stagiaire': c.stagiaireNom ?? '',
+      'Encadrant': c.encadrantNom ?? '',
+      'Département': c.departementNom ?? '',
+      'Statut': c.statut ?? '',
+      'Type stage': c.typeStage ?? '',
+      'Date émission': c.dateEmission ? new Date(c.dateEmission).toLocaleDateString('fr-FR') : '',
+      'Début stage': c.stageDebut ? new Date(c.stageDebut).toLocaleDateString('fr-FR') : '',
+      'Fin stage': c.stageFin ? new Date(c.stageFin).toLocaleDateString('fr-FR') : ''
+    }));
+    this.exportExcel(data, 'convocations', 'Convocations');
+  }
+
+  exportConventionsPdf(conventions: ConventionResponse[]): void {
+    const doc = new jsPDF('landscape');
+
+    doc.setFillColor(0, 132, 61);
+    doc.rect(0, 0, 297, 25, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('OCP Group — Rapport des Convocations', 14, 16);
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const signees = conventions.filter(c => c.statut === 'SIGNEE').length;
+    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} | Total : ${conventions.length} | Signées : ${signees}`, 14, 33);
+
+    autoTable(doc, {
+      startY: 40,
+      head: [['Numéro', 'Stage', 'Stagiaire', 'Encadrant', 'Département', 'Statut', 'Émission']],
+      body: conventions.map(c => [
+        c.numero ?? '—', c.stageSujet ?? '—', c.stagiaireNom ?? '—',
+        c.encadrantNom ?? '—', c.departementNom ?? '—', c.statut ?? '—',
+        c.dateEmission ? new Date(c.dateEmission).toLocaleDateString('fr-FR') : '—'
+      ]),
+      headStyles: { fillColor: [0, 132, 61], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [240, 253, 244] },
+      styles: { fontSize: 8, cellPadding: 3 }
+    });
+
+    doc.save(`convocations_${new Date().toISOString().split('T')[0]}.pdf`);
   }
 
   exportEvaluations(evaluations: EvaluationResponse[]): void {

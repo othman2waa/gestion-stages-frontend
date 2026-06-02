@@ -21,6 +21,9 @@ import { AttestationsAdminComponent } from '../attestations-admin/attestations-a
 import { SujetsAdminComponent } from '../sujets-admin/sujets-admin.component';
 import { CandidaturesEncadrantComponent } from '../candidatures-encadrant/candidatures-encadrant.component';
 import { ArchivesComponent } from '../archives/archives.component';
+import { ReportingComponent } from '../reporting/reporting.component';
+import { NotificationsPageComponent } from '../notifications-page/notifications-page.component';
+import { FichesAppreciationAdminComponent } from '../fiches-appreciation-admin/fiches-appreciation-admin.component';
 
 const routes: Routes = [
   {
@@ -48,10 +51,9 @@ const routes: Routes = [
       { path: 'sujets', component: SujetsAdminComponent },
       { path: 'candidatures-encadrant', component: CandidaturesEncadrantComponent },
       { path: 'archives', component: ArchivesComponent },
-
-
-
-
+      { path: 'reporting', component: ReportingComponent },
+      { path: 'notifications', component: NotificationsPageComponent },
+      { path: 'fiches-appreciation', component: FichesAppreciationAdminComponent },
     ]
   }
 ];
