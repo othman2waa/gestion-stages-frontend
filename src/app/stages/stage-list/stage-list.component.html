@@ -107,6 +107,28 @@
     </span>
   </div>
 
+  <!-- Status pills -->
+  <div class="status-pills">
+    <button class="pill" [class.active]="!selectedStatut" (click)="selectedStatut=''; onFilterChange()">
+      Tous <span class="pill-count">{{ totalElements }}</span>
+    </button>
+    <button class="pill en-cours" [class.active]="selectedStatut === 'EN_COURS'" (click)="selectedStatut='EN_COURS'; onFilterChange()">
+      En cours <span class="pill-count">{{ stagesEnCours }}</span>
+    </button>
+    <button class="pill en-attente" [class.active]="selectedStatut === 'EN_ATTENTE'" (click)="selectedStatut='EN_ATTENTE'; onFilterChange()">
+      En attente <span class="pill-count">{{ stagesEnAttente }}</span>
+    </button>
+    <button class="pill termine" [class.active]="selectedStatut === 'TERMINE'" (click)="selectedStatut='TERMINE'; onFilterChange()">
+      Terminés <span class="pill-count">{{ stagesTermines }}</span>
+    </button>
+    <button class="pill validee" [class.active]="selectedStatut === 'VALIDEE'" (click)="selectedStatut='VALIDEE'; onFilterChange()">
+      Validés
+    </button>
+    <button class="pill annule" [class.active]="selectedStatut === 'ANNULE'" (click)="selectedStatut='ANNULE'; onFilterChange()">
+      Annulés
+    </button>
+  </div>
+
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
   <!-- Empty State -->
@@ -259,6 +281,16 @@
           <span>{{ selectedStage?.encadrantPrenom }} {{ selectedStage?.encadrantNom ?? '—' }}</span>
         </div>
       </div>
+    </div>
+
+    <!-- Description & Objectifs -->
+    <div class="detail-desc" *ngIf="selectedStage?.description">
+      <p class="section-title">Description</p>
+      <p class="desc-text">{{ selectedStage.description }}</p>
+    </div>
+    <div class="detail-desc" *ngIf="selectedStage?.objectifs">
+      <p class="section-title">Objectifs</p>
+      <p class="desc-text">{{ selectedStage.objectifs }}</p>
     </div>
   </mat-dialog-content>
 

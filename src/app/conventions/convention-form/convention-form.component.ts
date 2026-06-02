@@ -11,7 +11,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConventionService } from '../../core/services/convention.service';
 import { StageService } from '../../core/services/stage.service';
 
@@ -22,7 +24,8 @@ import { StageService } from '../../core/services/stage.service';
     CommonModule, ReactiveFormsModule, MatDialogModule,
     MatFormFieldModule, MatInputModule, MatButtonModule,
     MatIconModule, MatSelectModule, MatAutocompleteModule,
-    MatDatepickerModule, MatNativeDateModule, MatProgressSpinnerModule
+    MatDatepickerModule, MatNativeDateModule, MatProgressSpinnerModule,
+    MatSnackBarModule, MatTooltipModule
   ],
   templateUrl: './convention-form.component.html',
   styleUrls: ['./convention-form.component.scss']
@@ -43,6 +46,7 @@ export class ConventionFormComponent implements OnInit {
     private fb: FormBuilder,
     private conventionService: ConventionService,
     private stageService: StageService,
+    private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<ConventionFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -115,8 +119,15 @@ export class ConventionFormComponent implements OnInit {
       ? this.conventionService.update(this.data.id, this.form.value)
       : this.conventionService.create(this.form.value);
     request.subscribe({
-      next: () => { this.isLoading = false; this.dialogRef.close(true); },
-      error: () => { this.isLoading = false; }
+      next: () => {
+        this.isLoading = false;
+        this.snackBar.open(this.isEdit ? 'Convocation modifiée' : 'Convocation créée', 'Fermer', { duration: 3000 });
+        this.dialogRef.close(true);
+      },
+      error: () => {
+        this.isLoading = false;
+        this.snackBar.open('Erreur lors de la sauvegarde', 'Fermer', { duration: 3000 });
+      }
     });
   }
 

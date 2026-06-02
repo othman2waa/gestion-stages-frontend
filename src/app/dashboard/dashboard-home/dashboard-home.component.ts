@@ -60,6 +60,8 @@ export class DashboardHomeComponent implements OnInit {
       items.push({ icon:'star_rate', color:'#F47920', bg:'#FFF7ED', border:'#FED7AA', label:'Stage(s) à évaluer', val: this.stats.stagesEnAttenteEvaluation, route:'/evaluations' });
     if ((this.stats.attestationsEnAttente ?? 0) > 0)
       items.push({ icon:'workspace_premium', color:'#1E40AF', bg:'#EFF6FF', border:'#BFDBFE', label:'Attestation(s) en attente', val: this.stats.attestationsEnAttente, route:'/attestations' });
+    if (this.compliance && this.compliance.dossierIncomplet > 0)
+      items.push({ icon:'folder_off', color:'#7C3AED', bg:'#F5F3FF', border:'#DDD6FE', label:'Dossier(s) incomplet(s)', val: this.compliance.dossierIncomplet, route:'' });
     if (items.length === 0)
       items.push({ icon:'check_circle', color:'#00843D', bg:'#F0FDF4', border:'#BBF7D0', label:'Tout est à jour !', val:'✓', route:'' });
     return items;

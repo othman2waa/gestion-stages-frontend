@@ -87,9 +87,16 @@
         <mat-option value="insuffisant">Insuffisant (&lt;10)</mat-option>
       </mat-select>
     </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field" *ngIf="!isEncadrant">
+      <mat-label>Encadrant</mat-label>
+      <mat-select [(ngModel)]="selectedEncadrant" (selectionChange)="onFilterChange()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option *ngFor="let enc of encadrantsDisponibles" [value]="enc">{{ enc }}</mat-option>
+      </mat-select>
+    </mat-form-field>
     <button mat-stroked-button color="warn" (click)="resetFiltres()"
-            *ngIf="searchKeyword || selectedType || selectedNiveau">
-      <mat-icon>filter_alt_off</mat-icon> Reset
+            *ngIf="filtresActifs > 0">
+      <mat-icon>filter_alt_off</mat-icon> Reset ({{ filtresActifs }})
     </button>
   </div>
 

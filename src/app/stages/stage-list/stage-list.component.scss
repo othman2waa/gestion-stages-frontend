@@ -52,6 +52,26 @@
   }
 }
 
+.status-pills {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+  .pill {
+    border: 1px solid #e2e8f0; background: white; border-radius: 20px;
+    padding: 6px 14px; font-size: 12px; font-weight: 600; color: #64748b;
+    cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+    &:hover { border-color: #94a3b8; }
+    &.active { background: #1e40af; color: white; border-color: #1e40af; }
+    &.en-cours.active { background: #059669; border-color: #059669; }
+    &.en-attente.active { background: #d97706; border-color: #d97706; }
+    &.termine.active { background: #7c3aed; border-color: #7c3aed; }
+    &.validee.active { background: #00843D; border-color: #00843D; }
+    &.annule.active { background: #dc2626; border-color: #dc2626; }
+    .pill-count {
+      background: rgba(0,0,0,0.1); border-radius: 10px; padding: 1px 7px; font-size: 11px;
+    }
+    &.active .pill-count { background: rgba(255,255,255,0.25); }
+  }
+}
+
 .stages-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;
   margin-bottom: 20px;
@@ -141,6 +161,13 @@
     font-size: 13px; color: #374151;
     mat-icon { font-size: 15px; color: #6366f1; flex-shrink: 0; }
   }
+}
+
+.detail-desc {
+  padding: 12px; background: #f8fafc; border-radius: 10px; margin-top: 12px;
+  .section-title { font-size: 11px; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px; }
+  .desc-text { margin: 0; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-line; }
 }
 
 .empty-state { grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8;

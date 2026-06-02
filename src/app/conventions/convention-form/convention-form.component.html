@@ -105,7 +105,9 @@
 
   <mat-dialog-actions align="end">
     <button mat-button (click)="onCancel()">Annuler</button>
-    <button mat-raised-button class="btn-submit" (click)="onSubmit()" [disabled]="form.invalid || isLoading">
+    <button mat-raised-button class="btn-submit" (click)="onSubmit()"
+            [disabled]="form.invalid || isLoading || !selectedStage"
+            [matTooltip]="!selectedStage ? 'Veuillez sélectionner un stage' : ''">
       <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
       <span *ngIf="!isLoading"><mat-icon>{{ isEdit ? 'save' : 'add' }}</mat-icon> {{ isEdit ? 'Modifier' : 'Créer la convocation' }}</span>
     </button>

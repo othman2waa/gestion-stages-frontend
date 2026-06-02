@@ -42,6 +42,7 @@ export class EvaluationListComponent implements OnInit {
   searchKeyword = '';
   selectedType = '';
   selectedNiveau = '';
+  selectedEncadrant = '';
   selectedEvaluation: any = null;
   userRole = '';
 
@@ -113,7 +114,11 @@ export class EvaluationListComponent implements OnInit {
         }
       });
     }
+    if (this.selectedEncadrant) {
+      result = result.filter(e => e.encadrantNom === this.selectedEncadrant);
+    }
     this.filteredEvaluations = result;
+    this.pageIndex = 0;
   }
 
   get paginatedEvaluations(): any[] {
@@ -125,8 +130,17 @@ export class EvaluationListComponent implements OnInit {
   onFilterChange(): void { this.pageIndex = 0; this.applyFilters(); }
   onPageChange(event: PageEvent): void { this.pageIndex = event.pageIndex; this.pageSize = event.pageSize; }
 
+  get encadrantsDisponibles(): string[] {
+    return [...new Set(this.evaluations.map(e => e.encadrantNom).filter(Boolean))];
+  }
+
+  get filtresActifs(): number {
+    return [this.searchKeyword, this.selectedType, this.selectedNiveau, this.selectedEncadrant].filter(v => v).length;
+  }
+
   resetFiltres(): void {
     this.searchKeyword = ''; this.selectedType = ''; this.selectedNiveau = '';
+    this.selectedEncadrant = '';
     this.pageIndex = 0; this.filteredEvaluations = this.evaluations;
   }
 
