@@ -95,7 +95,7 @@ readonly checklistCategories = [
   readonly steps = [
     { key: 'EN_ATTENTE',            label: 'Candidature' },
     { key: 'VALIDEE',               label: 'Validé' },
-    { key: 'CONVENTION_GENEREE',    label: 'Convention' },
+    { key: 'CONVENTION_GENEREE',    label: 'Convocation' },
     { key: 'CONVENTION_SIGNEE',     label: 'Signée' },
     { key: 'EN_COURS',              label: 'En cours' },
     { key: 'EN_ATTENTE_EVALUATION', label: 'Évaluation' },
@@ -262,7 +262,7 @@ readonly checklistCategories = [
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `convention-${this.dashboard.conventionNumero}.pdf`;
+        a.download = `convocation-${this.dashboard.conventionNumero}.pdf`;
         a.click();
         window.URL.revokeObjectURL(url);
       },

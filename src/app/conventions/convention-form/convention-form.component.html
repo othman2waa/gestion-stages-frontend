@@ -4,8 +4,8 @@
   <div class="conv-header">
     <div class="ch-icon"><mat-icon>{{ isEdit ? 'edit_document' : 'note_add' }}</mat-icon></div>
     <div>
-      <h2>{{ isEdit ? 'Modifier la convention' : 'Nouvelle convention de stage' }}</h2>
-      <p>{{ isEdit ? 'Mettre à jour les informations' : 'Créez une convention liée à un stage' }}</p>
+      <h2>{{ isEdit ? 'Modifier la convocation' : 'Nouvelle convocation de stage' }}</h2>
+      <p>{{ isEdit ? 'Mettre à jour les informations' : 'Créez une convocation liée à un stage' }}</p>
     </div>
   </div>
 
@@ -76,10 +76,10 @@
 
       <!-- Section 2 : Détails convention -->
       <div class="form-section">
-        <div class="section-label"><mat-icon>description</mat-icon> Détails de la convention</div>
+        <div class="section-label"><mat-icon>description</mat-icon> Détails de la convocation</div>
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Numéro de convention</mat-label>
+            <mat-label>Numéro de convocation</mat-label>
             <input matInput formControlName="numero" placeholder="CONV-2026-001">
             <mat-icon matPrefix>tag</mat-icon>
             <mat-hint>Auto-généré, modifiable</mat-hint>
@@ -107,7 +107,7 @@
     <button mat-button (click)="onCancel()">Annuler</button>
     <button mat-raised-button class="btn-submit" (click)="onSubmit()" [disabled]="form.invalid || isLoading">
       <mat-spinner diameter="18" *ngIf="isLoading"></mat-spinner>
-      <span *ngIf="!isLoading"><mat-icon>{{ isEdit ? 'save' : 'add' }}</mat-icon> {{ isEdit ? 'Modifier' : 'Créer la convention' }}</span>
+      <span *ngIf="!isLoading"><mat-icon>{{ isEdit ? 'save' : 'add' }}</mat-icon> {{ isEdit ? 'Modifier' : 'Créer la convocation' }}</span>
     </button>
   </mat-dialog-actions>
 </div>

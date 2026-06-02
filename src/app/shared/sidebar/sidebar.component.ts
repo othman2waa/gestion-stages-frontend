@@ -76,7 +76,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       title: 'Suivi',
       roles: ['ADMIN_RH', 'RESPONSABLE_RH', 'ENCADRANT'],
       items: [
-        { label:'Conventions',  icon:'description',        route:'/conventions',         roles:['ADMIN_RH','RESPONSABLE_RH'] },
+        { label:'Convocations',  icon:'description',        route:'/conventions',         roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label:'Suivi hebdo',  icon:'event_note',         route:'/suivi-hebdomadaire',  roles:['ADMIN_RH','RESPONSABLE_RH','ENCADRANT'] },
         { label:'Évaluations',  icon:'star_rate',          route:'/evaluations',         roles:['ADMIN_RH','RESPONSABLE_RH','ENCADRANT'] },
         { label:'Onboarding',   icon:'checklist',          route:'/onboarding',          roles:['ADMIN_RH','RESPONSABLE_RH'] },

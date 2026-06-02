@@ -40,7 +40,7 @@ export class DashboardHomeComponent implements OnInit {
       { label:'Stagiaires',   value: this.stats.totalStagiaires,  icon:'school',            color:'#1E40AF' },
       { label:'Stages',       value: this.stats.totalStages,      icon:'work',              color:'#00843D' },
       { label:'En cours',     value: this.stats.stagesEnCours,    icon:'play_circle',       color:'#059669' },
-      { label:'Conventions',  value: this.stats.totalConventions, icon:'description',       color:'#F47920' },
+      { label:'Convocations',  value: this.stats.totalConventions, icon:'description',       color:'#F47920' },
       { label:'Évaluations',  value: this.stats.totalEvaluations, icon:'star_rate',         color:'#7C3AED' },
       { label:'Encadrants',   value: this.stats.totalEncadrants,  icon:'supervisor_account',color:'#0891B2' },
       { label:'Candidatures', value: this.stats.totalCandidatures,icon:'inbox',             color:'#DC2626' },
@@ -69,7 +69,7 @@ export class DashboardHomeComponent implements OnInit {
   get stageStatusChartData(): ChartData<'doughnut'> {
     if (!this.stats) return { labels: [], datasets: [] };
     return {
-      labels: ['En attente', 'En cours', 'Convention générée', 'Convention signée', 'En attente éval.', 'Terminés', 'Annulés'],
+      labels: ['En attente', 'En cours', 'Convocation générée', 'Convocation signée', 'En attente éval.', 'Terminés', 'Annulés'],
       datasets: [{
         data: [
           this.stats.stagesEnAttente ?? 0,
