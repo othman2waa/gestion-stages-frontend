@@ -47,6 +47,10 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  changePassword(oldPassword: string, newPassword: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/auth/change-password`, { oldPassword, newPassword });
+  }
+
   private getUserFromStorage(): User | null {
     const user = localStorage.getItem('currentUser');
     return user ? JSON.parse(user) : null;

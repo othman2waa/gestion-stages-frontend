@@ -96,6 +96,14 @@
 
   <!-- Footer -->
   <div class="sidebar-footer">
+    <a class="nav-item" (click)="openChangePassword()"
+       [matTooltip]="isCollapsed ? 'Mot de passe' : ''"
+       matTooltipPosition="right">
+      <div class="nav-icon-wrap">
+        <mat-icon>lock</mat-icon>
+      </div>
+      <span class="nav-label" *ngIf="!isCollapsed">Mot de passe</span>
+    </a>
     <a class="nav-item logout" (click)="logout()"
        [matTooltip]="isCollapsed ? 'Déconnexion' : ''"
        matTooltipPosition="right">

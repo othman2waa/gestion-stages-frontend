@@ -129,12 +129,17 @@
 
     </div>
 
-    <div *ngIf="filteredStagiaires.length === 0" class="empty-state">
-      <mat-icon>person_search</mat-icon>
-      <p>Aucun stagiaire trouvé</p>
-      <button mat-stroked-button (click)="resetFiltres()">Réinitialiser les filtres</button>
-    </div>
   </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && totalElements > 0 && !isEncadrant"
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
 
 </div>
 

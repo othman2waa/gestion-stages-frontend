@@ -37,4 +37,8 @@ export class StagiaireService {
   getMesStagiaires(): Observable<StagiaireResponse[]> {
     return this.http.get<StagiaireResponse[]>(`${this.api}/mes-stagiaires`);
   }
+
+  rechercher(params: any): Observable<any> {
+    return this.http.get<any>(`${this.api}/rechercher`, { params });
+  }
 }

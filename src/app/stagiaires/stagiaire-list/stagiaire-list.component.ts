@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { StagiaireService } from '../../core/services/stagiaire.service';
 import { StagiaireFormComponent } from '../stagiaire-form/stagiaire-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
@@ -28,13 +32,14 @@ import { AuthService } from '../../core/services/auth.service';
     MatButtonModule, MatIconModule, MatInputModule,
     MatFormFieldModule, MatCardModule, MatSnackBarModule,
     MatDialogModule, MatTooltipModule, MatProgressBarModule,
-    MatSelectModule, MatChipsModule, MatBadgeModule
+    MatSelectModule, MatChipsModule, MatBadgeModule, MatPaginatorModule
   ],
   templateUrl: './stagiaire-list.component.html',
   styleUrls: ['./stagiaire-list.component.scss']
 })
 export class StagiaireListComponent implements OnInit {
   @ViewChild('detailDialog') detailDialog!: TemplateRef<any>;
+  private destroyRef = inject(DestroyRef);
 
   stagiaires: any[] = [];
   filteredStagiaires: any[] = [];
@@ -44,12 +49,20 @@ export class StagiaireListComponent implements OnInit {
   isLoading = true;
   selectedStagiaire: any = null;
 
+  // Pagination
+  pageSize = 12;
+  pageIndex = 0;
+  pageSizeOptions = [12, 24, 48];
+  totalElements = 0;
+
+  private searchSubject = new Subject<string>();
+
   userRole = '';
   get isEncadrant(): boolean { return this.userRole === 'ENCADRANT'; }
 
   readonly niveaux = ['Bac+2', 'Bac+3', 'Bac+4', 'Bac+5', 'Master', 'Doctorat'];
 
-  get totalStagiaires(): number { return this.stagiaires.length; }
+  get totalStagiaires(): number { return this.totalElements; }
   get avecCompte(): number { return this.stagiaires.filter(s => s.username).length; }
   get filieres(): string[] {
     return [...new Set(this.stagiaires.map(s => s.filiere).filter(Boolean))];
@@ -65,33 +78,70 @@ export class StagiaireListComponent implements OnInit {
 
   ngOnInit(): void {
     this.userRole = this.authService.getRole() ?? '';
+    this.searchSubject.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.pageIndex = 0;
+      this.loadStagiaires();
+    });
     this.loadStagiaires();
   }
 
-loadStagiaires(): void {
-  this.isLoading = true;
-  const role = this.authService.getRole() ?? '';
+  loadStagiaires(): void {
+    this.isLoading = true;
+    const role = this.authService.getRole() ?? '';
 
-  const obs = role === 'ENCADRANT'
-    ? this.stagiaireService.getMesStagiaires()
-    : this.stagiaireService.getAll();
+    if (role === 'ENCADRANT') {
+      this.stagiaireService.getMesStagiaires().subscribe({
+        next: (data) => {
+          this.stagiaires = data;
+          this.filteredStagiaires = data;
+          this.totalElements = data.length;
+          this.isLoading = false;
+        },
+        error: () => this.isLoading = false
+      });
+    } else {
+      const params: any = { page: this.pageIndex, size: this.pageSize };
+      if (this.searchKeyword.trim()) params['keyword'] = this.searchKeyword.trim();
+      if (this.selectedNiveau) params['niveau'] = this.selectedNiveau;
+      if (this.selectedFiliere) params['filiere'] = this.selectedFiliere;
 
-  obs.subscribe({
-    next: (data) => {
-      this.stagiaires = data;
-      this.filteredStagiaires = data;
-      this.isLoading = false;
-    },
-    error: () => this.isLoading = false
-  });
-}
+      this.stagiaireService.rechercher(params).subscribe({
+        next: (data) => {
+          this.stagiaires = data.content;
+          this.filteredStagiaires = data.content;
+          this.totalElements = data.totalElements;
+          this.isLoading = false;
+        },
+        error: () => this.isLoading = false
+      });
+    }
+  }
 
   onSearch(): void {
-    this.applyFilters();
+    if (this.isEncadrant) {
+      this.applyFilters();
+    } else {
+      this.searchSubject.next(this.searchKeyword);
+    }
   }
 
   onFilterChange(): void {
-    this.applyFilters();
+    if (this.isEncadrant) {
+      this.applyFilters();
+    } else {
+      this.pageIndex = 0;
+      this.loadStagiaires();
+    }
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadStagiaires();
   }
 
   applyFilters(): void {
@@ -118,7 +168,12 @@ loadStagiaires(): void {
     this.searchKeyword = '';
     this.selectedNiveau = '';
     this.selectedFiliere = '';
-    this.filteredStagiaires = this.stagiaires;
+    this.pageIndex = 0;
+    if (this.isEncadrant) {
+      this.filteredStagiaires = this.stagiaires;
+    } else {
+      this.loadStagiaires();
+    }
   }
 
   voirDetail(s: any): void {
@@ -168,8 +223,7 @@ loadStagiaires(): void {
     return map[niveau] ?? 'n3';
   }
 
-
-closeDialog(): void { this.dialog.closeAll(); }
+  closeDialog(): void { this.dialog.closeAll(); }
 
   trackById(_: number, item: any): number { return item.id; }
 }

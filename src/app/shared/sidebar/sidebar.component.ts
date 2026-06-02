@@ -3,8 +3,10 @@ import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService, AppNotification } from '../../core/services/notification.service';
+import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Subscription, filter, interval } from 'rxjs';
@@ -25,7 +27,7 @@ interface MenuGroup {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatTooltipModule, MatDialogModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
@@ -98,7 +100,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     public router: Router,
     private http: HttpClient,
-    private notifService: NotificationService
+    private notifService: NotificationService,
+    private dialog: MatDialog
   ) {
     this.currentUrl = this.router.url;
     this.routerSub = this.router.events.pipe(
@@ -218,6 +221,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   toggleCollapse(): void {
     this.isCollapsed = !this.isCollapsed;
+  }
+
+  openChangePassword(): void {
+    this.dialog.open(ChangePasswordDialogComponent, { width: '440px' });
   }
 
   logout(): void {
