@@ -8,12 +8,25 @@
 .hero {
   background: linear-gradient(135deg, #003B1C 0%, #00843D 65%, #F47920 100%);
   border-radius: 18px; padding: 24px 28px; margin-bottom: 20px;
+  display: flex; justify-content: space-between; align-items: flex-start;
   .hero-live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
     color: rgba(255,255,255,0.85); margin-bottom: 8px;
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #86efac;
       animation: blink 2s infinite; } }
   h1 { margin: 0 0 4px; color: white; font-size: 24px; font-weight: 800; }
   p  { margin: 0; color: rgba(255,255,255,0.75); font-size: 12px; }
+  .hero-actions { display: flex; gap: 8px;
+    .hero-btn { color: white !important; border-color: rgba(255,255,255,0.4) !important;
+      font-size: 12px; border-radius: 10px !important;
+      &:hover { background: rgba(255,255,255,0.15) !important; }
+    }
+  }
+}
+
+@media print {
+  .hero-actions, mat-progress-bar, .alertes { display: none !important; }
+  .dash { padding: 0; background: white; }
+  .hero { border-radius: 0; }
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 

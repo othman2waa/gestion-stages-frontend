@@ -20,6 +20,20 @@
       <mat-error *ngIf="form.get('sujet')?.hasError('required')">Le sujet est obligatoire</mat-error>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description du stage</mat-label>
+      <textarea matInput formControlName="description" rows="3"
+                placeholder="Décrivez le contexte et le périmètre du stage..."></textarea>
+      <mat-icon matPrefix>description</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Objectifs</mat-label>
+      <textarea matInput formControlName="objectifs" rows="2"
+                placeholder="Listez les objectifs principaux du stage..."></textarea>
+      <mat-icon matPrefix>flag</mat-icon>
+    </mat-form-field>
+
     <div class="form-row">
       <mat-form-field appearance="outline">
         <mat-label>Type de stage *</mat-label>

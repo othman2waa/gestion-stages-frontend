@@ -17,6 +17,14 @@
           <h1>Tableau de Bord RH</h1>
           <p>OCP Group · Direction Capital Humain · {{ today | date:'EEEE d MMMM yyyy' }}</p>
         </div>
+        <div class="hero-actions">
+          <button mat-stroked-button class="hero-btn" matTooltip="Imprimer le dashboard" (click)="printDashboard()">
+            <mat-icon>print</mat-icon> Imprimer
+          </button>
+          <button mat-stroked-button class="hero-btn" matTooltip="Reporting détaillé" routerLink="/reporting">
+            <mat-icon>analytics</mat-icon> Reporting
+          </button>
+        </div>
       </div>
 
       <!-- KPIs -->

@@ -11,6 +11,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { StagiaireService } from '../core/services/stagiaire.service';
@@ -24,7 +26,7 @@ import { ExportService } from '../core/services/export.service';
     CommonModule, FormsModule, MatCardModule, MatIconModule,
     MatButtonModule, MatInputModule, MatFormFieldModule,
     MatChipsModule, MatTooltipModule, MatSnackBarModule,
-    MatProgressBarModule, MatDialogModule
+    MatProgressBarModule, MatDialogModule, MatPaginatorModule, MatSelectModule
   ],
   templateUrl: './gestion-comptes.component.html',
   styleUrls: ['./gestion-comptes.component.scss']
@@ -36,8 +38,13 @@ export class GestionComptesComponent implements OnInit {
   filteredStagiaires: any[] = [];
   isLoading = true;
   searchKeyword = '';
+  filterStatut = '';
   resetPasswordResult: any = null;
   selectedStagiaire: any = null;
+
+  pageSize = 12;
+  pageIndex = 0;
+  pageSizeOptions = [12, 24, 48];
 
   private api = `${environment.apiUrl}/stagiaires`;
 
@@ -67,13 +74,29 @@ export class GestionComptesComponent implements OnInit {
   }
 
   onSearch(): void {
+    this.pageIndex = 0;
     const kw = this.searchKeyword.toLowerCase();
-    this.filteredStagiaires = this.stagiaires.filter(s =>
-      s.nom?.toLowerCase().includes(kw) ||
-      s.prenom?.toLowerCase().includes(kw) ||
-      s.email?.toLowerCase().includes(kw) ||
-      s.username?.toLowerCase().includes(kw)
-    );
+    this.filteredStagiaires = this.stagiaires.filter(s => {
+      const matchSearch = !kw ||
+        s.nom?.toLowerCase().includes(kw) ||
+        s.prenom?.toLowerCase().includes(kw) ||
+        s.email?.toLowerCase().includes(kw) ||
+        s.username?.toLowerCase().includes(kw);
+      const matchStatut = !this.filterStatut ||
+        (this.filterStatut === 'actif' && s.actif) ||
+        (this.filterStatut === 'inactif' && !s.actif);
+      return matchSearch && matchStatut;
+    });
+  }
+
+  get paginatedStagiaires(): any[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredStagiaires.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 
   selectStagiaire(s: any): void {

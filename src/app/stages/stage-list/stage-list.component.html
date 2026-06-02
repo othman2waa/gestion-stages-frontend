@@ -181,6 +181,9 @@
                 (click)="genererLettreAccord(s)" *ngIf="!isEncadrant">
           <mat-icon>description</mat-icon>
         </button>
+        <a mat-icon-button matTooltip="Workflow" [routerLink]="['/stages', s.id, 'workflow']">
+          <mat-icon>account_tree</mat-icon>
+        </a>
         <button mat-icon-button [matMenuTriggerFor]="statutMenu" matTooltip="Changer statut">
           <mat-icon>swap_horiz</mat-icon>
         </button>

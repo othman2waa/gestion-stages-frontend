@@ -3,8 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
@@ -15,7 +17,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressBarModule, BaseChartDirective],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatTooltipModule, RouterModule, BaseChartDirective],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss']
 })
@@ -250,5 +252,9 @@ export class DashboardHomeComponent implements OnInit {
 
   navigate(route: string): void {
     if (route) this.router.navigate([route]);
+  }
+
+  printDashboard(): void {
+    window.print();
   }
 }

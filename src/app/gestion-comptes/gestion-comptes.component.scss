@@ -41,6 +41,17 @@
   input { flex: 1; border: none; outline: none; font-size: 14px; color: #333; background: transparent; }
 }
 
+// Filter row
+.filter-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+  button { border-radius: 20px !important; font-size: 12px; font-weight: 600;
+    mat-icon { font-size: 16px; margin-right: 2px; }
+    &.active-filter { background: #1e40af !important; color: white !important;
+      border-color: #1e40af !important; }
+  }
+  .results-count { margin-left: auto; font-size: 12px; color: #94a3b8; font-weight: 600; }
+}
+
 .loading { margin-bottom: 16px; }
 
 .cards-list { display: flex; flex-direction: column; gap: 10px; }
