@@ -22,12 +22,21 @@
   }
 }
 
+.filtres-bar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+
 .search-bar {
   display: flex; align-items: center; gap: 10px; background: white;
   border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 16px;
-  margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05); flex: 1; min-width: 240px;
   mat-icon { color: #94a3b8; }
   input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; }
+}
+
+.filter-field {
+  width: 200px;
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
 }
 
 .encadrants-grid {

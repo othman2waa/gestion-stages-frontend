@@ -9,6 +9,9 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { EncadrantService } from '../../core/services/encadrant.service';
 import { EncadrantFormComponent } from '../encadrant-form/encadrant-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
@@ -20,7 +23,8 @@ import { StageService } from '../../core/services/stage.service';
   imports: [
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
-    MatTooltipModule, MatProgressBarModule, MatChipsModule
+    MatTooltipModule, MatProgressBarModule, MatChipsModule,
+    MatSelectModule, MatFormFieldModule, MatPaginatorModule
   ],
   templateUrl: './encadrant-list.component.html',
   styleUrls: ['./encadrant-list.component.scss']
@@ -33,8 +37,14 @@ export class EncadrantListComponent implements OnInit {
   stagesParEncadrant: Map<number, any[]> = new Map();
   isLoading = true;
   searchKeyword = '';
+  selectedDepartement = '';
   selectedEncadrant: any = null;
   selectedEncadrantStages: any[] = [];
+
+  // Pagination
+  pageSize = 12;
+  pageIndex = 0;
+  pageSizeOptions = [12, 24, 48];
 
   constructor(
     private encadrantService: EncadrantService,
@@ -65,15 +75,49 @@ export class EncadrantListComponent implements OnInit {
     });
   }
 
+  get departements(): string[] {
+    return [...new Set(this.encadrants.map(e => e.departementNom).filter(Boolean))].sort();
+  }
+
   onSearch(): void {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  onFilterChange(): void {
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
     const kw = this.searchKeyword.toLowerCase();
-    this.filteredEncadrants = this.encadrants.filter(e =>
-      e.nom?.toLowerCase().includes(kw) ||
-      e.prenom?.toLowerCase().includes(kw) ||
-      e.email?.toLowerCase().includes(kw) ||
-      e.fonction?.toLowerCase().includes(kw) ||
-      e.departementNom?.toLowerCase().includes(kw)
-    );
+    this.filteredEncadrants = this.encadrants.filter(e => {
+      const matchSearch = !kw ||
+        e.nom?.toLowerCase().includes(kw) ||
+        e.prenom?.toLowerCase().includes(kw) ||
+        e.email?.toLowerCase().includes(kw) ||
+        e.fonction?.toLowerCase().includes(kw) ||
+        e.departementNom?.toLowerCase().includes(kw);
+      const matchDept = !this.selectedDepartement || e.departementNom === this.selectedDepartement;
+      return matchSearch && matchDept;
+    });
+  }
+
+  get paginatedEncadrants(): any[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredEncadrants.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
+  resetFiltres(): void {
+    this.searchKeyword = '';
+    this.selectedDepartement = '';
+    this.pageIndex = 0;
+    this.filteredEncadrants = this.encadrants;
   }
 
   getNombreStagiaires(encadrantId: number): number {

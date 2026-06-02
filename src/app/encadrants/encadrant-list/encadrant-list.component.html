@@ -23,13 +23,26 @@
     </div>
   </div>
 
-  <!-- Search -->
-  <div class="search-bar">
-    <mat-icon>search</mat-icon>
-    <input [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
-           placeholder="Rechercher par nom, email, fonction, département...">
-    <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
-      <mat-icon>close</mat-icon>
+  <!-- Search + Filters -->
+  <div class="filtres-bar">
+    <div class="search-bar">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
+             placeholder="Rechercher par nom, email, fonction...">
+      <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Département</mat-label>
+      <mat-select [(ngModel)]="selectedDepartement" (selectionChange)="onFilterChange()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option *ngFor="let d of departements" [value]="d">{{ d }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button color="warn" (click)="resetFiltres()"
+            *ngIf="searchKeyword || selectedDepartement">
+      <mat-icon>filter_alt_off</mat-icon> Reset
     </button>
   </div>
 
@@ -44,7 +57,7 @@
 
   <!-- Cards Grid -->
   <div class="encadrants-grid" *ngIf="!isLoading && filteredEncadrants.length > 0">
-    <div *ngFor="let e of filteredEncadrants; trackBy: trackById" class="encadrant-card">
+    <div *ngFor="let e of paginatedEncadrants; trackBy: trackById" class="encadrant-card">
 
       <div class="card-header">
         <div class="avatar">{{ getInitials(e) }}</div>
@@ -88,11 +101,18 @@
       </div>
     </div>
 
-    <div *ngIf="filteredEncadrants.length === 0" class="empty-state">
-      <mat-icon>person_search</mat-icon>
-      <p>Aucun encadrant trouvé</p>
-    </div>
   </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && filteredEncadrants.length > 0"
+    [length]="filteredEncadrants.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+
 </div>
 
 <!-- Dialog détail -->

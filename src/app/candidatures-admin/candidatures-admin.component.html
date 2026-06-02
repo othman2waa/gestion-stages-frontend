@@ -14,27 +14,27 @@
 
   <!-- KPIs -->
   <div class="kpi-row">
-  <div class="kpi-card purple" (click)="filterStatut = 'ACCEPTEE_ENCADRANT'">
+  <div class="kpi-card purple" (click)="filterStatut = 'ACCEPTEE_ENCADRANT'; pageIndex = 0">
     <mat-icon>how_to_reg</mat-icon>
     <div><span class="kpi-val">{{ aTraiterRH.length }}</span>
     <span class="kpi-lbl">À traiter RH</span></div>
   </div>
-  <div class="kpi-card blue" (click)="filterStatut = 'DOCUMENTS_SOUMIS'">
+  <div class="kpi-card blue" (click)="filterStatut = 'DOCUMENTS_SOUMIS'; pageIndex = 0">
     <mat-icon>upload_file</mat-icon>
     <div><span class="kpi-val">{{ docssoumis.length }}</span>
     <span class="kpi-lbl">Docs soumis</span></div>
   </div>
-  <div class="kpi-card green" (click)="filterStatut = 'ACCEPTEE_RH'">
+  <div class="kpi-card green" (click)="filterStatut = 'ACCEPTEE_RH'; pageIndex = 0">
     <mat-icon>check_circle</mat-icon>
     <div><span class="kpi-val">{{ acceptees.length }}</span>
     <span class="kpi-lbl">Acceptées RH</span></div>
   </div>
-  <div class="kpi-card red" (click)="filterStatut = 'REFUSEE_RH'">
+  <div class="kpi-card red" (click)="filterStatut = 'REFUSEE_RH'; pageIndex = 0">
     <mat-icon>cancel</mat-icon>
     <div><span class="kpi-val">{{ refusees.length }}</span>
     <span class="kpi-lbl">Refusées</span></div>
   </div>
-  <div class="kpi-card blue" (click)="filterStatut = ''">
+  <div class="kpi-card blue" (click)="filterStatut = ''; pageIndex = 0">
     <mat-icon>people</mat-icon>
     <div><span class="kpi-val">{{ candidatures.length }}</span>
     <span class="kpi-lbl">Total</span></div>
@@ -57,25 +57,25 @@
 
   <div class="filter-pills">
     <button class="pill" [class.active]="filterStatut === ''"
-            (click)="filterStatut = ''">Tous</button>
+            (click)="filterStatut = ''; pageIndex = 0">Tous</button>
     <button class="pill purple" [class.active]="filterStatut === 'ACCEPTEE_ENCADRANT'"
-            (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'">
+            (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'; pageIndex = 0">
       À traiter RH
     </button>
     <button class="pill blue" [class.active]="filterStatut === 'DOCUMENTS_SOUMIS'"
-            (click)="filterStatut = filterStatut === 'DOCUMENTS_SOUMIS' ? '' : 'DOCUMENTS_SOUMIS'">
+            (click)="filterStatut = filterStatut === 'DOCUMENTS_SOUMIS' ? '' : 'DOCUMENTS_SOUMIS'; pageIndex = 0">
       Docs soumis
     </button>
     <button class="pill teal" [class.active]="filterStatut === 'VERIFICATION_IA'"
-            (click)="filterStatut = filterStatut === 'VERIFICATION_IA' ? '' : 'VERIFICATION_IA'">
+            (click)="filterStatut = filterStatut === 'VERIFICATION_IA' ? '' : 'VERIFICATION_IA'; pageIndex = 0">
       Vérification IA
     </button>
     <button class="pill green" [class.active]="filterStatut === 'ACCEPTEE_RH'"
-            (click)="filterStatut = filterStatut === 'ACCEPTEE_RH' ? '' : 'ACCEPTEE_RH'">
+            (click)="filterStatut = filterStatut === 'ACCEPTEE_RH' ? '' : 'ACCEPTEE_RH'; pageIndex = 0">
       Validées RH
     </button>
     <button class="pill red" [class.active]="filterStatut === 'REFUSEE_RH'"
-            (click)="filterStatut = filterStatut === 'REFUSEE_RH' ? '' : 'REFUSEE_RH'">
+            (click)="filterStatut = filterStatut === 'REFUSEE_RH' ? '' : 'REFUSEE_RH'; pageIndex = 0">
       Refusées
     </button>
   </div>
@@ -91,7 +91,7 @@
 
   <!-- Liste -->
   <div class="candidatures-list" *ngIf="!isLoading && filtered.length > 0">
-    <div *ngFor="let c of filtered; trackBy: trackById" class="candidature-card"
+    <div *ngFor="let c of paginatedList; trackBy: trackById" class="candidature-card"
          [style.border-left]="'4px solid ' + getConf(c.statut).color">
 
       <div class="card-left">
@@ -167,11 +167,18 @@
       </div>
     </div>
 
-    <div *ngIf="filtered.length === 0" class="empty-state">
-      <mat-icon>people</mat-icon>
-      <p>Aucune candidature trouvée</p>
-    </div>
   </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && filtered.length > 0"
+    [length]="filtered.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+
 </div>
 
 <!-- ═══ DIALOG DOCUMENTS & VÉRIFICATION IA ═══ -->

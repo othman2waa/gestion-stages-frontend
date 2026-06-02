@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -16,6 +16,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { CandidatureService } from '../core/services/candidature.service';
@@ -32,7 +33,7 @@ import { ExportService } from '../core/services/export.service';
     MatFormFieldModule, MatInputModule, MatSelectModule,
     MatChipsModule, MatDialogModule, MatSnackBarModule,
     MatProgressBarModule, MatTooltipModule, MatTabsModule,
-    MatBadgeModule, MatDatepickerModule, MatNativeDateModule
+    MatBadgeModule, MatDatepickerModule, MatNativeDateModule, MatPaginatorModule
   ],
   templateUrl: './candidatures-admin.component.html',
   styleUrls: ['./candidatures-admin.component.scss']
@@ -55,6 +56,11 @@ export class CandidaturesAdminComponent implements OnInit {
   documents: any[] = [];
   iaResult: any = null;
   isVerifyingIa = false;
+
+  // Pagination
+  pageSize = 12;
+  pageIndex = 0;
+  pageSizeOptions = [12, 24, 48];
 
   acceptForm: FormGroup;
   refusForm: FormGroup;
@@ -94,6 +100,16 @@ export class CandidaturesAdminComponent implements OnInit {
     const matchDept   = !this.filterDept   || c.departementNom === this.filterDept;
     return matchSearch && matchStatut && matchDept;
   });
+}
+
+get paginatedList(): any[] {
+  const start = this.pageIndex * this.pageSize;
+  return this.filtered.slice(start, start + this.pageSize);
+}
+
+onPageChange(event: PageEvent): void {
+  this.pageIndex = event.pageIndex;
+  this.pageSize = event.pageSize;
 }
 
 get departementsDisponibles(): string[] {

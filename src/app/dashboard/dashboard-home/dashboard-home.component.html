@@ -170,6 +170,32 @@
         </div>
       </div>
 
+      <!-- STATISTIQUES PAR DÉPARTEMENT -->
+      <div class="section-title" *ngIf="stats?.stagesParDepartement?.length > 0">
+        <mat-icon>domain</mat-icon> Détail par département
+      </div>
+      <div class="dept-table" *ngIf="stats?.stagesParDepartement?.length > 0">
+        <div class="dept-row header">
+          <span class="dept-name">Département</span>
+          <span class="dept-val">Stages</span>
+          <span class="dept-val">En cours</span>
+          <span class="dept-val">Terminés</span>
+          <span class="dept-bar">Répartition</span>
+        </div>
+        <div class="dept-row" *ngFor="let d of stats.stagesParDepartement">
+          <span class="dept-name">{{ d[0] ?? 'N/A' }}</span>
+          <span class="dept-val bold">{{ d[1] ?? 0 }}</span>
+          <span class="dept-val green">{{ d[2] ?? 0 }}</span>
+          <span class="dept-val blue">{{ d[3] ?? 0 }}</span>
+          <span class="dept-bar">
+            <div class="dept-bar-track">
+              <div class="dept-bar-fill" [style.width]="(d[1] / stats.totalStages * 100) + '%'"></div>
+            </div>
+            <span class="dept-pct">{{ (d[1] / stats.totalStages * 100) | number:'1.0-0' }}%</span>
+          </span>
+        </div>
+      </div>
+
       <!-- RÉSUMÉ RAPIDE -->
       <div class="quick-summary">
         <div class="qs-card">
