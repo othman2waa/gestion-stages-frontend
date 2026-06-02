@@ -24,6 +24,29 @@
     </div>
   </div>
 
+  <!-- Filters bar -->
+  <div class="filters-section" *ngIf="step === 'liste'">
+    <div class="filters-bar">
+      <select class="filter-select" [(ngModel)]="filterDepartement" (change)="onFilterChange()">
+        <option value="">Tous les départements</option>
+        <option *ngFor="let d of departementsDisponibles" [value]="d">{{ d }}</option>
+      </select>
+      <select class="filter-select" [(ngModel)]="filterType" (change)="onFilterChange()">
+        <option value="">Tous les types</option>
+        <option *ngFor="let t of typesDisponibles" [value]="t">{{ t }}</option>
+      </select>
+      <select class="filter-select" [(ngModel)]="sortBy" (change)="onFilterChange()">
+        <option value="recent">Plus récentes</option>
+        <option value="postes">Plus de postes</option>
+        <option value="dateLimite">Date limite proche</option>
+      </select>
+      <button *ngIf="filterDepartement || filterType || searchKeyword" class="reset-btn" (click)="resetFiltres()">
+        <mat-icon>filter_alt_off</mat-icon> Réinitialiser
+      </button>
+      <span class="results-count">{{ filteredAnnonces.length }} offre(s)</span>
+    </div>
+  </div>
+
   <!-- Liste annonces -->
   <div class="annonces-section" *ngIf="step === 'liste'">
     <div *ngIf="isLoading" class="loading">
@@ -42,7 +65,7 @@
           </mat-card-subtitle>
         </mat-card-header>
 
-        <mat-card-content>
+        <mat-card-content (click)="voirDetail(a)" style="cursor: pointer;">
           <p class="description">{{ a.description }}</p>
 
           <div class="annonce-tags">
@@ -71,8 +94,11 @@
         </mat-card-content>
 
         <mat-card-actions>
+          <button mat-stroked-button class="detail-btn" (click)="voirDetail(a)">
+            <mat-icon>info</mat-icon> Détails
+          </button>
           <button mat-raised-button class="postuler-btn" (click)="postuler(a)">
-            <mat-icon>send</mat-icon> Postuler maintenant
+            <mat-icon>send</mat-icon> Postuler
           </button>
         </mat-card-actions>
       </mat-card>
@@ -82,6 +108,72 @@
         <p>Aucune offre disponible pour le moment</p>
         <a routerLink="/candidature" mat-stroked-button>Déposer une candidature spontanée</a>
       </div>
+    </div>
+  </div>
+
+  <!-- Detail view -->
+  <div class="detail-section" *ngIf="step === 'detail' && detailAnnonce">
+    <div class="detail-container">
+      <div class="back-btn" (click)="retourListe()">
+        <mat-icon>arrow_back</mat-icon> Retour aux offres
+      </div>
+
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <div class="detail-hero">
+            <div class="detail-icon"><mat-icon>work</mat-icon></div>
+            <div>
+              <h2>{{ detailAnnonce.titre }}</h2>
+              <div class="detail-badges">
+                <span class="dept-badge">{{ detailAnnonce.departement }}</span>
+                <span class="tag type">{{ detailAnnonce.typeStage?.replace('_', ' ') }}</span>
+                <span class="tag niveau" *ngIf="detailAnnonce.niveauRequis">{{ detailAnnonce.niveauRequis }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-body">
+            <div class="detail-block">
+              <h4><mat-icon>description</mat-icon> Description du stage</h4>
+              <p>{{ detailAnnonce.description }}</p>
+            </div>
+
+            <div class="detail-block">
+              <h4><mat-icon>build</mat-icon> Compétences requises</h4>
+              <div class="comp-chips">
+                <span *ngFor="let comp of detailAnnonce.competencesRequises?.split(',')" class="comp-chip">
+                  {{ comp.trim() }}
+                </span>
+              </div>
+            </div>
+
+            <div class="detail-grid">
+              <div class="detail-info" *ngIf="detailAnnonce.filiereRequise">
+                <mat-icon>school</mat-icon>
+                <div><span class="info-label">Filière requise</span><span>{{ detailAnnonce.filiereRequise }}</span></div>
+              </div>
+              <div class="detail-info">
+                <mat-icon>people</mat-icon>
+                <div><span class="info-label">Postes disponibles</span><span>{{ detailAnnonce.nombrePostes }}</span></div>
+              </div>
+              <div class="detail-info" *ngIf="detailAnnonce.dateLimite">
+                <mat-icon>event</mat-icon>
+                <div><span class="info-label">Date limite</span><span>{{ detailAnnonce.dateLimite | date:'dd/MM/yyyy' }}</span></div>
+              </div>
+              <div class="detail-info" *ngIf="detailAnnonce.niveauRequis">
+                <mat-icon>grade</mat-icon>
+                <div><span class="info-label">Niveau requis</span><span>{{ detailAnnonce.niveauRequis }}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <button mat-raised-button class="postuler-btn-lg" (click)="postuler(detailAnnonce)">
+              <mat-icon>send</mat-icon> Postuler maintenant
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
   </div>
 

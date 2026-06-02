@@ -4,18 +4,74 @@
   <div class="page-header">
     <div>
       <h2><mat-icon>campaign</mat-icon> Gestion des Annonces</h2>
-      <p>{{ annonces.length }} annonce(s) publiées</p>
+      <p>{{ annonces.length }} annonce(s) au total</p>
     </div>
     <button mat-raised-button color="primary" (click)="openForm()">
       <mat-icon>add</mat-icon> Nouvelle annonce
     </button>
   </div>
 
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-item blue">
+      <mat-icon>campaign</mat-icon>
+      <div><span class="kpi-val">{{ annonces.length }}</span><span class="kpi-lbl">Total</span></div>
+    </div>
+    <div class="kpi-item green">
+      <mat-icon>visibility</mat-icon>
+      <div><span class="kpi-val">{{ annoncesActives }}</span><span class="kpi-lbl">Actives</span></div>
+    </div>
+    <div class="kpi-item orange">
+      <mat-icon>visibility_off</mat-icon>
+      <div><span class="kpi-val">{{ annonces.length - annoncesActives }}</span><span class="kpi-lbl">Fermées</span></div>
+    </div>
+    <div class="kpi-item purple">
+      <mat-icon>people</mat-icon>
+      <div><span class="kpi-val">{{ totalCandidatures }}</span><span class="kpi-lbl">Candidatures</span></div>
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="filtres-bar">
+    <div class="search-input">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="searchTerm" placeholder="Rechercher par titre, compétences, département...">
+      <button *ngIf="searchTerm" mat-icon-button (click)="searchTerm = ''"><mat-icon>close</mat-icon></button>
+    </div>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Département</mat-label>
+      <mat-select [(ngModel)]="filterDepartement">
+        <mat-option value="">Tous</mat-option>
+        <mat-option *ngFor="let d of departements" [value]="d">{{ d }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="filterType">
+        <mat-option value="">Tous</mat-option>
+        <mat-option *ngFor="let t of typesStage" [value]="t">{{ t }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Statut</mat-label>
+      <mat-select [(ngModel)]="filterStatut">
+        <mat-option value="">Tous</mat-option>
+        <mat-option value="actif">Actives</mat-option>
+        <mat-option value="inactif">Fermées</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button color="warn" *ngIf="searchTerm || filterDepartement || filterType || filterStatut"
+            (click)="resetFiltres()">
+      <mat-icon>filter_alt_off</mat-icon> Reset
+    </button>
+    <span class="results-badge">{{ filteredAnnonces.length }} résultat(s)</span>
+  </div>
+
   <div *ngIf="isLoading"><mat-progress-bar mode="indeterminate"></mat-progress-bar></div>
 
   <!-- Grid annonces -->
   <div class="annonces-grid" *ngIf="!isLoading">
-    <mat-card *ngFor="let a of annonces" class="annonce-card" [class.inactive]="!a.actif">
+    <mat-card *ngFor="let a of filteredAnnonces" class="annonce-card" [class.inactive]="!a.actif">
       <mat-card-header>
         <mat-card-title>{{ a.titre }}</mat-card-title>
         <mat-card-subtitle>
@@ -50,6 +106,9 @@
         <button mat-icon-button (click)="openForm(a)" matTooltip="Modifier">
           <mat-icon>edit</mat-icon>
         </button>
+        <button mat-icon-button (click)="dupliquer(a)" matTooltip="Dupliquer">
+          <mat-icon>content_copy</mat-icon>
+        </button>
         <button mat-icon-button (click)="toggle(a)"
                 [matTooltip]="a.actif ? 'Fermer' : 'Ouvrir'">
           <mat-icon>{{ a.actif ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -60,7 +119,7 @@
       </mat-card-actions>
     </mat-card>
 
-    <div *ngIf="annonces.length === 0" class="empty-state">
+    <div *ngIf="filteredAnnonces.length === 0" class="empty-state">
       <mat-icon>campaign</mat-icon>
       <p>Aucune annonce créée</p>
       <button mat-raised-button color="primary" (click)="openForm()">Créer la première annonce</button>

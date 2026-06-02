@@ -43,6 +43,10 @@ export class AnnoncesAdminComponent implements OnInit {
   isLoading = true;
   editingId: number | null = null;
   selectedAnnonce: any = null;
+  searchTerm = '';
+  filterDepartement = '';
+  filterType = '';
+  filterStatut = '';
 
   form: FormGroup;
 
@@ -71,6 +75,23 @@ export class AnnoncesAdminComponent implements OnInit {
     });
   }
 
+  get filteredAnnonces(): any[] {
+    return this.annonces.filter(a => {
+      const matchSearch = !this.searchTerm ||
+        `${a.titre} ${a.description} ${a.departement} ${a.competencesRequises}`
+          .toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchDept = !this.filterDepartement || a.departement === this.filterDepartement;
+      const matchType = !this.filterType || a.typeStage === this.filterType;
+      const matchStatut = !this.filterStatut ||
+        (this.filterStatut === 'actif' && a.actif) ||
+        (this.filterStatut === 'inactif' && !a.actif);
+      return matchSearch && matchDept && matchType && matchStatut;
+    });
+  }
+
+  get annoncesActives(): number { return this.annonces.filter(a => a.actif).length; }
+  get totalCandidatures(): number { return this.annonces.reduce((sum: number, a: any) => sum + (a.nombreCandidatures ?? 0), 0); }
+
   ngOnInit(): void { this.loadAnnonces(); }
 
   loadAnnonces(): void {
@@ -78,6 +99,35 @@ export class AnnoncesAdminComponent implements OnInit {
     this.annonceService.getAll().subscribe({
       next: (data) => { this.annonces = data; this.isLoading = false; },
       error: () => this.isLoading = false
+    });
+  }
+
+  resetFiltres(): void {
+    this.searchTerm = '';
+    this.filterDepartement = '';
+    this.filterType = '';
+    this.filterStatut = '';
+  }
+
+  dupliquer(annonce: any): void {
+    const payload = {
+      titre: annonce.titre + ' (copie)',
+      description: annonce.description,
+      competencesRequises: annonce.competencesRequises,
+      departement: annonce.departement,
+      typeStage: annonce.typeStage,
+      niveauRequis: annonce.niveauRequis,
+      filiereRequise: annonce.filiereRequise,
+      nombrePostes: annonce.nombrePostes,
+      dateLimite: annonce.dateLimite,
+      actif: false
+    };
+    this.annonceService.create(payload).subscribe({
+      next: () => {
+        this.snackBar.open('Annonce dupliquée', 'Fermer', { duration: 3000 });
+        this.loadAnnonces();
+      },
+      error: () => this.snackBar.open('Erreur lors de la duplication', 'Fermer', { duration: 3000 })
     });
   }
 

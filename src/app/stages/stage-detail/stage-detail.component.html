@@ -1,0 +1,87 @@
+<div class="workflow-container">
+
+  <!-- Header -->
+  <div class="workflow-header">
+    <h2>Workflow du Stage #{{ stageId }}</h2>
+    <span class="status-badge" *ngIf="getCurrentStatut()"
+          [style.background]="getColor(getCurrentStatut())">
+      {{ getLabel(getCurrentStatut()) }}
+    </span>
+  </div>
+
+  <!-- Alert message -->
+  <div *ngIf="message" class="alert" [class.alert-success]="messageType === 'success'" [class.alert-error]="messageType === 'error'">
+    <span>{{ message }}</span>
+    <button class="close-btn" (click)="message = ''">&times;</button>
+  </div>
+
+  <!-- Actions possibles -->
+  <div class="actions-section">
+    <h3>Transitions possibles</h3>
+
+    <div *ngIf="transitionsPossibles.length > 0">
+      <div class="comment-input">
+        <textarea [(ngModel)]="commentaire" rows="3"
+                  placeholder="Commentaire (optionnel)..."></textarea>
+      </div>
+      <div class="action-buttons">
+        <button *ngFor="let t of transitionsPossibles"
+                class="action-btn"
+                [class.btn-danger]="t === 'REJETEE' || t === 'ANNULE'"
+                [class.btn-success]="t === 'VALIDEE' || t === 'TERMINE'"
+                [style.borderColor]="getColor(t)"
+                [disabled]="loading"
+                (click)="effectuerTransition(t)">
+          <span class="btn-dot" [style.background]="getColor(t)"></span>
+          {{ getLabel(t) }}
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="transitionsPossibles.length === 0" class="no-actions">
+      <p>Aucune transition disponible pour ce statut.</p>
+    </div>
+  </div>
+
+  <!-- Timeline historique -->
+  <div class="timeline-section">
+    <h3>Historique des transitions</h3>
+
+    <div *ngIf="historique.length > 0" class="timeline">
+      <div *ngFor="let h of historique; let last = last" class="timeline-item">
+        <div class="timeline-dot" [style.color]="getColor(h.statutNouveau)"></div>
+        <div *ngIf="!last" class="timeline-line"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <div class="transition-arrow">
+              <span class="statut-chip"
+                    [style.borderColor]="getColor(h.statutPrecedent)"
+                    [style.color]="getColor(h.statutPrecedent)">
+                {{ getLabel(h.statutPrecedent) }}
+              </span>
+              <span class="arrow">&rarr;</span>
+              <span class="statut-chip"
+                    [style.borderColor]="getColor(h.statutNouveau)"
+                    [style.color]="getColor(h.statutNouveau)"
+                    [style.background]="getColor(h.statutNouveau) + '18'">
+                {{ getLabel(h.statutNouveau) }}
+              </span>
+            </div>
+          </div>
+          <div class="timeline-meta">
+            <span>{{ h.dateModification | date:'dd/MM/yyyy HH:mm' }}</span>
+            <span *ngIf="h.modifiePar">par {{ h.modifiePar }}</span>
+          </div>
+          <div *ngIf="h.commentaire" class="timeline-comment">
+            "{{ h.commentaire }}"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="historique.length === 0" class="empty-state">
+      Aucun historique de transition pour ce stage.
+    </div>
+  </div>
+
+</div>

@@ -128,7 +128,7 @@
       <span>Année</span>
     </div>
 
-    <div *ngFor="let a of filtered" class="table-row">
+    <div *ngFor="let a of paginatedArchives" class="table-row">
       <!-- Stagiaire -->
       <div class="cell-stagiaire">
         <div class="stag-avatar">{{ a.stagiaireNom?.charAt(0) }}{{ a.stagiaireNom?.split(' ')[1]?.charAt(0) }}</div>
@@ -191,4 +191,10 @@
       <p *ngIf="totalArchives > 0">Modifiez vos filtres</p>
     </div>
   </div>
+
+  <!-- Pagination -->
+  <mat-paginator *ngIf="!isLoading && filtered.length > 0"
+    [length]="filtered.length" [pageSize]="pageSize" [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons>
+  </mat-paginator>
 </div>

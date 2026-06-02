@@ -7,6 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { HttpClient } from '@angular/common/http';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { environment } from '../../environments/environment';
@@ -16,7 +17,7 @@ import { environment } from '../../environments/environment';
   standalone: true,
   imports: [
     CommonModule, FormsModule, MatIconModule, MatButtonModule,
-    MatProgressBarModule, MatTooltipModule, MatSnackBarModule, MatDialogModule
+    MatProgressBarModule, MatTooltipModule, MatSnackBarModule, MatDialogModule, MatPaginatorModule
   ],
   templateUrl: './archives.component.html',
   styleUrls: ['./archives.component.scss']
@@ -32,6 +33,10 @@ export class ArchivesComponent implements OnInit {
   filterAnnee: number | null = null;
   filterDept = '';
   filterType = '';
+
+  pageSize = 15;
+  pageIndex = 0;
+  pageSizeOptions = [15, 30, 50];
 
   private api = `${environment.apiUrl}/archives`;
 
@@ -53,6 +58,16 @@ export class ArchivesComponent implements OnInit {
   }
   get typesDisponibles(): string[] {
     return [...new Set(this.archives.map(a => a.typeStage).filter(Boolean))].sort();
+  }
+
+  get paginatedArchives(): any[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filtered.slice(start, start + this.pageSize);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 
   constructor(private http: HttpClient, private snackBar: MatSnackBar, private dialog: MatDialog) {}
@@ -81,6 +96,7 @@ export class ArchivesComponent implements OnInit {
   }
 
   applyFilter(): void {
+    this.pageIndex = 0;
     this.filtered = this.archives.filter(a => {
       const matchSearch = !this.searchTerm ||
         `${a.stagiaireNom} ${a.stagiaireEmail} ${a.sujet} ${a.encadrantNom}`
