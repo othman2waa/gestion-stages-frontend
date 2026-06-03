@@ -20,6 +20,14 @@
   }
 }
 
+.search-bar {
+  display: flex; align-items: center; gap: 10px; background: white;
+  border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 12px;
+  mat-icon { color: #94a3b8; }
+  input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; }
+}
+
 .filters {
   display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: center;
   mat-chip { cursor: pointer; &.active { background: #1E40AF !important; color: white !important; } }
@@ -52,6 +60,11 @@
   }
 
   .notif-dot { width: 10px; height: 10px; border-radius: 50%; background: #F47920; flex-shrink: 0; }
+  .notif-delete { opacity: 0; transition: opacity 0.15s; flex-shrink: 0;
+    mat-icon { font-size: 18px; color: #94a3b8; }
+    &:hover mat-icon { color: #dc2626; }
+  }
+  &:hover .notif-delete { opacity: 1; }
   .notif-arrow { color: #CBD5E1; flex-shrink: 0; }
 }
 

@@ -42,6 +42,13 @@
   input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; }
 }
 
+.header-actions { display: flex; gap: 10px; }
+
+.filter-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  .filter-field { min-width: 160px; }
+}
+
 .fiches-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px;
 }

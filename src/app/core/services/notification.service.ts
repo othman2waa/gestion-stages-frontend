@@ -52,4 +52,8 @@ export class NotificationService {
       tap(() => this.unreadCount$.next(0))
     );
   }
+
+  supprimer(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
 }

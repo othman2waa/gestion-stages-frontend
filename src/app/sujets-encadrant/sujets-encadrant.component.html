@@ -38,11 +38,40 @@
     <div class="flux-step pending"><mat-icon>school</mat-icon><span>Stagiaire voit</span></div>
   </div>
 
+  <!-- Search & Filters -->
+  <div class="filtres-bar">
+    <div class="search-input">
+      <mat-icon>search</mat-icon>
+      <input [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
+             placeholder="Rechercher par titre, technologies, département...">
+      <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="status-pills">
+      <button class="pill" [class.active]="!selectedStatut" (click)="selectedStatut=''; onFilterChange()">
+        Tous ({{ sujets.length }})
+      </button>
+      <button class="pill propose" [class.active]="selectedStatut === 'PROPOSE'" (click)="selectedStatut='PROPOSE'; onFilterChange()">
+        En attente ({{ proposes }})
+      </button>
+      <button class="pill valide" [class.active]="selectedStatut === 'VALIDE'" (click)="selectedStatut='VALIDE'; onFilterChange()">
+        Validés ({{ valides }})
+      </button>
+      <button class="pill affecte" [class.active]="selectedStatut === 'AFFECTE'" (click)="selectedStatut='AFFECTE'; onFilterChange()">
+        Affectés ({{ affectes }})
+      </button>
+      <button class="pill refuse" [class.active]="selectedStatut === 'REFUSE'" (click)="selectedStatut='REFUSE'; onFilterChange()">
+        Refusés ({{ refuses }})
+      </button>
+    </div>
+  </div>
+
   <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
   <!-- Liste -->
   <div class="sujets-list" *ngIf="!isLoading">
-    <div *ngFor="let s of sujets" class="sujet-card"
+    <div *ngFor="let s of filteredSujets" class="sujet-card"
          [style.border-left]="'4px solid ' + getStatutConf(s.statut).color">
 
       <div class="card-top">
@@ -57,6 +86,11 @@
           <p *ngIf="s.description">{{ s.description }}</p>
         </div>
         <div class="card-right">
+          <button mat-icon-button matTooltip="Modifier"
+                  *ngIf="s.statut === 'PROPOSE'"
+                  (click)="ouvrirModifier(s)">
+            <mat-icon>edit</mat-icon>
+          </button>
           <button mat-icon-button color="warn" matTooltip="Supprimer"
                   *ngIf="s.statut === 'PROPOSE'"
                   (click)="supprimer(s.id)">
@@ -79,7 +113,7 @@
       </div>
     </div>
 
-    <div *ngIf="sujets.length === 0" class="empty-state">
+    <div *ngIf="filteredSujets.length === 0" class="empty-state">
       <mat-icon>assignment_add</mat-icon>
       <h3>Aucun sujet proposé</h3>
       <p>Cliquez sur "Proposer un sujet" pour soumettre un sujet au RH</p>
@@ -93,8 +127,8 @@
 <!-- ═══ DIALOG NOUVEAU SUJET ═══ -->
 <ng-template #nouveauDialog>
   <div class="dialog-header">
-    <mat-icon>assignment_add</mat-icon>
-    <h3>Proposer un sujet de stage</h3>
+    <mat-icon>{{ editMode ? 'edit' : 'assignment_add' }}</mat-icon>
+    <h3>{{ editMode ? 'Modifier le sujet' : 'Proposer un sujet de stage' }}</h3>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
   </div>
   <mat-dialog-content>
@@ -149,7 +183,7 @@
     <button mat-button mat-dialog-close>Annuler</button>
     <button mat-raised-button class="btn-proposer"
             (click)="proposer()" [disabled]="nouveauForm.invalid">
-      <mat-icon>send</mat-icon> Envoyer au RH
+      <mat-icon>{{ editMode ? 'save' : 'send' }}</mat-icon> {{ editMode ? 'Enregistrer' : 'Envoyer au RH' }}
     </button>
   </mat-dialog-actions>
 </ng-template>

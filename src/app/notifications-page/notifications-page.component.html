@@ -27,6 +27,16 @@
     </div>
   </div>
 
+  <!-- Search -->
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
+           placeholder="Rechercher dans les notifications...">
+    <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
   <!-- Filters -->
   <div class="filters">
     <mat-chip-set>
@@ -63,6 +73,9 @@
         </span>
       </div>
       <div class="notif-dot" *ngIf="!n.lue"></div>
+      <button mat-icon-button class="notif-delete" matTooltip="Supprimer" (click)="deleteNotif(n, $event)">
+        <mat-icon>close</mat-icon>
+      </button>
       <mat-icon class="notif-arrow" *ngIf="n.lien">chevron_right</mat-icon>
     </div>
 

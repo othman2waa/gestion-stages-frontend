@@ -32,16 +32,24 @@ export class SujetsEncadrantComponent implements OnInit {
   @ViewChild('nouveauDialog') nouveauDialog!: TemplateRef<any>;
 
   sujets: any[] = [];
+  filteredSujets: any[] = [];
   departements: any[] = [];
   isLoading = true;
   nouveauForm: FormGroup;
+  editMode = false;
+  editId: number | null = null;
+
+  searchKeyword = '';
+  selectedStatut = '';
 
   readonly typeStages = ['PFE', 'PFA', 'STAGE_ETE', 'STAGE_OBSERVATION'];
   readonly niveaux = ['Bac+2', 'Bac+3', 'Bac+5', 'Ingénieur'];
+  readonly statuts = ['PROPOSE', 'VALIDE', 'REFUSE', 'AFFECTE'];
 
   get proposes(): number { return this.sujets.filter(s => s.statut === 'PROPOSE').length; }
   get valides(): number { return this.sujets.filter(s => s.statut === 'VALIDE').length; }
   get affectes(): number { return this.sujets.filter(s => s.statut === 'AFFECTE').length; }
+  get refuses(): number { return this.sujets.filter(s => s.statut === 'REFUSE').length; }
 
   constructor(
     private sujetService: SujetStageService,
@@ -68,25 +76,72 @@ export class SujetsEncadrantComponent implements OnInit {
   load(): void {
     this.isLoading = true;
     this.sujetService.getMesSujets().subscribe({
-      next: (d) => { this.sujets = d; this.isLoading = false; },
+      next: (d) => { this.sujets = d; this.applyFilters(); this.isLoading = false; },
       error: () => this.isLoading = false
     });
   }
 
+  applyFilters(): void {
+    let result = this.sujets;
+    if (this.searchKeyword.trim()) {
+      const kw = this.searchKeyword.toLowerCase();
+      result = result.filter(s =>
+        s.titre?.toLowerCase().includes(kw) || s.description?.toLowerCase().includes(kw) ||
+        s.technologies?.toLowerCase().includes(kw) || s.departementNom?.toLowerCase().includes(kw)
+      );
+    }
+    if (this.selectedStatut) {
+      result = result.filter(s => s.statut === this.selectedStatut);
+    }
+    this.filteredSujets = result;
+  }
+
+  onSearch(): void { this.applyFilters(); }
+  onFilterChange(): void { this.applyFilters(); }
+
+  resetFiltres(): void {
+    this.searchKeyword = ''; this.selectedStatut = '';
+    this.applyFilters();
+  }
+
   ouvrirNouveau(): void {
+    this.editMode = false;
+    this.editId = null;
     this.nouveauForm.reset({ typeStage: 'PFE' });
+    this.dialog.open(this.nouveauDialog, { width: '550px', disableClose: true });
+  }
+
+  ouvrirModifier(s: any): void {
+    this.editMode = true;
+    this.editId = s.id;
+    this.nouveauForm.patchValue({
+      titre: s.titre, description: s.description ?? '',
+      technologies: s.technologies ?? '', niveauRequis: s.niveauRequis ?? '',
+      typeStage: s.typeStage ?? 'PFE', departementId: s.departementId ?? null
+    });
     this.dialog.open(this.nouveauDialog, { width: '550px', disableClose: true });
   }
 
   proposer(): void {
     if (this.nouveauForm.invalid) return;
-    this.sujetService.proposer(this.nouveauForm.value).subscribe({
-      next: (s) => {
-        this.sujets.unshift(s);
-        this.snackBar.open('✅ Sujet proposé au RH avec succès', 'Fermer', { duration: 3000 });
-        this.dialog.closeAll();
-      }
-    });
+    if (this.editMode && this.editId) {
+      this.sujetService.modifier(this.editId, this.nouveauForm.value).subscribe({
+        next: () => {
+          this.snackBar.open('Sujet modifié avec succès', 'Fermer', { duration: 3000 });
+          this.dialog.closeAll();
+          this.load();
+        }
+      });
+    } else {
+      this.sujetService.proposer(this.nouveauForm.value).subscribe({
+        next: (s) => {
+          this.sujets.unshift(s);
+          this.applyFilters();
+          this.snackBar.open('Sujet proposé au RH avec succès', 'Fermer', { duration: 3000 });
+          this.dialog.closeAll();
+        }
+      });
+    }
   }
 
   supprimer(id: number): void {

@@ -355,4 +355,8 @@ exportStagiairesPdf(stagiaires: StagiaireResponse[]): void {
     }));
     this.exportExcel(data, 'evaluations', 'Evaluations');
   }
+
+  exportGeneric(data: any[], filename: string): void {
+    this.exportExcel(data, filename, filename);
+  }
 }

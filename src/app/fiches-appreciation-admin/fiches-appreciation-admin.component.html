@@ -6,6 +6,11 @@
       <h2><mat-icon>fact_check</mat-icon> Fiches d'Appréciation</h2>
       <p>{{ totalFichesStage }} fiche(s) stage · {{ totalFichesStagiaire }} fiche(s) stagiaire</p>
     </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="exportExcel()">
+        <mat-icon>table_view</mat-icon> Excel
+      </button>
+    </div>
   </div>
 
   <!-- KPIs -->
@@ -45,6 +50,22 @@
            placeholder="Rechercher par stage, stagiaire, encadrant...">
     <button *ngIf="searchKeyword" mat-icon-button (click)="searchKeyword=''; onSearch()">
       <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="filter-row">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Niveau</mat-label>
+      <mat-select [(ngModel)]="selectedNiveau" (selectionChange)="applyFilters()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option value="excellent">Excellent (≥16)</mat-option>
+        <mat-option value="bien">Bien (12-15)</mat-option>
+        <mat-option value="passable">Passable (10-11)</mat-option>
+        <mat-option value="insuffisant">Insuffisant (&lt;10)</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button color="warn" *ngIf="filtresActifs > 0"
+            (click)="searchKeyword=''; selectedNiveau=''; applyFilters()">
+      <mat-icon>filter_alt_off</mat-icon> Reset ({{ filtresActifs }})
     </button>
   </div>
 

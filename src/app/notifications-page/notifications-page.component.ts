@@ -6,13 +6,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { Router } from '@angular/router';
 import { NotificationService, AppNotification } from '../core/services/notification.service';
 
 @Component({
   selector: 'app-notifications-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatChipsModule, MatPaginatorModule],
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatChipsModule, MatPaginatorModule, MatTooltipModule, MatInputModule, MatFormFieldModule],
   templateUrl: './notifications-page.component.html',
   styleUrls: ['./notifications-page.component.scss']
 })
@@ -23,6 +26,7 @@ export class NotificationsPageComponent implements OnInit {
 
   selectedType = '';
   selectedLu = '';
+  searchKeyword = '';
   readonly types = ['STAGE', 'CANDIDATURE', 'CONVENTION', 'EVALUATION', 'ATTESTATION', 'SYSTEME'];
 
   // Pagination
@@ -55,12 +59,20 @@ export class NotificationsPageComponent implements OnInit {
 
   applyFilters(): void {
     let result = this.notifications;
+    if (this.searchKeyword.trim()) {
+      const kw = this.searchKeyword.toLowerCase();
+      result = result.filter(n =>
+        n.titre?.toLowerCase().includes(kw) || n.message?.toLowerCase().includes(kw)
+      );
+    }
     if (this.selectedType) result = result.filter(n => n.type === this.selectedType);
     if (this.selectedLu === 'non_lues') result = result.filter(n => !n.lue);
     if (this.selectedLu === 'lues') result = result.filter(n => n.lue);
     this.filteredNotifications = result;
     this.pageIndex = 0;
   }
+
+  onSearch(): void { this.applyFilters(); }
 
   onFilterType(type: string): void {
     this.selectedType = this.selectedType === type ? '' : type;
@@ -88,6 +100,14 @@ export class NotificationsPageComponent implements OnInit {
   markAllRead(): void {
     this.notifService.marquerToutesLues().subscribe(() => {
       this.notifications.forEach(n => n.lue = true);
+    });
+  }
+
+  deleteNotif(notif: AppNotification, event: Event): void {
+    event.stopPropagation();
+    this.notifService.supprimer(notif.id).subscribe(() => {
+      this.notifications = this.notifications.filter(n => n.id !== notif.id);
+      this.applyFilters();
     });
   }
 

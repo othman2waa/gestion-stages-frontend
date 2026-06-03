@@ -13,6 +13,7 @@ export class SujetStageService {
   getMesSujets(): Observable<SujetStageResponse[]> { return this.http.get<SujetStageResponse[]>(`${this.api}/mes-sujets`); }
   getByStatut(statut: string): Observable<SujetStageResponse[]> { return this.http.get<SujetStageResponse[]>(`${this.api}/statut/${statut}`); }
   proposer(data: any): Observable<SujetStageResponse> { return this.http.post<SujetStageResponse>(this.api, data); }
+  modifier(id: number, data: any): Observable<SujetStageResponse> { return this.http.put<SujetStageResponse>(`${this.api}/${id}`, data); }
   valider(id: number): Observable<SujetStageResponse> { return this.http.patch<SujetStageResponse>(`${this.api}/${id}/valider`, {}); }
   refuser(id: number): Observable<SujetStageResponse> { return this.http.patch<SujetStageResponse>(`${this.api}/${id}/refuser`, {}); }
   affecter(id: number, data: any): Observable<SujetStageResponse> { return this.http.patch<SujetStageResponse>(`${this.api}/${id}/affecter`, data); }
