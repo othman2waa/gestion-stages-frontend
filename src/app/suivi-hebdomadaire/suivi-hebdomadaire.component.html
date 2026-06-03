@@ -11,6 +11,18 @@
       </div>
     </div>
 
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi-item blue">
+        <mat-icon>school</mat-icon>
+        <div><span class="kpi-val">{{ totalStagiaires }}</span><span class="kpi-lbl">Stagiaires</span></div>
+      </div>
+      <div class="kpi-item green">
+        <mat-icon>play_circle</mat-icon>
+        <div><span class="kpi-val">{{ stagesEnCours }}</span><span class="kpi-lbl">En cours</span></div>
+      </div>
+    </div>
+
     <!-- Search -->
     <div class="search-bar">
       <mat-form-field appearance="outline" class="search-field">
@@ -70,9 +82,17 @@
         <h2>{{ selectedStagiaire.stagiaireNom }}</h2>
         <span>{{ selectedStagiaire.sujet }}</span>
       </div>
-      <button mat-raised-button color="primary" (click)="savePointages()" [disabled]="savingPointage" class="save-btn">
-        <mat-icon>save</mat-icon> Sauvegarder
-      </button>
+      <div class="header-actions">
+        <button mat-stroked-button matTooltip="Exporter pointage" (click)="exportPointages()">
+          <mat-icon>calendar_month</mat-icon> Pointage
+        </button>
+        <button mat-stroked-button matTooltip="Exporter suivis" (click)="exportSuivis()" *ngIf="suivis.length > 0">
+          <mat-icon>table_view</mat-icon> Suivis
+        </button>
+        <button mat-raised-button color="primary" (click)="savePointages()" [disabled]="savingPointage" class="save-btn">
+          <mat-icon>save</mat-icon> Sauvegarder
+        </button>
+      </div>
     </div>
 
     <!-- Stage Info -->

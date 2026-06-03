@@ -10,6 +10,17 @@
         <h1><mat-icon>bar_chart</mat-icon> Reporting & Statistiques</h1>
         <p>OCP Group · Vue d'ensemble · {{ today | date:'EEEE d MMMM yyyy' }}</p>
       </div>
+      <div class="hero-actions">
+        <button mat-stroked-button class="hero-btn" matTooltip="Actualiser les données" (click)="refreshData()">
+          <mat-icon>refresh</mat-icon> Actualiser
+        </button>
+        <button mat-stroked-button class="hero-btn" matTooltip="Exporter en Excel" (click)="exportExcel()">
+          <mat-icon>table_view</mat-icon> Excel
+        </button>
+        <button mat-stroked-button class="hero-btn" matTooltip="Imprimer le rapport" (click)="printReport()">
+          <mat-icon>print</mat-icon> Imprimer
+        </button>
+      </div>
     </div>
 
     <!-- KPIs -->

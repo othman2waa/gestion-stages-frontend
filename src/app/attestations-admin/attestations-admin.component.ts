@@ -12,7 +12,9 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { ExportService } from '../core/services/export.service';
 
 @Component({
   selector: 'app-attestations-admin',
@@ -20,7 +22,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule,
-    FormsModule, MatSelectModule, MatDialogModule
+    FormsModule, MatSelectModule, MatDialogModule, MatPaginatorModule
   ],
   templateUrl: './attestations-admin.component.html',
   styleUrls: ['./attestations-admin.component.scss']
@@ -50,7 +52,17 @@ export class AttestationsAdminComponent implements OnInit {
     });
   }
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar, private dialog: MatDialog) {}
+  // Pagination
+  pageSize = 12;
+  pageIndex = 0;
+  pageSizeOptions = [12, 24, 48];
+
+  get paginatedList(): any[] {
+    const start = this.pageIndex * this.pageSize;
+    return this.filtered.slice(start, start + this.pageSize);
+  }
+
+  constructor(private http: HttpClient, private snackBar: MatSnackBar, private dialog: MatDialog, private exportService: ExportService) {}
 
   ngOnInit(): void { this.loadAttestations(); }
 
@@ -116,6 +128,24 @@ export class AttestationsAdminComponent implements OnInit {
       },
       error: () => this.snackBar.open('Erreur téléchargement', 'Fermer', { duration: 3000 })
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+  }
+
+  exportExcel(): void {
+    const data = this.filtered.map(a => ({
+      Stagiaire: a.stagiaireNom,
+      Stage: a.stageSujet,
+      Département: a.departementNom ?? '',
+      Statut: a.statut,
+      'N° Attestation': a.numeroAttestation ?? '',
+      'Date demande': a.dateDemande ? new Date(a.dateDemande).toLocaleDateString('fr-FR') : '',
+      'Traité par': a.traitePar ?? ''
+    }));
+    this.exportService.exportGeneric(data, 'attestations');
   }
 
   getStatutClass(statut: string): string {

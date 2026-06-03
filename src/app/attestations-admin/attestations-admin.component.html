@@ -6,6 +6,11 @@
       <h2><mat-icon>workspace_premium</mat-icon> Attestations de Stage</h2>
       <p>{{ attestations.length }} demande(s) au total</p>
     </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="exportExcel()">
+        <mat-icon>table_view</mat-icon> Excel
+      </button>
+    </div>
   </div>
 
   <!-- KPIs -->
@@ -54,7 +59,7 @@
   <!-- Liste -->
   <div class="attestations-list" *ngIf="!isLoading && filtered.length > 0">
 
-    <div *ngFor="let a of filtered; trackBy: trackById" class="attestation-card" [class]="'border-' + getStatutClass(a.statut)">
+    <div *ngFor="let a of paginatedList; trackBy: trackById" class="attestation-card" [class]="'border-' + getStatutClass(a.statut)">
 
       <div class="card-left">
         <div class="att-avatar" [class]="getStatutClass(a.statut)">
@@ -103,9 +108,15 @@
       </div>
     </div>
 
-    <div *ngIf="attestations.length === 0" class="empty-state">
-      <mat-icon>workspace_premium</mat-icon>
-      <p>Aucune demande d'attestation</p>
-    </div>
   </div>
+
+  <!-- Paginator -->
+  <mat-paginator *ngIf="!isLoading && filtered.length > 0"
+    [length]="filtered.length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
 </div>

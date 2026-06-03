@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { BaseChartDirective } from 'ng2-charts';
@@ -14,7 +15,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-reporting',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressBarModule, MatButtonModule, BaseChartDirective],
+  imports: [CommonModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatTooltipModule, BaseChartDirective],
   templateUrl: './reporting.component.html',
   styleUrls: ['./reporting.component.scss']
 })
@@ -23,7 +24,7 @@ export class ReportingComponent implements OnInit {
   isLoading = true;
   readonly today = new Date();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private exportService: ExportService) {}
 
   ngOnInit(): void {
     this.http.get<any>(`${environment.apiUrl}/reporting/stats-completes`).subscribe({
@@ -189,5 +190,30 @@ export class ReportingComponent implements OnInit {
       { label: 'Suivis', value: this.stats.totalSuivis ?? 0, icon: 'event_note', color: '#00843D' },
       { label: 'Annonces', value: this.stats.totalAnnonces ?? 0, icon: 'campaign', color: '#D97706' },
     ];
+  }
+
+  // ── Actions ──
+  printReport(): void { window.print(); }
+
+  refreshData(): void {
+    this.isLoading = true;
+    this.http.get<any>(`${environment.apiUrl}/reporting/stats-completes`).subscribe({
+      next: (data) => { this.stats = data; this.isLoading = false; },
+      error: () => this.isLoading = false
+    });
+  }
+
+  exportExcel(): void {
+    if (!this.stats) return;
+    const rows: any[] = [];
+    // KPIs
+    this.kpis.forEach(k => rows.push({ Section: 'KPI', Indicateur: k.label, Valeur: k.value }));
+    // Pipeline
+    this.pipelineSteps.forEach(s => rows.push({ Section: 'Pipeline', Indicateur: s.label, Valeur: s.value }));
+    // Départements
+    (this.stats.stagesParDepartement ?? []).forEach((d: any) =>
+      rows.push({ Section: 'Département', Indicateur: d[0] ?? 'N/A', Valeur: d[1] ?? 0, 'En cours': d[2] ?? 0, 'Terminés': d[3] ?? 0 })
+    );
+    this.exportService.exportGeneric(rows, 'reporting-ocp');
   }
 }

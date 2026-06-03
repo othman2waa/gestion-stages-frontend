@@ -17,6 +17,7 @@ import { RapportService } from '../core/services/rapport.service';
 import { FicheAppreciationService } from '../core/services/fiche-appreciation.service';
 import { FicheAppreciationFormComponent, FicheDialogData } from '../fiche-appreciation-form/fiche-appreciation-form.component';
 import { SujetsEncadrantComponent } from '../sujets-encadrant/sujets-encadrant.component';
+import { ExportService } from '../core/services/export.service';
 
 @Component({
   selector: 'app-encadrant-dashboard',
@@ -66,7 +67,8 @@ export class EncadrantDashboardComponent implements OnInit {
     private ficheService: FicheAppreciationService,
     private dialog: MatDialog,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -139,6 +141,16 @@ export class EncadrantDashboardComponent implements OnInit {
   }
 
   dismissNotif(): void { this.notifDismissed = true; }
+
+  exportStagiaires(): void {
+    const data = this.filteredStagiaires.map((s: any) => ({
+      Stagiaire: `${s.stagiairePrenom} ${s.stagiaireNom}`,
+      Sujet: s.sujet, Type: s.typeStage,
+      Statut: s.statut?.replace('_', ' '),
+      Début: s.dateDebut, Fin: s.dateFin
+    }));
+    this.exportService.exportGeneric(data, 'mes-stagiaires');
+  }
 
   // Year-based KPIs
   private getStagiairesByYear(year: number | null): any[] {

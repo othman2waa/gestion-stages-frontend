@@ -15,6 +15,7 @@ import { StageService } from '../core/services/stage.service';
 import { SuiviService } from '../core/services/suivi.service';
 import { AuthService } from '../core/services/auth.service';
 import { SuiviResponse } from '../core/models';
+import { ExportService } from '../core/services/export.service';
 
 interface CalendarDay {
   date: Date;
@@ -104,7 +105,8 @@ export class SuiviHebdomadaireComponent implements OnInit {
     private stageService: StageService,
     private suiviService: SuiviService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private exportService: ExportService
   ) {}
 
   ngOnInit(): void {
@@ -355,6 +357,42 @@ export class SuiviHebdomadaireComponent implements OnInit {
       PFE: 'PFE', PFA: 'PFA', STAGE_ETE: 'Stage été', STAGE_OBSERVATION: 'Observation'
     };
     return map[type] ?? type;
+  }
+
+  get totalStagiaires(): number { return this.stagiaires.length; }
+  get stagesEnCours(): number { return this.stagiaires.filter(s => s.statut === 'EN_COURS').length; }
+  get totalSuivis(): number { return this.suivis.length; }
+  get avgProgression(): number {
+    if (!this.suivis.length) return 0;
+    return Math.round(this.suivis.reduce((s, sv) => s + (sv.progression ?? 0), 0) / this.suivis.length);
+  }
+
+  exportSuivis(): void {
+    if (!this.selectedStagiaire || !this.suivis.length) return;
+    const data = this.suivis.map(s => ({
+      Stagiaire: this.selectedStagiaire!.stagiaireNom,
+      Semaine: s.semaineNumero,
+      Date: s.dateSuivi,
+      'Progression %': s.progression,
+      'Tâches assignées': s.tachesAssignees ?? '',
+      'Tâches complétées': s.tachesCompletees ?? '',
+      Commentaire: s.commentaire ?? ''
+    }));
+    this.exportService.exportGeneric(data, `suivi-${this.selectedStagiaire.stagiaireNom}`);
+  }
+
+  exportPointages(): void {
+    if (!this.selectedStagiaire) return;
+    const rows: any[] = [];
+    this.pointageMap.forEach((value, key) => {
+      rows.push({
+        Stagiaire: this.selectedStagiaire!.stagiaireNom,
+        Date: key,
+        Statut: value.present ? 'Présent' : 'Absent',
+        Motif: value.motif || ''
+      });
+    });
+    this.exportService.exportGeneric(rows, `pointage-${this.selectedStagiaire.stagiaireNom}`);
   }
 
   private formatDate(d: Date): string {

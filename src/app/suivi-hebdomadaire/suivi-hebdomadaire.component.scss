@@ -9,6 +9,20 @@
   p { margin: 4px 0 0; color: #64748b; font-size: 13px; }
 }
 
+// ─── KPIs ───
+.kpi-row {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px;
+  .kpi-item {
+    border-radius: 12px; padding: 14px 18px; display: flex; align-items: center;
+    gap: 12px; color: white;
+    mat-icon { font-size: 24px; opacity: 0.9; }
+    .kpi-val { display: block; font-size: 22px; font-weight: 800; }
+    .kpi-lbl { font-size: 11px; opacity: 0.85; }
+    &.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    &.green { background: linear-gradient(135deg, #059669, #10b981); }
+  }
+}
+
 // ─── Search ───
 .search-bar {
   display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
@@ -80,6 +94,7 @@
     span { font-size: 13px; color: #3b82f6; }
   }
 
+  .header-actions { display: flex; gap: 8px; align-items: center; }
   .save-btn { height: 40px; border-radius: 20px; }
 }
 

@@ -5,9 +5,22 @@
 .hero {
   background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 65%, #7C3AED 100%);
   border-radius: 18px; padding: 24px 28px; margin-bottom: 20px;
+  display: flex; justify-content: space-between; align-items: flex-start;
   h1 { margin: 0; color: white; font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px;
     mat-icon { font-size: 28px; } }
   p { margin: 4px 0 0; color: rgba(255,255,255,0.75); font-size: 12px; }
+  .hero-actions { display: flex; gap: 8px;
+    .hero-btn { color: white !important; border-color: rgba(255,255,255,0.4) !important;
+      font-size: 12px; border-radius: 10px !important;
+      &:hover { background: rgba(255,255,255,0.15) !important; }
+    }
+  }
+}
+
+@media print {
+  .hero-actions { display: none !important; }
+  .reporting-container { padding: 0; background: white; }
+  .hero { border-radius: 0; }
 }
 
 // Section titles
