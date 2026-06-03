@@ -40,6 +40,13 @@
           </mat-error>
         </mat-form-field>
 
+        <!-- Remember me -->
+        <div class="remember-row">
+          <mat-checkbox [(ngModel)]="rememberMe" [ngModelOptions]="{standalone: true}">
+            Se souvenir de moi
+          </mat-checkbox>
+        </div>
+
         <!-- Error Message -->
         <div class="error-message" *ngIf="errorMessage">
           <mat-icon>error_outline</mat-icon>
@@ -55,6 +62,20 @@
         </button>
 
       </form>
+
+      <!-- Demo Accounts -->
+      <div class="demo-hint">
+        <div class="demo-title">
+          <mat-icon>science</mat-icon>
+          <span>Comptes de démonstration</span>
+        </div>
+        <div class="demo-accounts">
+          <button *ngFor="let acc of demoAccounts" class="demo-chip" (click)="fillDemo(acc)">
+            <mat-icon>{{ acc.icon }}</mat-icon>
+            <span>{{ acc.label }}</span>
+          </button>
+        </div>
+      </div>
     </mat-card-content>
 
   </mat-card>

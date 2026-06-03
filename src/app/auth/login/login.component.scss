@@ -7,7 +7,7 @@
 }
 
 .login-card {
-  width: 420px;
+  width: 440px;
   padding: 2rem;
   border-radius: 16px !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
@@ -55,11 +55,16 @@
   margin-bottom: 0.5rem;
 }
 
+.remember-row {
+  margin: -4px 0 12px;
+  ::ng-deep .mdc-label { font-size: 13px; color: #64748b; }
+}
+
 .login-btn {
   height: 48px;
   font-size: 1rem;
   font-weight: 600;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   border-radius: 8px !important;
 
   mat-spinner {
@@ -82,5 +87,55 @@
     font-size: 1.2rem;
     width: 1.2rem;
     height: 1.2rem;
+  }
+}
+
+// ─── Demo Hint ───
+.demo-hint {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.demo-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.demo-accounts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.demo-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.2s;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: #3b82f6; }
+
+  &:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1e40af;
   }
 }

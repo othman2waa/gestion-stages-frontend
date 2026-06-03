@@ -32,5 +32,8 @@ export const routes: Routes = [
     path: 'postuler',
     component: PortailCandidatureComponent   
   },
-  { path: '**', redirectTo: 'auth/login' },
+  {
+    path: '**',
+    loadComponent: () => import('./not-found/not-found.component').then(m => m.NotFoundComponent)
+  },
 ];

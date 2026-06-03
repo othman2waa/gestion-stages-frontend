@@ -3,7 +3,12 @@
     <mat-icon>{{ isCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
   </button>
 
-  <span class="page-title">OCP — Gestion des Stages</span>
+  <!-- Breadcrumb -->
+  <div class="breadcrumb" *ngIf="breadcrumb">
+    <mat-icon class="bc-icon">{{ breadcrumb.icon }}</mat-icon>
+    <span class="bc-label">{{ breadcrumb.label }}</span>
+  </div>
+  <span class="page-title" *ngIf="!breadcrumb">OCP — Gestion des Stages</span>
 
   <span class="spacer"></span>
 

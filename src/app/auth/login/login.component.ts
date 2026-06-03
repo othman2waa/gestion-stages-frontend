@@ -14,16 +14,31 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
   hidePassword = true;
+  rememberMe = false;
+
+  readonly demoAccounts = [
+    { label: 'Admin RH', username: 'admin.rh', password: 'test123', icon: 'admin_panel_settings' },
+    { label: 'Encadrant', username: 'encadrant1', password: 'test123', icon: 'supervisor_account' },
+    { label: 'Stagiaire', username: 'stagiaire1', password: 'test123', icon: 'school' },
+  ];
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
+    const saved = localStorage.getItem('rememberedUser');
+    const initial = saved ? JSON.parse(saved) : { username: '', password: '' };
+    this.rememberMe = !!saved;
+
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      username: [initial.username, [Validators.required, Validators.minLength(3)]],
+      password: [initial.password, [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  fillDemo(account: { username: string; password: string }): void {
+    this.loginForm.patchValue({ username: account.username, password: account.password });
   }
 
   onSubmit(): void {
@@ -31,6 +46,12 @@ export class LoginComponent {
 
     this.isLoading = true;
     this.errorMessage = '';
+
+    if (this.rememberMe) {
+      localStorage.setItem('rememberedUser', JSON.stringify(this.loginForm.value));
+    } else {
+      localStorage.removeItem('rememberedUser');
+    }
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
