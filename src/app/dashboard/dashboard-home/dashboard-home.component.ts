@@ -6,8 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ExportService } from '../../core/services/export.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { Chart, registerables } from 'chart.js';
@@ -17,7 +19,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatTooltipModule, RouterModule, BaseChartDirective],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatSnackBarModule, RouterModule, BaseChartDirective],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss']
 })
@@ -25,11 +27,18 @@ export class DashboardHomeComponent implements OnInit {
   stats: any = null;
   compliance: any = null;
   isLoading = true;
+  isError = false;
   userRole = '';
   readonly today = new Date();
   private apiBase = `${environment.apiUrl}/reporting`;
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
+    private exportService: ExportService
+  ) {}
 
   get isAdmin(): boolean {
     return ['ADMIN_RH', 'RESPONSABLE_RH'].includes(this.userRole);
@@ -242,8 +251,8 @@ export class DashboardHomeComponent implements OnInit {
     }
     if (this.isAdmin) {
       this.http.get<any>(`${this.apiBase}/stats-completes`).subscribe({
-        next: (data) => { this.stats = data; this.isLoading = false; },
-        error: () => this.isLoading = false
+        next: (data) => { this.stats = data; this.isLoading = false; this.isError = false; },
+        error: () => { this.isLoading = false; this.isError = true; }
       });
       this.http.get<any>(`${environment.apiUrl}/documents-stagiaire/compliance`).subscribe({
         next: (data) => this.compliance = data,
@@ -257,6 +266,34 @@ export class DashboardHomeComponent implements OnInit {
   }
 
   printDashboard(): void {
+    if (this.isLoading) {
+      this.snackBar.open('Veuillez attendre le chargement complet', 'OK', { duration: 3000 });
+      return;
+    }
     window.print();
+  }
+
+  exportExcel(): void {
+    if (!this.stats) return;
+    const data = [
+      { Indicateur: 'Total stagiaires', Valeur: this.stats.totalStagiaires },
+      { Indicateur: 'Total stages', Valeur: this.stats.totalStages },
+      { Indicateur: 'Stages en cours', Valeur: this.stats.stagesEnCours },
+      { Indicateur: 'Stages terminés', Valeur: this.stats.stagesTermines },
+      { Indicateur: 'Convocations', Valeur: this.stats.totalConventions },
+      { Indicateur: 'Évaluations', Valeur: this.stats.totalEvaluations },
+      { Indicateur: 'Encadrants', Valeur: this.stats.totalEncadrants },
+      { Indicateur: 'Candidatures', Valeur: this.stats.totalCandidatures },
+      { Indicateur: 'Taux acceptation', Valeur: (this.stats.tauxAcceptation ?? 0) + '%' },
+      { Indicateur: 'Moyenne évaluations', Valeur: (this.stats.moyenneEvaluations ?? 0).toFixed(1) + '/20' },
+      { Indicateur: 'Score moyen IA', Valeur: (this.stats.scoreMoyenMatching ?? 0) + '%' },
+    ];
+    this.exportService.exportGeneric(data, 'dashboard-rh');
+    this.snackBar.open('Export Excel téléchargé', 'OK', { duration: 3000 });
+  }
+
+  retry(): void {
+    this.isError = false;
+    this.ngOnInit();
   }
 }

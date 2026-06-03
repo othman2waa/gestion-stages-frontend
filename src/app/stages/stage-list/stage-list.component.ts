@@ -218,8 +218,14 @@ export class StageListComponent implements OnInit {
     return `${months} mois`;
   }
 
-  exportExcel(): void { this.exportService.exportStages(this.stages); }
-  exportPdf(): void { this.exportService.exportStagesPdf(this.stages); }
+  exportExcel(): void {
+    this.exportService.exportStages(this.stages);
+    this.snackBar.open('Export Excel téléchargé', 'OK', { duration: 3000 });
+  }
+  exportPdf(): void {
+    this.exportService.exportStagesPdf(this.stages);
+    this.snackBar.open('Export PDF téléchargé', 'OK', { duration: 3000 });
+  }
 
   trackById(_: number, item: any): number { return item.id; }
 

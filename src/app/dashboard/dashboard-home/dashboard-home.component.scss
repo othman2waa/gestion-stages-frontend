@@ -4,6 +4,13 @@
   mat-icon { font-size: 64px; display: block; margin-bottom: 16px; }
   h3 { margin: 0; color: #475569; } }
 
+.error-state {
+  text-align: center; padding: 60px 20px; color: #94a3b8;
+  mat-icon { font-size: 56px; width: 56px; height: 56px; display: block; margin: 0 auto 16px; color: #DC2626; }
+  h3 { margin: 0 0 8px; color: #1e293b; font-size: 18px; }
+  p { margin: 0 0 20px; font-size: 13px; }
+}
+
 // Hero
 .hero {
   background: linear-gradient(135deg, #003B1C 0%, #00843D 65%, #F47920 100%);

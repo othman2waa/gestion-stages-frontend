@@ -8,7 +8,17 @@
   <ng-container *ngIf="isAdmin">
     <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="top-bar"></mat-progress-bar>
 
-    <ng-container *ngIf="!isLoading && stats">
+    <!-- Error State -->
+    <div *ngIf="!isLoading && isError" class="error-state">
+      <mat-icon>cloud_off</mat-icon>
+      <h3>Impossible de charger le tableau de bord</h3>
+      <p>Vérifiez votre connexion ou réessayez plus tard.</p>
+      <button mat-raised-button color="primary" (click)="retry()">
+        <mat-icon>refresh</mat-icon> Réessayer
+      </button>
+    </div>
+
+    <ng-container *ngIf="!isLoading && stats && !isError">
 
       <!-- HERO -->
       <div class="hero">
@@ -18,6 +28,9 @@
           <p>OCP Group · Direction Capital Humain · {{ today | date:'EEEE d MMMM yyyy' }}</p>
         </div>
         <div class="hero-actions">
+          <button mat-stroked-button class="hero-btn" matTooltip="Exporter en Excel" (click)="exportExcel()">
+            <mat-icon>table_view</mat-icon> Excel
+          </button>
           <button mat-stroked-button class="hero-btn" matTooltip="Imprimer le dashboard" (click)="printDashboard()">
             <mat-icon>print</mat-icon> Imprimer
           </button>

@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,6 +12,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, debounceTime } from 'rxjs';
 import { EncadrantService } from '../../core/services/encadrant.service';
 import { EncadrantFormComponent } from '../encadrant-form/encadrant-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
@@ -31,6 +33,7 @@ import { ExportService } from '../../core/services/export.service';
   styleUrls: ['./encadrant-list.component.scss']
 })
 export class EncadrantListComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   @ViewChild('detailDialog') detailDialog!: TemplateRef<any>;
 
   encadrants: any[] = [];
@@ -41,6 +44,7 @@ export class EncadrantListComponent implements OnInit {
   selectedDepartement = '';
   selectedEncadrant: any = null;
   selectedEncadrantStages: any[] = [];
+  private searchSubject = new Subject<string>();
 
   // Pagination
   pageSize = 12;
@@ -55,7 +59,11 @@ export class EncadrantListComponent implements OnInit {
     private exportService: ExportService
   ) {}
 
-  ngOnInit(): void { this.loadEncadrants(); }
+  ngOnInit(): void {
+    this.searchSubject.pipe(debounceTime(350), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => { this.pageIndex = 0; this.applyFilters(); });
+    this.loadEncadrants();
+  }
 
   loadEncadrants(): void {
     this.isLoading = true;
@@ -82,8 +90,7 @@ export class EncadrantListComponent implements OnInit {
   }
 
   onSearch(): void {
-    this.pageIndex = 0;
-    this.applyFilters();
+    this.searchSubject.next(this.searchKeyword);
   }
 
   onFilterChange(): void {
@@ -144,14 +151,18 @@ export class EncadrantListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => { if (result) this.loadEncadrants(); });
   }
 
-  delete(id: number): void {
+  delete(enc: any): void {
+    const stages = this.getNombreStagiaires(enc.id);
+    const msg = stages > 0
+      ? `Cet encadrant a ${stages} stage(s) assigné(s). Confirmer la suppression ?`
+      : `Supprimer l'encadrant ${enc.prenom} ${enc.nom} ?`;
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: { title: 'Suppression', message: 'Confirmer la suppression ?', confirmText: 'Supprimer' }
+      data: { title: 'Suppression encadrant', message: msg, confirmText: 'Supprimer' }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.encadrantService.delete(id).subscribe({
+        this.encadrantService.delete(enc.id).subscribe({
           next: () => {
             this.snackBar.open('Encadrant supprimé', 'Fermer', { duration: 3000 });
             this.loadEncadrants();
@@ -173,8 +184,14 @@ export class EncadrantListComponent implements OnInit {
     return map[statut] ?? 'status-gray';
   }
 
-  exportExcel(): void { this.exportService.exportEncadrants(this.encadrants); }
-  exportPdf(): void { this.exportService.exportEncadrantsPdf(this.encadrants); }
+  exportExcel(): void {
+    this.exportService.exportEncadrants(this.encadrants);
+    this.snackBar.open('Export Excel téléchargé', 'OK', { duration: 3000 });
+  }
+  exportPdf(): void {
+    this.exportService.exportEncadrantsPdf(this.encadrants);
+    this.snackBar.open('Export PDF téléchargé', 'OK', { duration: 3000 });
+  }
 
   trackById(_: number, item: any): number { return item.id; }
 }

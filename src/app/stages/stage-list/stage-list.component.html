@@ -133,10 +133,14 @@
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && stages.length === 0" class="empty-state">
-    <mat-icon>inbox</mat-icon>
-    <h3>Aucun stage trouvé</h3>
+    <mat-icon>{{ isEncadrant ? 'school' : 'inbox' }}</mat-icon>
+    <h3>{{ isEncadrant ? 'Aucun stage assigné' : 'Aucun stage trouvé' }}</h3>
     <p *ngIf="filtresActifs > 0">Essayez de modifier vos filtres de recherche</p>
-    <p *ngIf="filtresActifs === 0">Aucun stage n'a encore été créé</p>
+    <p *ngIf="filtresActifs === 0 && !isEncadrant">Aucun stage n'a encore été créé</p>
+    <p *ngIf="filtresActifs === 0 && isEncadrant">Vous n'avez pas encore de stagiaires assignés</p>
+    <button *ngIf="filtresActifs > 0" mat-stroked-button (click)="resetFiltres()">
+      <mat-icon>filter_alt_off</mat-icon> Réinitialiser les filtres
+    </button>
   </div>
 
   <!-- Cards Grid -->
