@@ -127,11 +127,23 @@ export class DepartementsComponent implements OnInit {
   }
 
   toggle(d: any): void {
-    this.deptService.toggle(d.id).subscribe({
-      next: () => {
-        d.actif = !d.actif;
-        this.snackBar.open(d.actif ? '✅ Département activé' : '🔒 Département désactivé', 'Fermer', { duration: 3000 });
+    const action = d.actif ? 'désactiver' : 'activer';
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: d.actif ? 'Désactiver le département' : 'Activer le département',
+        message: `Voulez-vous ${action} le département « ${d.nom} » ?`,
+        confirmText: d.actif ? 'Désactiver' : 'Activer'
       }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.deptService.toggle(d.id).subscribe({
+        next: () => {
+          d.actif = !d.actif;
+          this.snackBar.open(d.actif ? 'Département activé' : 'Département désactivé', 'Fermer', { duration: 3000 });
+        }
+      });
     });
   }
 

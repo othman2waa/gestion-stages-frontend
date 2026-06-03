@@ -150,8 +150,10 @@
           <span class="type-chip">{{ s.typeStage?.replace('_', ' ') }}</span>
         </div>
         <div class="progression-row">
-          <mat-progress-bar mode="determinate" [value]="getProgression(s.statut)"></mat-progress-bar>
-          <span>{{ getProgression(s.statut) }}%</span>
+          <mat-progress-bar mode="determinate" [value]="getProgression(s.statut)"
+                            [class]="'prog-' + (getProgression(s.statut) >= 75 ? 'green' : getProgression(s.statut) >= 40 ? 'orange' : 'blue')">
+          </mat-progress-bar>
+          <span [style.color]="getProgressionColor(s.statut)" style="font-weight:700">{{ getProgression(s.statut) }}%</span>
         </div>
         <span class="statut-badge" [class]="getStatutClass(s.statut)">
           {{ s.statut?.replace('_', ' ') }}
@@ -252,9 +254,14 @@
     <!-- Progression -->
     <div class="detail-progression">
       <div class="prog-header">
-        <span>Progression</span><span>{{ getProgression(selectedStage?.statut) }}%</span>
+        <span>Progression</span>
+        <span [style.color]="getProgressionColor(selectedStage?.statut)" style="font-weight:700">
+          {{ getProgression(selectedStage?.statut) }}%
+        </span>
       </div>
-      <mat-progress-bar mode="determinate" [value]="getProgression(selectedStage?.statut)"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="getProgression(selectedStage?.statut)"
+                        [class]="'prog-' + (getProgression(selectedStage?.statut) >= 75 ? 'green' : getProgression(selectedStage?.statut) >= 40 ? 'orange' : 'blue')">
+      </mat-progress-bar>
     </div>
 
     <div class="detail-grid">
@@ -265,6 +272,7 @@
         <div class="detail-row"><mat-icon>date_range</mat-icon>
           <span>{{ selectedStage?.dateDebut | date:'dd/MM/yyyy' }} → {{ selectedStage?.dateFin | date:'dd/MM/yyyy' }}</span>
         </div>
+        <div class="detail-row"><mat-icon>timer</mat-icon><span>Durée : {{ getDuree(selectedStage) }}</span></div>
       </div>
 
       <div class="detail-section">
@@ -273,12 +281,18 @@
           <span>{{ selectedStage?.stagiairePrenom }} {{ selectedStage?.stagiaireNom }}</span>
         </div>
         <div class="detail-row"><mat-icon>school</mat-icon><span>{{ selectedStage?.stagiaireFiliere ?? '—' }}</span></div>
+        <div class="detail-row" *ngIf="selectedStage?.stagiaireEmail">
+          <mat-icon>email</mat-icon><span>{{ selectedStage.stagiaireEmail }}</span>
+        </div>
       </div>
 
       <div class="detail-section">
         <p class="section-title">Encadrant</p>
         <div class="detail-row"><mat-icon>person</mat-icon>
           <span>{{ selectedStage?.encadrantPrenom }} {{ selectedStage?.encadrantNom ?? '—' }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedStage?.encadrantEmail">
+          <mat-icon>email</mat-icon><span>{{ selectedStage.encadrantEmail }}</span>
         </div>
       </div>
     </div>

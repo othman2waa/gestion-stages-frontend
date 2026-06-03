@@ -56,6 +56,7 @@ export class CandidaturesAdminComponent implements OnInit {
   documents: any[] = [];
   iaResult: any = null;
   isVerifyingIa = false;
+  isProcessing = false;
 
   // Pagination
   pageSize = 12;
@@ -206,44 +207,59 @@ get departementsDisponibles(): string[] {
 
   validerDossier(decision: string): void {
     if (!this.selectedCandidature) return;
+    this.isProcessing = true;
     this.http.patch(`${environment.apiUrl}/candidatures/${this.selectedCandidature.id}/valider-final`,
       { decision, commentaire: '' }
     ).subscribe({
       next: () => {
+        this.isProcessing = false;
         const msg = decision === 'VALIDE'
-          ? '✅ Dossier validé — Convocation envoyée !'
-          : '❌ Dossier refusé';
+          ? 'Dossier validé — Convocation envoyée !'
+          : 'Dossier refusé';
         this.snackBar.open(msg, 'Fermer', { duration: 4000 });
         this.dialog.closeAll();
         this.loadCandidatures();
       },
-      error: () => this.snackBar.open('Erreur lors de la validation', 'Fermer', { duration: 3000 })
+      error: () => {
+        this.isProcessing = false;
+        this.snackBar.open('Erreur lors de la validation', 'Fermer', { duration: 3000 });
+      }
     });
   }
 
   accepter(): void {
     if (this.acceptForm.invalid || !this.selectedCandidature) return;
+    this.isProcessing = true;
     this.candidatureService.traiter(this.selectedCandidature.id,
       { statut: 'ACCEPTEE', ...this.acceptForm.value }
     ).subscribe({
       next: () => {
-        this.snackBar.open('✅ Candidature acceptée', 'Fermer', { duration: 3000 });
+        this.isProcessing = false;
+        this.snackBar.open('Candidature acceptée', 'Fermer', { duration: 3000 });
         this.dialog.closeAll(); this.loadCandidatures();
       },
-      error: () => this.snackBar.open('Erreur lors de l\'acceptation', 'Fermer', { duration: 3000 })
+      error: () => {
+        this.isProcessing = false;
+        this.snackBar.open('Erreur lors de l\'acceptation', 'Fermer', { duration: 3000 });
+      }
     });
   }
 
   refuser(): void {
     if (!this.selectedCandidature) return;
+    this.isProcessing = true;
     this.candidatureService.traiter(this.selectedCandidature.id,
       { statut: 'REFUSEE', commentaireRh: this.refusForm.value.commentaireRh }
     ).subscribe({
       next: () => {
-        this.snackBar.open('❌ Candidature refusée', 'Fermer', { duration: 3000 });
+        this.isProcessing = false;
+        this.snackBar.open('Candidature refusée', 'Fermer', { duration: 3000 });
         this.dialog.closeAll(); this.loadCandidatures();
       },
-      error: () => this.snackBar.open('Erreur lors du refus', 'Fermer', { duration: 3000 })
+      error: () => {
+        this.isProcessing = false;
+        this.snackBar.open('Erreur lors du refus', 'Fermer', { duration: 3000 });
+      }
     });
   }
 

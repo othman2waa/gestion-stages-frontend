@@ -117,10 +117,20 @@
       </div>
 
       <div class="card-right">
+        <!-- Score matching IA -->
         <div class="score-badge" *ngIf="c.scoreMatching"
              [style.background]="getScoreColor(c.scoreMatching) + '18'"
-             [style.color]="getScoreColor(c.scoreMatching)">
-          <mat-icon>psychology</mat-icon> {{ c.scoreMatching }}%
+             [style.color]="getScoreColor(c.scoreMatching)"
+             [matTooltip]="'Score IA : ' + (c.scoreMatching >= 80 ? 'Recommandé' : c.scoreMatching >= 60 ? 'Acceptable' : 'Non recommandé')">
+          <mat-icon>smart_toy</mat-icon> {{ c.scoreMatching }}%
+        </div>
+
+        <!-- Badge vérification IA -->
+        <div class="ia-badge verified" *ngIf="c.statut === 'VERIFICATION_IA'" matTooltip="Documents vérifiés par IA">
+          <mat-icon>verified</mat-icon> Vérifié IA
+        </div>
+        <div class="ia-badge pending" *ngIf="c.statut === 'DOCUMENTS_SOUMIS'" matTooltip="Vérification IA en attente">
+          <mat-icon>pending</mat-icon> IA en attente
         </div>
 
         <div class="statut-pill"
@@ -226,23 +236,76 @@
       </div>
     </div>
 
-    <!-- Vérification IA -->
-    <div class="ia-section" *ngIf="documents.length > 0">
-      <button mat-raised-button class="btn-ia"
-              (click)="lancerVerificationIa()"
-              [disabled]="isVerifyingIa">
-        <mat-icon>psychology</mat-icon>
-        {{ isVerifyingIa ? 'Vérification en cours...' : 'Lancer vérification IA' }}
-      </button>
-
-      <div class="ia-result" *ngIf="iaResult">
-        <div class="ia-score"
-             [style.color]="getScoreColor(iaResult.scoreMoyen)">
-          {{ iaResult.scoreMoyen }}%
+    <!-- Score matching CV (Ollama LLM) -->
+    <div class="ia-matching" *ngIf="selectedCandidature?.scoreMatching">
+      <div class="ia-matching-header">
+        <mat-icon>smart_toy</mat-icon>
+        <span>Analyse IA du CV (Ollama LLM)</span>
+      </div>
+      <div class="ia-matching-body">
+        <div class="ia-gauge">
+          <svg viewBox="0 0 36 36" class="gauge-svg">
+            <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none" stroke="#e2e8f0" stroke-width="3"/>
+            <path class="gauge-fill" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none" [attr.stroke]="getScoreColor(selectedCandidature.scoreMatching)" stroke-width="3"
+                  [attr.stroke-dasharray]="selectedCandidature.scoreMatching + ', 100'"/>
+          </svg>
+          <span class="gauge-val" [style.color]="getScoreColor(selectedCandidature.scoreMatching)">
+            {{ selectedCandidature.scoreMatching }}%
+          </span>
         </div>
-        <div class="ia-label">Score de cohérence IA</div>
-        <div class="ia-status">
-          {{ iaResult.statut === 'DOCUMENTS_VALIDES' ? '✅ Documents valides' : '⚠️ Documents suspects' }}
+        <div class="ia-matching-info">
+          <span class="ia-matching-label">Score de compatibilité CV</span>
+          <span class="ia-matching-verdict" [style.color]="getScoreColor(selectedCandidature.scoreMatching)">
+            {{ selectedCandidature.scoreMatching >= 80 ? 'Recommandé' : selectedCandidature.scoreMatching >= 60 ? 'Acceptable' : 'Non recommandé' }}
+          </span>
+          <span class="ia-matching-desc">
+            Analysé par Ollama (llama3.2) — évaluation des compétences, parcours et adéquation au poste
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vérification IA documents -->
+    <div class="ia-section" *ngIf="documents.length > 0">
+      <div class="ia-section-header">
+        <div>
+          <span class="ia-section-title"><mat-icon>psychology</mat-icon> Vérification IA des documents</span>
+          <span class="ia-section-sub" *ngIf="!iaResult">Lancez la vérification pour analyser la cohérence des documents</span>
+        </div>
+        <button mat-raised-button class="btn-ia"
+                (click)="lancerVerificationIa()"
+                [disabled]="isVerifyingIa">
+          <mat-icon>{{ isVerifyingIa ? 'hourglass_empty' : 'psychology' }}</mat-icon>
+          {{ isVerifyingIa ? 'Analyse en cours...' : (iaResult ? 'Relancer' : 'Lancer vérification') }}
+        </button>
+      </div>
+
+      <!-- IA Progress -->
+      <mat-progress-bar *ngIf="isVerifyingIa" mode="indeterminate" class="ia-progress"></mat-progress-bar>
+
+      <!-- IA Result détaillé -->
+      <div class="ia-result-detailed" *ngIf="iaResult">
+        <div class="ia-result-summary">
+          <div class="ia-score-circle" [style.border-color]="getScoreColor(iaResult.scoreMoyen)">
+            <span [style.color]="getScoreColor(iaResult.scoreMoyen)">{{ iaResult.scoreMoyen }}%</span>
+          </div>
+          <div class="ia-result-info">
+            <span class="ia-verdict" [style.color]="getScoreColor(iaResult.scoreMoyen)">
+              {{ iaResult.statut === 'DOCUMENTS_VALIDES' ? 'Documents valides' : 'Documents suspects' }}
+            </span>
+            <span class="ia-meta">{{ iaResult.nbDocuments }} document(s) analysé(s)</span>
+          </div>
+        </div>
+        <!-- Détail par document -->
+        <div class="ia-doc-details" *ngIf="iaResult.commentaires">
+          <div class="ia-doc-item" *ngFor="let c of iaResult.commentaires; let i = index">
+            <mat-icon [style.color]="getScoreColor(documents[i]?.scoreIa ?? 75)">
+              {{ (documents[i]?.scoreIa ?? 75) >= 80 ? 'check_circle' : 'warning' }}
+            </mat-icon>
+            <span>{{ c }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -253,13 +316,15 @@
     <button mat-button mat-dialog-close>Fermer</button>
     <button mat-raised-button class="btn-refuse-final"
             *ngIf="['ACCEPTEE_ENCADRANT','DOCUMENTS_SOUMIS','VERIFICATION_IA'].includes(selectedCandidature?.statut)"
-            (click)="validerDossier('REFUSE')">
-      <mat-icon>cancel</mat-icon> Refuser le dossier
+            (click)="validerDossier('REFUSE')" [disabled]="isProcessing">
+      <mat-icon>{{ isProcessing ? 'hourglass_empty' : 'cancel' }}</mat-icon>
+      {{ isProcessing ? 'Traitement...' : 'Refuser le dossier' }}
     </button>
     <button mat-raised-button class="btn-valider-final"
             *ngIf="['ACCEPTEE_ENCADRANT','DOCUMENTS_SOUMIS','VERIFICATION_IA'].includes(selectedCandidature?.statut)"
-            (click)="validerDossier('VALIDE')">
-      <mat-icon>verified</mat-icon> Valider + Envoyer convocation
+            (click)="validerDossier('VALIDE')" [disabled]="isProcessing">
+      <mat-icon>{{ isProcessing ? 'hourglass_empty' : 'verified' }}</mat-icon>
+      {{ isProcessing ? 'Traitement...' : 'Valider + Envoyer convocation' }}
     </button>
   </mat-dialog-actions>
 </ng-template>
@@ -344,8 +409,9 @@
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Annuler</button>
     <button mat-raised-button class="btn-valider-final"
-            (click)="accepter()" [disabled]="acceptForm.invalid">
-      <mat-icon>check</mat-icon> Confirmer
+            (click)="accepter()" [disabled]="acceptForm.invalid || isProcessing">
+      <mat-icon>{{ isProcessing ? 'hourglass_empty' : 'check' }}</mat-icon>
+      {{ isProcessing ? 'Traitement...' : 'Confirmer' }}
     </button>
   </mat-dialog-actions>
 </ng-template>
@@ -367,8 +433,9 @@
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Annuler</button>
-    <button mat-raised-button class="btn-refuse-final" (click)="refuser()">
-      <mat-icon>cancel</mat-icon> Confirmer refus
+    <button mat-raised-button class="btn-refuse-final" (click)="refuser()" [disabled]="isProcessing">
+      <mat-icon>{{ isProcessing ? 'hourglass_empty' : 'cancel' }}</mat-icon>
+      {{ isProcessing ? 'Traitement...' : 'Confirmer refus' }}
     </button>
   </mat-dialog-actions>
 </ng-template>

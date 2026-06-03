@@ -197,8 +197,25 @@ export class StageListComponent implements OnInit {
     return this.progressionMap[statut] ?? 0;
   }
 
+  getProgressionColor(statut: string): string {
+    const p = this.getProgression(statut);
+    if (p >= 75) return '#00843D';
+    if (p >= 40) return '#F47920';
+    return '#3b82f6';
+  }
+
   getInitials(prenom: string, nom: string): string {
     return `${prenom?.charAt(0) ?? ''}${nom?.charAt(0) ?? ''}`.toUpperCase();
+  }
+
+  getDuree(stage: any): string {
+    if (!stage?.dateDebut || !stage?.dateFin) return '—';
+    const d1 = new Date(stage.dateDebut);
+    const d2 = new Date(stage.dateFin);
+    const days = Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
+    if (days < 30) return `${days} jours`;
+    const months = Math.round(days / 30);
+    return `${months} mois`;
   }
 
   exportExcel(): void { this.exportService.exportStages(this.stages); }

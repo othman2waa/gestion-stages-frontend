@@ -7,6 +7,9 @@
       <p>{{ attestations.length }} demande(s) au total</p>
     </div>
     <div class="header-actions">
+      <button mat-stroked-button (click)="telechargerBatch()" *ngIf="approuvees > 0">
+        <mat-icon>download</mat-icon> Tout télécharger ({{ approuvees }})
+      </button>
       <button mat-stroked-button (click)="exportExcel()">
         <mat-icon>table_view</mat-icon> Excel
       </button>
@@ -61,50 +64,88 @@
 
     <div *ngFor="let a of paginatedList; trackBy: trackById" class="attestation-card" [class]="'border-' + getStatutClass(a.statut)">
 
-      <div class="card-left">
-        <div class="att-avatar" [class]="getStatutClass(a.statut)">
-          <mat-icon>{{ a.statut === 'APPROUVEE' ? 'verified' : a.statut === 'REFUSEE' ? 'cancel' : 'hourglass_empty' }}</mat-icon>
+      <div class="card-main" (click)="selectedAttestation = selectedAttestation?.id === a.id ? null : a">
+        <div class="card-left">
+          <div class="att-avatar" [class]="getStatutClass(a.statut)">
+            <mat-icon>{{ a.statut === 'APPROUVEE' ? 'verified' : a.statut === 'REFUSEE' ? 'cancel' : 'hourglass_empty' }}</mat-icon>
+          </div>
+          <div class="att-info">
+            <h4>{{ a.stagiaireNom }}</h4>
+            <span class="att-sujet">{{ a.stageSujet }}</span>
+            <span class="att-dept" *ngIf="a.departementNom"><mat-icon>business</mat-icon>{{ a.departementNom }}</span>
+            <span class="att-date">
+              <mat-icon>calendar_today</mat-icon>
+              Demandée le {{ a.dateDemande | date:'dd/MM/yyyy à HH:mm' }}
+            </span>
+            <span class="att-numero" *ngIf="a.numeroAttestation">
+              <mat-icon>tag</mat-icon>{{ a.numeroAttestation }}
+            </span>
+          </div>
         </div>
-        <div class="att-info">
-          <h4>{{ a.stagiaireNom }}</h4>
-          <span class="att-sujet">{{ a.stageSujet }}</span>
-          <span class="att-dept" *ngIf="a.departementNom"><mat-icon>business</mat-icon>{{ a.departementNom }}</span>
-          <span class="att-date">
-            <mat-icon>calendar_today</mat-icon>
-            Demandée le {{ a.dateDemande | date:'dd/MM/yyyy à HH:mm' }}
+
+        <div class="card-right">
+          <span class="statut-badge" [class]="getStatutClass(a.statut)">
+            {{ a.statut.replace('_', ' ') }}
           </span>
-          <span class="att-numero" *ngIf="a.numeroAttestation">
-            <mat-icon>tag</mat-icon>{{ a.numeroAttestation }}
+          <div class="att-actions">
+            <button mat-raised-button class="btn-approuver"
+                    *ngIf="a.statut === 'EN_ATTENTE'"
+                    [disabled]="a._processing"
+                    (click)="approuver(a); $event.stopPropagation()">
+              <mat-icon>check</mat-icon> Approuver
+            </button>
+            <button mat-stroked-button color="warn"
+                    *ngIf="a.statut === 'EN_ATTENTE'"
+                    [disabled]="a._processing"
+                    (click)="refuser(a); $event.stopPropagation()">
+              <mat-icon>close</mat-icon> Refuser
+            </button>
+            <button mat-raised-button class="btn-pdf"
+                    *ngIf="a.statut === 'APPROUVEE'"
+                    (click)="telechargerPdf(a); $event.stopPropagation()">
+              <mat-icon>picture_as_pdf</mat-icon> Imprimer PDF
+            </button>
+          </div>
+          <span class="traite-par" *ngIf="a.traitePar">
+            Par {{ a.traitePar }}
           </span>
+          <mat-icon class="expand-icon">{{ selectedAttestation?.id === a.id ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
       </div>
 
-      <div class="card-right">
-        <span class="statut-badge" [class]="getStatutClass(a.statut)">
-          {{ a.statut.replace('_', ' ') }}
-        </span>
-        <div class="att-actions">
-          <button mat-raised-button class="btn-approuver"
-                  *ngIf="a.statut === 'EN_ATTENTE'"
-                  [disabled]="a._processing"
-                  (click)="approuver(a)">
-            <mat-icon>check</mat-icon> Approuver
-          </button>
-          <button mat-stroked-button color="warn"
-                  *ngIf="a.statut === 'EN_ATTENTE'"
-                  [disabled]="a._processing"
-                  (click)="refuser(a)">
-            <mat-icon>close</mat-icon> Refuser
-          </button>
-          <button mat-raised-button class="btn-pdf"
-                  *ngIf="a.statut === 'APPROUVEE'"
-                  (click)="telechargerPdf(a)">
-            <mat-icon>picture_as_pdf</mat-icon> Imprimer PDF
-          </button>
+      <!-- Detail expandable -->
+      <div class="att-detail" *ngIf="selectedAttestation?.id === a.id">
+        <div class="detail-divider"></div>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="dl">Stagiaire</span>
+            <span class="dv">{{ a.stagiaireNom }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="dl">Stage / Sujet</span>
+            <span class="dv">{{ a.stageSujet ?? '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="dl">Département</span>
+            <span class="dv">{{ a.departementNom ?? '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="dl">Date de demande</span>
+            <span class="dv">{{ a.dateDemande | date:'dd/MM/yyyy à HH:mm' }}</span>
+          </div>
+          <div class="detail-item" *ngIf="a.numeroAttestation">
+            <span class="dl">N° Attestation</span>
+            <span class="dv" style="color:#00843D;font-weight:700">{{ a.numeroAttestation }}</span>
+          </div>
+          <div class="detail-item" *ngIf="a.traitePar">
+            <span class="dl">Traité par</span>
+            <span class="dv">{{ a.traitePar }}</span>
+          </div>
+          <div class="detail-item" *ngIf="a.commentaire" style="grid-column:1/-1">
+            <span class="dl">Commentaire / Motif</span>
+            <span class="dv">{{ a.commentaire }}</span>
+          </div>
         </div>
-        <span class="traite-par" *ngIf="a.traitePar">
-          Par {{ a.traitePar }}
-        </span>
       </div>
     </div>
 

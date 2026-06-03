@@ -105,15 +105,27 @@ export class GestionComptesComponent implements OnInit {
   }
 
   toggleActif(stagiaire: any): void {
-    const endpoint = stagiaire.actif
-      ? `${this.api}/${stagiaire.id}/desactiver`
-      : `${this.api}/${stagiaire.id}/activer`;
-    this.http.patch(endpoint, {}).subscribe({
-      next: () => {
-        stagiaire.actif = !stagiaire.actif;
-        this.snackBar.open(stagiaire.actif ? '✅ Compte activé' : '🔒 Compte désactivé', 'Fermer', { duration: 3000 });
-      },
-      error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+    const action = stagiaire.actif ? 'désactiver' : 'activer';
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '420px',
+      data: {
+        title: stagiaire.actif ? 'Désactiver le compte' : 'Activer le compte',
+        message: `Voulez-vous ${action} le compte de ${stagiaire.prenom} ${stagiaire.nom} ?`,
+        confirmText: stagiaire.actif ? 'Désactiver' : 'Activer'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      const endpoint = stagiaire.actif
+        ? `${this.api}/${stagiaire.id}/desactiver`
+        : `${this.api}/${stagiaire.id}/activer`;
+      this.http.patch(endpoint, {}).subscribe({
+        next: () => {
+          stagiaire.actif = !stagiaire.actif;
+          this.snackBar.open(stagiaire.actif ? 'Compte activé' : 'Compte désactivé', 'Fermer', { duration: 3000 });
+        },
+        error: () => this.snackBar.open('Erreur', 'Fermer', { duration: 3000 })
+      });
     });
   }
 
@@ -139,6 +151,13 @@ export class GestionComptesComponent implements OnInit {
   }
 
   closePasswordResult(): void { this.resetPasswordResult = null; }
+
+  copyPassword(): void {
+    if (this.resetPasswordResult?.password) {
+      navigator.clipboard.writeText(this.resetPasswordResult.password);
+      this.snackBar.open('Mot de passe copié', 'Fermer', { duration: 2000 });
+    }
+  }
 
   get totalActifs(): number { return this.stagiaires.filter(s => s.actif).length; }
   get totalInactifs(): number { return this.stagiaires.filter(s => !s.actif).length; }

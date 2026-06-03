@@ -429,12 +429,23 @@ downloadDoc(docId: number, nomFichier: string): void {
 }
 
 deleteDoc(docId: number): void {
-  this.docStagiaireService.delete(docId).subscribe({
-    next: () => {
-      this.snackBar.open('Document supprimé', 'Fermer', { duration: 3000 });
-      this.loadMesDocuments();
-    },
-    error: () => this.snackBar.open('Erreur suppression', 'Fermer', { duration: 3000 })
+  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    width: '400px',
+    data: {
+      title: 'Supprimer le document',
+      message: 'Êtes-vous sûr de vouloir supprimer ce document ? Cette action est irréversible.',
+      confirmText: 'Supprimer'
+    }
+  });
+  dialogRef.afterClosed().subscribe(result => {
+    if (!result) return;
+    this.docStagiaireService.delete(docId).subscribe({
+      next: () => {
+        this.snackBar.open('Document supprimé', 'Fermer', { duration: 3000 });
+        this.loadMesDocuments();
+      },
+      error: () => this.snackBar.open('Erreur suppression', 'Fermer', { duration: 3000 })
+    });
   });
 }
 

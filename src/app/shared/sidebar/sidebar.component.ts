@@ -8,6 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { NotificationService, AppNotification } from '../../core/services/notification.service';
 import { ChangePasswordDialogComponent } from '../change-password-dialog/change-password-dialog.component';
 import { UserProfileDialogComponent } from '../user-profile-dialog/user-profile-dialog.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Subscription, filter, interval } from 'rxjs';
@@ -234,7 +235,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Déconnexion',
+        message: 'Êtes-vous sûr de vouloir vous déconnecter ?',
+        confirmText: 'Se déconnecter',
+        cancelText: 'Annuler'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.authService.logout();
+    });
   }
 
   getUserInfo(): { name: string; role: string; initials: string } {

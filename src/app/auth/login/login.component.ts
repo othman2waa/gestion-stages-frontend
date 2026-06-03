@@ -27,13 +27,12 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    const saved = localStorage.getItem('rememberedUser');
-    const initial = saved ? JSON.parse(saved) : { username: '', password: '' };
-    this.rememberMe = !!saved;
+    const savedUsername = localStorage.getItem('rememberedUsername') ?? '';
+    this.rememberMe = !!savedUsername;
 
     this.loginForm = this.fb.group({
-      username: [initial.username, [Validators.required, Validators.minLength(3)]],
-      password: [initial.password, [Validators.required, Validators.minLength(6)]]
+      username: [savedUsername, [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -48,9 +47,9 @@ export class LoginComponent {
     this.errorMessage = '';
 
     if (this.rememberMe) {
-      localStorage.setItem('rememberedUser', JSON.stringify(this.loginForm.value));
+      localStorage.setItem('rememberedUsername', this.loginForm.value.username);
     } else {
-      localStorage.removeItem('rememberedUser');
+      localStorage.removeItem('rememberedUsername');
     }
 
     this.authService.login(this.loginForm.value).subscribe({

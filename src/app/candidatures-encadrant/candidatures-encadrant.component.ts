@@ -150,7 +150,7 @@ applyFilter(): void {
   ouvrirDecision(c: any): void {
     this.selected = c;
     this.decisionForm.reset({ decision: 'ACCEPTE' });
-    this.dialog.open(this.decisionDialog, { width: '500px', disableClose: true });
+    this.dialog.open(this.decisionDialog, { width: '500px' });
   }
 
   envoyerDecision(): void {
@@ -160,10 +160,16 @@ applyFilter(): void {
     ).subscribe({
       next: () => {
         const msg = this.decisionForm.value.decision === 'ACCEPTE'
-          ? '✅ Accepté — Email + identifiants envoyés'
-          : '❌ Refusé — Email envoyé';
+          ? 'Accepté — Email + identifiants envoyés'
+          : 'Refusé — Email envoyé';
         this.snackBar.open(msg, 'Fermer', { duration: 4000 });
         this.dialog.closeAll(); this.load();
+      },
+      error: (err) => {
+        const msg = err.status === 403 ? 'Vous n\'êtes pas autorisé à effectuer cette action'
+          : err.status === 404 ? 'Candidature introuvable'
+          : err.error?.message ?? 'Erreur lors de l\'envoi de la décision';
+        this.snackBar.open(msg, 'Fermer', { duration: 4000 });
       }
     });
   }

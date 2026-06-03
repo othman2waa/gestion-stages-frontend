@@ -93,3 +93,18 @@
 .att-dept { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #1e40af; margin-top: 2px;
   mat-icon { font-size: 13px; width: 13px; height: 13px; }
 }
+
+.card-main { display: flex; align-items: center; justify-content: space-between; cursor: pointer; width: 100%; }
+.expand-icon { color: #94a3b8; margin-left: 8px; transition: transform 0.2s; }
+
+.att-detail {
+  .detail-divider { height: 1px; background: #e2e8f0; margin: 12px 0; }
+  .detail-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    .detail-item {
+      background: #f8fafc; border-radius: 8px; padding: 8px 12px;
+      .dl { display: block; font-size: 10px; text-transform: uppercase; color: #94a3b8; font-weight: 600; }
+      .dv { display: block; font-size: 13px; color: #1e293b; margin-top: 2px; }
+    }
+  }
+}

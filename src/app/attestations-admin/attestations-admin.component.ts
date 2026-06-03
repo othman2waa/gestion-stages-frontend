@@ -75,16 +75,27 @@ export class AttestationsAdminComponent implements OnInit {
   }
 
   approuver(att: any): void {
-    att._processing = true;
-    this.http.patch(`${this.api}/${att.id}/approuver`, {}).subscribe({
-      next: (data: any) => {
-        att._processing = false;
-        att.statut = 'APPROUVEE';
-        att.numeroAttestation = data.numeroAttestation;
-        att.traitePar = data.traitePar;
-        this.snackBar.open('✅ Attestation approuvée', 'Fermer', { duration: 3000 });
-      },
-      error: () => { att._processing = false; this.snackBar.open('Erreur lors de l\'approbation', 'Fermer', { duration: 3000 }); }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Approuver l\'attestation',
+        message: `Confirmer l'approbation de l'attestation de ${att.stagiaireNom} ?`,
+        confirmText: 'Approuver'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+      att._processing = true;
+      this.http.patch(`${this.api}/${att.id}/approuver`, {}).subscribe({
+        next: (data: any) => {
+          att._processing = false;
+          att.statut = 'APPROUVEE';
+          att.numeroAttestation = data.numeroAttestation;
+          att.traitePar = data.traitePar;
+          this.snackBar.open('Attestation approuvée', 'Fermer', { duration: 3000 });
+        },
+        error: () => { att._processing = false; this.snackBar.open('Erreur lors de l\'approbation', 'Fermer', { duration: 3000 }); }
+      });
     });
   }
 
@@ -146,6 +157,22 @@ export class AttestationsAdminComponent implements OnInit {
       'Traité par': a.traitePar ?? ''
     }));
     this.exportService.exportGeneric(data, 'attestations');
+  }
+
+  telechargerBatch(): void {
+    const approuvees = this.filtered.filter(a => a.statut === 'APPROUVEE');
+    if (approuvees.length === 0) {
+      this.snackBar.open('Aucune attestation approuvée à télécharger', 'Fermer', { duration: 3000 });
+      return;
+    }
+    this.snackBar.open(`Téléchargement de ${approuvees.length} attestation(s)...`, 'Fermer', { duration: 2000 });
+    approuvees.forEach(att => this.telechargerPdf(att));
+  }
+
+  selectedAttestation: any = null;
+
+  voirDetail(att: any): void {
+    this.selectedAttestation = att;
   }
 
   getStatutClass(statut: string): string {

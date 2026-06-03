@@ -170,6 +170,11 @@
   .desc-text { margin: 0; font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-line; }
 }
 
+// Progress bar colors
+::ng-deep .prog-green .mdc-linear-progress__bar-inner { border-color: #00843D !important; }
+::ng-deep .prog-orange .mdc-linear-progress__bar-inner { border-color: #F47920 !important; }
+::ng-deep .prog-blue .mdc-linear-progress__bar-inner { border-color: #3b82f6 !important; }
+
 .empty-state { grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8;
   mat-icon { font-size: 56px; display: block; margin-bottom: 12px; }
   p { margin-bottom: 16px; } }

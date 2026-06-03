@@ -20,7 +20,8 @@
     <mat-icon>key</mat-icon>
     <span>Nouveau mot de passe de <strong>{{ resetPasswordResult.stagiaire.prenom }}</strong> :</span>
     <code>{{ resetPasswordResult.password }}</code>
-    <span class="banner-note">Email envoyé ✓</span>
+    <button mat-icon-button matTooltip="Copier" (click)="copyPassword()"><mat-icon>content_copy</mat-icon></button>
+    <span class="banner-note">Email envoyé</span>
     <button mat-icon-button (click)="closePasswordResult()"><mat-icon>close</mat-icon></button>
   </div>
 

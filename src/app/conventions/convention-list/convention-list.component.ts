@@ -117,7 +117,7 @@ export class ConventionListComponent implements OnInit {
   ouvrirSignature(convention: any, cible: 'stagiaire' | 'encadrant'): void {
     this.selectedConvention = convention;
     this.signatureCible = cible;
-    this.dialog.open(this.signatureDialog, { width: '520px', disableClose: true });
+    this.dialog.open(this.signatureDialog, { width: '520px', disableClose: false });
   }
 
   envoyerSignature(signatureBase64: string): void {
