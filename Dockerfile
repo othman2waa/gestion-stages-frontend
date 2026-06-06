@@ -1,7 +1,8 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+# --legacy-peer-deps : npm 10 refuse le conflit de peer deps (ng2-charts vs Angular 18)
+RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 

@@ -58,6 +58,22 @@ mesDocuments: DocumentStagiaireResponse[] = [];
 typesDocuments = TYPES_DOCUMENTS;
 
 
+// ── Gating progressif selon statut ──
+private readonly PRE_RH_STATUTS = ['VALIDEE'];
+private readonly POST_RH_STATUTS = ['CONVENTION_GENEREE', 'CONVENTION_SIGNEE', 'EN_COURS', 'EN_ATTENTE_EVALUATION', 'TERMINE'];
+
+get isPreRH(): boolean {
+  return this.PRE_RH_STATUTS.includes(this.dashboard?.stageStatut);
+}
+
+get isPostRH(): boolean {
+  return this.POST_RH_STATUTS.includes(this.dashboard?.stageStatut);
+}
+
+get isDocumentsComplets(): boolean {
+  return this.dossierCompletionPct === 100;
+}
+
 // ── Désactivation compte ──
 get showDeactivationWarning(): boolean {
   return this.dashboard?.stageStatut === 'TERMINE' && !!this.dashboard?.dateDesactivationPrevue;
@@ -135,15 +151,18 @@ readonly checklistCategories = [
       next: (data) => {
         this.dashboard = data;
         this.isLoading = false;
-        if (data.stageId) {
-          this.loadSuivis(data.stageId);
-          this.loadEvaluations();
-          this.loadRapport(data.stageId);
-          this.loadChecklist();
-         this.loadAttestation(data.stageId);
-          this.loadFiches(data.stageId);
-        }
         this.loadMesDocuments();
+        if (data.stageId) {
+          // Données disponibles uniquement après validation RH
+          if (this.isPostRH) {
+            this.loadSuivis(data.stageId);
+            this.loadEvaluations();
+            this.loadRapport(data.stageId);
+            this.loadChecklist();
+            this.loadAttestation(data.stageId);
+            this.loadFiches(data.stageId);
+          }
+        }
       },
       error: () => { this.isLoading = false; }
     });
