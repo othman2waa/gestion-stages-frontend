@@ -52,11 +52,7 @@
       <div class="pre-rh-icon"><mat-icon>assignment_turned_in</mat-icon></div>
       <div class="pre-rh-text">
         <strong>Votre candidature a été acceptée par l'encadrant</strong>
-        <span>Veuillez compléter votre dossier (documents + fiche OCP) pour que le service RH puisse finaliser votre validation.</span>
-      </div>
-      <div class="pre-rh-progress">
-        <span>{{ dossierCompletionPct }}%</span>
-        <mat-progress-bar mode="determinate" [value]="dossierCompletionPct"></mat-progress-bar>
+        <span>Veuillez compléter vos documents (onglet « Mes Documents ») et la fiche OCP pour que le service RH puisse finaliser votre validation.</span>
       </div>
     </div>
 
@@ -734,73 +730,6 @@
   </div>
 </mat-tab>
 
-<!-- Tab Mon Dossier Personnel -->
-<mat-tab>
-  <ng-template mat-tab-label>
-    <mat-icon>folder_shared</mat-icon>&nbsp; Mon Dossier
-    <span class="tab-badge-docs" *ngIf="missingDocsCount > 0">{{ missingDocsCount }}</span>
-  </ng-template>
-  <div class="tab-content">
-
-    <!-- Progress -->
-    <div class="dossier-progress">
-      <div class="dossier-prog-info">
-        <span><mat-icon>folder_shared</mat-icon> Dossier personnel</span>
-        <span class="dossier-prog-pct">{{ dossierCompletionPct }}% complet</span>
-      </div>
-      <mat-progress-bar mode="determinate" [value]="dossierCompletionPct"
-                        [class.complete-bar]="dossierCompletionPct === 100"></mat-progress-bar>
-      <p class="dossier-hint">Veuillez uploader tous les documents requis pour compléter votre dossier</p>
-    </div>
-
-    <!-- Document cards grid -->
-    <div class="docs-grid">
-      <div *ngFor="let docType of typesDocuments" class="doc-card"
-           [class.doc-uploaded]="getDocByType(docType.value)"
-           [class.doc-missing]="!getDocByType(docType.value)">
-
-        <div class="doc-card-header">
-          <div class="doc-icon" [class.uploaded]="getDocByType(docType.value)">
-            <mat-icon>{{ getDocByType(docType.value) ? 'check_circle' : docType.icon }}</mat-icon>
-          </div>
-          <div class="doc-info">
-            <h4>{{ docType.label }}</h4>
-            <p *ngIf="getDocByType(docType.value) as doc">
-              {{ doc.nomFichier }} · {{ formatDocSize(doc.taille) }}
-            </p>
-            <p *ngIf="!getDocByType(docType.value)" class="doc-missing-hint">Non uploadé</p>
-          </div>
-        </div>
-
-        <div class="doc-card-actions">
-          <!-- Upload / Replace -->
-          <button mat-stroked-button class="btn-doc-upload"
-                  (click)="docInput.click()">
-            <mat-icon>{{ getDocByType(docType.value) ? 'refresh' : 'upload' }}</mat-icon>
-            {{ getDocByType(docType.value) ? 'Remplacer' : 'Uploader' }}
-          </button>
-          <input #docInput type="file" [accept]="docType.accept" hidden
-                 (change)="onDocSelected($event, docType.value)">
-
-          <!-- Download -->
-          <button mat-icon-button *ngIf="getDocByType(docType.value)"
-                  (click)="downloadDoc(getDocByType(docType.value)!.id, getDocByType(docType.value)!.nomFichier)"
-                  matTooltip="Télécharger">
-            <mat-icon>download</mat-icon>
-          </button>
-
-          <!-- Delete -->
-          <button mat-icon-button *ngIf="getDocByType(docType.value)"
-                  (click)="deleteDoc(getDocByType(docType.value)!.id)"
-                  matTooltip="Supprimer" class="btn-doc-delete">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</mat-tab>
     </mat-tab-group>
 
   </ng-container>
