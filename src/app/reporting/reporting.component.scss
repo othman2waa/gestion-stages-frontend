@@ -121,6 +121,56 @@
   }
 }
 
+// ── PFE Bac+5 ──
+.pfe-section { margin-top: 24px; }
+
+.pfe-panel {
+  background: white; border-radius: 14px; padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #F1F5F9;
+}
+
+.pfe-toolbar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+}
+
+.pfe-filters { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+.year-pills { display: flex; gap: 6px;
+  .yr-pill { padding: 5px 14px; border-radius: 20px; border: 1px solid #E2E8F0;
+    background: #F8FAFC; font-size: 12px; cursor: pointer; color: #475569; font-weight: 600;
+    &:hover { border-color: #00843D; color: #00843D; }
+    &.active { background: #00843D; color: white; border-color: #00843D; } }
+}
+
+.dept-select { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 10px;
+  font-size: 12px; color: #475569; background: white; outline: none; cursor: pointer;
+  &:focus { border-color: #00843D; } }
+
+.pfe-actions { display: flex; gap: 8px; }
+
+.pfe-count { font-size: 13px; color: #475569; margin-bottom: 12px; font-weight: 600; }
+
+.pfe-table { overflow-x: auto; }
+
+.pfe-row {
+  display: grid; grid-template-columns: 1.2fr 1fr 0.8fr 1.5fr 0.6fr 0.6fr 0.5fr 1fr;
+  gap: 8px; padding: 10px 12px; align-items: center; font-size: 12px; color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+  &.header { font-weight: 700; color: #64748B; font-size: 11px; text-transform: uppercase;
+    background: #F8FAFC; border-radius: 8px; border-bottom: none; }
+  &:hover:not(.header) { background: #F8FAFC; }
+}
+
+.pfe-col {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  &.sujet { white-space: normal; }
+}
+
+.pfe-empty { text-align: center; padding: 40px; color: #94A3B8;
+  mat-icon { font-size: 48px; display: block; margin: 0 auto 12px; opacity: 0.5; }
+  p { margin: 0; font-size: 13px; }
+}
+
 // Responsive
 @media (max-width: 1200px) {
   .kpis-grid { grid-template-columns: repeat(2, 1fr); }

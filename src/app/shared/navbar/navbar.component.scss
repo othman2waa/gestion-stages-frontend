@@ -1,42 +1,48 @@
 .navbar {
-  position: fixed !important;
+  position: sticky !important;   // dans le flux du contenu (suit la colonne flex)
   top: 0;
-  right: 0;
-  left: 260px;
-  z-index: 999;
-  background: white !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  transition: left 0.3s ease;
-  height: 64px !important;
-  color: #333 !important;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+  height: 60px !important;
+  color: #1E293B !important;
 }
 
 .page-title {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #1a237e;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1E293B;
   margin-left: 8px;
+  letter-spacing: -0.01em;
 }
 
 // ─── Breadcrumb ───
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-left: 8px;
 }
 
 .bc-icon {
   font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: #3b82f6;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 132, 61, 0.1);
+  color: #00843D;
+  border-radius: 8px;
 }
 
 .bc-label {
   font-weight: 700;
   font-size: 15px;
-  color: #1e293b;
+  color: #1E293B;
+  letter-spacing: -0.01em;
 }
 
 .spacer { flex: 1; }
@@ -44,16 +50,35 @@
 .user-info {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #555;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid #F1F5F9;
 
-  mat-icon { color: #1565c0; font-size: 2rem; width: 2rem; height: 2rem; }
+  mat-icon {
+    color: #00843D;
+    font-size: 1.6rem;
+    width: 1.6rem;
+    height: 1.6rem;
+  }
 
   .user-details {
     display: flex;
     flex-direction: column;
 
-    .username { font-weight: 600; font-size: 0.9rem; color: #333; }
-    .role { font-size: 0.75rem; color: #1565c0; font-weight: 500; }
+    .username {
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: #1E293B;
+      line-height: 1.2;
+    }
+    .role {
+      font-size: 0.7rem;
+      color: #00843D;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
   }
 }

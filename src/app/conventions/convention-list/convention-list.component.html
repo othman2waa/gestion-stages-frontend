@@ -53,7 +53,7 @@
       <mat-label>Statut</mat-label>
       <mat-select [(ngModel)]="selectedStatut" (selectionChange)="onFilterChange()">
         <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let s of statuts" [value]="s">{{ s.replace('_', ' ') }}</mat-option>
+        <mat-option *ngFor="let s of statuts" [value]="s">{{ s | statutLabel }}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="filter-field">
@@ -87,7 +87,7 @@
         <div class="statut-section">
           <mat-icon class="statut-icon">{{ getStatutIcon(c.statut) }}</mat-icon>
           <span class="statut-badge" [class]="getStatutClass(c.statut)">
-            {{ c.statut?.replace('_', ' ') }}
+            {{ c.statut | statutLabel }}
           </span>
         </div>
       </div>
@@ -173,7 +173,7 @@
     <div>
       <h3>{{ selectedConvention?.numero ?? 'Convocation' }}</h3>
       <span class="statut-badge" [class]="getStatutClass(selectedConvention?.statut)">
-        {{ selectedConvention?.statut?.replace('_', ' ') }}
+        {{ selectedConvention?.statut | statutLabel }}
       </span>
     </div>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>

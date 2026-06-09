@@ -6,6 +6,33 @@
 
 .loading-state { text-align: center; padding: 40px; color: #666; }
 
+// ── Bandeaux progressifs ──
+.pre-rh-banner {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 1px solid #F59E0B;
+  border-radius: 14px; margin-bottom: 20px;
+  .pre-rh-icon { width: 44px; height: 44px; border-radius: 12px; background: #F59E0B;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    mat-icon { color: white; } }
+  .pre-rh-text { flex: 1;
+    strong { display: block; font-size: 14px; color: #92400E; margin-bottom: 2px; }
+    span { font-size: 12px; color: #A16207; } }
+  .pre-rh-progress { text-align: center; min-width: 80px;
+    span { font-size: 18px; font-weight: 800; color: #92400E; }
+    mat-progress-bar { margin-top: 4px; } }
+}
+
+.post-rh-banner {
+  display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+  background: linear-gradient(135deg, #F0FDF4, #DCFCE7); border: 1px solid #86EFAC;
+  border-radius: 14px; margin-bottom: 20px;
+  .post-rh-icon { width: 44px; height: 44px; border-radius: 12px; background: #00843D;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    mat-icon { color: white; } }
+  strong { display: block; font-size: 14px; color: #166534; margin-bottom: 2px; }
+  span { font-size: 12px; color: #15803D; }
+}
+
 // ── Bannière désactivation compte ──
 .deactivation-banner {
   border-radius: 12px;

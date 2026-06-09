@@ -31,6 +31,7 @@ export class CandidaturesEncadrantComponent implements OnInit {
   @ViewChild('meetingDialog')  meetingDialog!:  TemplateRef<any>;
   @ViewChild('decisionDialog') decisionDialog!: TemplateRef<any>;
   @ViewChild('cvDialog')       cvDialog!:       TemplateRef<any>;
+  @ViewChild('scoreDetailDialog') scoreDetailDialog!: TemplateRef<any>;
 
   candidatures: any[] = [];
   filtered: any[] = [];
@@ -41,6 +42,9 @@ export class CandidaturesEncadrantComponent implements OnInit {
   sortByScore = true;
   selected: any = null;
   cvUrl: SafeResourceUrl | null = null;
+  mesSujets: any[] = [];
+  scoreDetail: any = null;
+  scoreDetailLoading = false;
 
   meetingForm: FormGroup;
   decisionForm: FormGroup;
@@ -81,10 +85,20 @@ export class CandidaturesEncadrantComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     this.meetingForm  = this.fb.group({ dateMeeting: ['', Validators.required] });
-    this.decisionForm = this.fb.group({ decision: ['', Validators.required], note: [''] });
+    this.decisionForm = this.fb.group({ decision: ['', Validators.required], note: [''], sujet: [''], dateDebut: [''], dateFin: [''] });
   }
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.load();
+    this.loadSujets();
+  }
+
+  loadSujets(): void {
+    this.http.get<any[]>(`${environment.apiUrl}/sujets-stage/mes-sujets`).subscribe({
+      next: (s) => this.mesSujets = s,
+      error: () => {}
+    });
+  }
 
   load(): void {
     this.isLoading = true;
@@ -183,10 +197,34 @@ applyFilter(): void {
       }
     });
   }
-get specialitesDisponibles(): string[] {
-  return [...new Set(this.candidatures
-    .filter(c => c.specialite)
-    .map(c => c.specialite))];
-}
+  get specialitesDisponibles(): string[] {
+    return [...new Set(this.candidatures
+      .filter(c => c.specialite)
+      .map(c => c.specialite))];
+  }
 
+  voirScoreDetail(c: any): void {
+    this.selected = c;
+    this.scoreDetail = null;
+    this.scoreDetailLoading = true;
+    this.dialog.open(this.scoreDetailDialog, { width: '500px' });
+    this.http.post<any>(`${environment.apiUrl}/candidatures/${c.id}/score-detaille`, {}).subscribe({
+      next: (data) => { this.scoreDetail = data; this.scoreDetailLoading = false; },
+      error: () => {
+        this.scoreDetail = { scoreGlobal: c.scoreMatching ?? 0, recommendation: 'N/A' };
+        this.scoreDetailLoading = false;
+      }
+    });
+  }
+
+  get scoreDetailCriteres(): { label: string; key: string; icon: string }[] {
+    return [
+      { label: 'Disponibilité', key: 'disponibilite', icon: 'schedule' },
+      { label: 'Proximité géographique', key: 'proximiteGeographique', icon: 'location_on' },
+      { label: 'Compétences techniques', key: 'competencesTechniques', icon: 'code' },
+      { label: 'Niveau d\'études', key: 'niveauEtudes', icon: 'school' },
+      { label: 'Adéquation sujet', key: 'adequationSujet', icon: 'assignment' },
+      { label: 'Expériences antérieures', key: 'experiencesAnterieures', icon: 'work_history' },
+    ];
+  }
 }

@@ -47,8 +47,30 @@
   </div>
 </div>
 
+    <!-- Bandeau pré-RH : documents à fournir -->
+    <div *ngIf="isPreRH" class="pre-rh-banner">
+      <div class="pre-rh-icon"><mat-icon>assignment_turned_in</mat-icon></div>
+      <div class="pre-rh-text">
+        <strong>Votre candidature a été acceptée par l'encadrant</strong>
+        <span>Veuillez compléter votre dossier (documents + fiche OCP) pour que le service RH puisse finaliser votre validation.</span>
+      </div>
+      <div class="pre-rh-progress">
+        <span>{{ dossierCompletionPct }}%</span>
+        <mat-progress-bar mode="determinate" [value]="dossierCompletionPct"></mat-progress-bar>
+      </div>
+    </div>
+
+    <!-- Bandeau bienvenue post-RH -->
+    <div *ngIf="isPostRH && dashboard.stageStatut !== 'TERMINE'" class="post-rh-banner">
+      <div class="post-rh-icon"><mat-icon>celebration</mat-icon></div>
+      <div>
+        <strong>Bienvenue chez OCP Group, {{ dashboard.stagiairePrenom }} !</strong>
+        <span>Votre dossier a été validé. Toutes les fonctionnalités de votre espace sont maintenant disponibles.</span>
+      </div>
+    </div>
+
     <!-- KPI Cards -->
-    <div class="kpi-grid" *ngIf="dashboard.stageId">
+    <div class="kpi-grid" *ngIf="dashboard.stageId && isPostRH">
       <div class="kpi-card blue">
         <mat-icon>event_note</mat-icon>
         <span class="kpi-value">{{ suivis.length }}</span>
@@ -112,8 +134,8 @@
     <app-fiche-renseignement [profil]="profil" [stage]="dashboard"></app-fiche-renseignement>
   </div>
 </mat-tab>
-      <!-- Tab Bienvenue -->
-<mat-tab>
+      <!-- Tab Bienvenue (post-RH uniquement) -->
+<mat-tab *ngIf="isPostRH">
   <ng-template mat-tab-label>
     <mat-icon>waving_hand</mat-icon>&nbsp; Bienvenue
   </ng-template>
@@ -261,8 +283,8 @@
 
   </div>
 </mat-tab>
-      <!-- Tab Infos -->
-      <mat-tab>
+      <!-- Tab Infos (post-RH uniquement) -->
+      <mat-tab *ngIf="isPostRH">
         <ng-template mat-tab-label><mat-icon>info</mat-icon>&nbsp; Mon Stage</ng-template>
         <div class="tab-content">
           <div class="info-grid">
@@ -317,8 +339,8 @@
         </div>
       </mat-tab>
 
-     <!-- Tab Suivis -->
-<mat-tab>
+     <!-- Tab Suivis (post-RH uniquement) -->
+<mat-tab *ngIf="isPostRH">
   <ng-template mat-tab-label>
     <mat-icon>event_note</mat-icon>&nbsp; Suivis ({{ suivis.length }})
   </ng-template>
@@ -407,8 +429,8 @@
   </div>
 </mat-tab>
 
-      <!-- Tab Évaluations -->
-      <mat-tab>
+      <!-- Tab Évaluations (post-RH uniquement) -->
+      <mat-tab *ngIf="isPostRH">
         <ng-template mat-tab-label>
           <mat-icon>star</mat-icon>&nbsp; Évaluations ({{ evaluations.length }})
         </ng-template>
@@ -455,8 +477,8 @@
           </div>
         </div>
       </mat-tab>
-<!-- Tab Fiches d'appréciation -->
-<mat-tab>
+<!-- Tab Fiches d'appréciation (post-RH uniquement) -->
+<mat-tab *ngIf="isPostRH">
   <ng-template mat-tab-label>
     <mat-icon>rate_review</mat-icon>&nbsp; Fiches d'appréciation
   </ng-template>
@@ -572,8 +594,8 @@
   </div>
 </mat-tab>
 
-<!-- Tab Rapport -->
-<mat-tab>
+<!-- Tab Rapport (post-RH uniquement) -->
+<mat-tab *ngIf="isPostRH">
   <ng-template mat-tab-label>
     <mat-icon>upload_file</mat-icon>&nbsp; Mon Rapport
   </ng-template>
@@ -619,8 +641,8 @@
 </mat-tab>
 
 
-<!-- Tab Attestation -->
-<mat-tab>
+<!-- Tab Attestation (post-RH uniquement) -->
+<mat-tab *ngIf="isPostRH">
   <ng-template mat-tab-label>
     <mat-icon>workspace_premium</mat-icon>&nbsp; Attestation
   </ng-template>

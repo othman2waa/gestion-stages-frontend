@@ -16,6 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConventionService } from '../../core/services/convention.service';
 import { StageService } from '../../core/services/stage.service';
+import { StatutLabelPipe } from '../../shared/pipes/statut-label.pipe';
 
 @Component({
   selector: 'app-convention-form',
@@ -25,7 +26,7 @@ import { StageService } from '../../core/services/stage.service';
     MatFormFieldModule, MatInputModule, MatButtonModule,
     MatIconModule, MatSelectModule, MatAutocompleteModule,
     MatDatepickerModule, MatNativeDateModule, MatProgressSpinnerModule,
-    MatSnackBarModule, MatTooltipModule
+    MatSnackBarModule, MatTooltipModule, StatutLabelPipe
   ],
   templateUrl: './convention-form.component.html',
   styleUrls: ['./convention-form.component.scss']

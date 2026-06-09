@@ -88,10 +88,10 @@
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon teal"><mat-icon>handshake</mat-icon></div>
+        <div class="kpi-icon teal"><mat-icon>pending_actions</mat-icon></div>
         <div class="kpi-body">
-          <span class="kpi-val">{{ yearConventionSignee }}</span>
-          <span class="kpi-lbl">Convocation signée</span>
+          <span class="kpi-val">{{ enAttenteRH }}</span>
+          <span class="kpi-lbl">En attente RH</span>
         </div>
       </div>
       <div class="kpi-card">
@@ -114,6 +114,32 @@
         </ng-template>
 
         <div class="tab-content">
+
+          <!-- Section : En attente validation RH -->
+          <div class="section-group" *ngIf="stagiairesEnAttenteRH.length > 0">
+            <div class="section-header amber">
+              <mat-icon>pending_actions</mat-icon>
+              <span>En attente validation RH</span>
+              <span class="section-count">{{ stagiairesEnAttenteRH.length }}</span>
+            </div>
+            <div class="stagiaires-grid mini">
+              <div *ngFor="let s of stagiairesEnAttenteRH" class="stag-card pending-rh">
+                <div class="stag-header">
+                  <div class="stag-avatar" style="background: #FEF3C720">
+                    <span style="color: #F59E0B">{{ getInitials(s.stagiaireNom, s.stagiairePrenom) }}</span>
+                  </div>
+                  <div class="stag-identity">
+                    <h4>{{ s.stagiairePrenom }} {{ s.stagiaireNom }}</h4>
+                    <span class="stag-filiere">{{ s.filiere ?? s.typeStage }}</span>
+                    <span class="stag-etab" *ngIf="s.sujet"><mat-icon>assignment</mat-icon>{{ s.sujet }}</span>
+                  </div>
+                  <div class="statut-pill" style="background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A">
+                    <mat-icon>hourglass_empty</mat-icon> {{ getStatutConf(s.statut).label }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Search + Filter -->
           <div class="toolbar">
@@ -259,6 +285,13 @@
                       </button>
                     </div>
                   </div>
+                  <!-- Analyse IA -->
+                  <div class="extras-section">
+                    <button mat-stroked-button class="btn-sm btn-ia"
+                            (click)="lancerAnalyseIA(s, $event)">
+                      <mat-icon>psychology</mat-icon> Analyse IA performance
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -305,3 +338,54 @@
     <p>Contactez l'administrateur RH</p>
   </div>
 </div>
+
+<!-- ═══ DIALOG ANALYSE IA ═══ -->
+<ng-template #analyseIaDialog>
+  <div class="ia-dialog-header">
+    <mat-icon>psychology</mat-icon>
+    <div>
+      <h3>Analyse IA — Performance</h3>
+      <p>{{ analyseIaStagiaire?.stagiairePrenom }} {{ analyseIaStagiaire?.stagiaireNom }}</p>
+    </div>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <mat-progress-bar *ngIf="analyseIaLoading" mode="indeterminate"></mat-progress-bar>
+    <div *ngIf="analyseIa && !analyseIaLoading" class="ia-result">
+      <div class="ia-score-circle" [style.border-color]="getRecoColor(analyseIa.recommendation)">
+        <span class="ia-score-val" [style.color]="getRecoColor(analyseIa.recommendation)">{{ analyseIa.scoreGlobal }}</span>
+        <span class="ia-score-lbl">/100</span>
+      </div>
+      <div class="ia-reco" [style.color]="getRecoColor(analyseIa.recommendation)"
+           [style.background]="getRecoColor(analyseIa.recommendation) + '15'">
+        {{ analyseIa.recommendation }}
+      </div>
+      <div class="ia-synthese" *ngIf="analyseIa.synthese">
+        <strong>Synthèse</strong>
+        <p>{{ analyseIa.synthese }}</p>
+      </div>
+      <div class="ia-lists" *ngIf="analyseIa.pointsForts?.length">
+        <div class="ia-list green">
+          <strong><mat-icon>thumb_up</mat-icon> Points forts</strong>
+          <ul><li *ngFor="let p of analyseIa.pointsForts">{{ p }}</li></ul>
+        </div>
+      </div>
+      <div class="ia-lists" *ngIf="analyseIa.axesAmelioration?.length">
+        <div class="ia-list orange">
+          <strong><mat-icon>trending_up</mat-icon> Axes d'amélioration</strong>
+          <ul><li *ngFor="let a of analyseIa.axesAmelioration">{{ a }}</li></ul>
+        </div>
+      </div>
+      <div class="ia-conseil" *ngIf="analyseIa.conseilCarriere">
+        <strong><mat-icon>lightbulb</mat-icon> Conseil carrière</strong>
+        <p>{{ analyseIa.conseilCarriere }}</p>
+      </div>
+      <div class="ia-embauche" *ngIf="analyseIa.apteEmbauche !== undefined">
+        <mat-icon [style.color]="analyseIa.apteEmbauche ? '#00843D' : '#DC2626'">
+          {{ analyseIa.apteEmbauche ? 'verified' : 'cancel' }}
+        </mat-icon>
+        <span>{{ analyseIa.apteEmbauche ? 'Apte à l\'embauche' : 'Non recommandé pour embauche' }}</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>

@@ -1,4 +1,4 @@
-<mat-toolbar class="navbar">
+<mat-toolbar class="navbar" [class.collapsed]="isCollapsed">
   <button mat-icon-button (click)="toggleSidebar.emit()">
     <mat-icon>{{ isCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
   </button>

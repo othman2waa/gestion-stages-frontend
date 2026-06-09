@@ -85,7 +85,7 @@
 
         <div class="card-right">
           <span class="statut-badge" [class]="getStatutClass(a.statut)">
-            {{ a.statut.replace('_', ' ') }}
+            {{ a.statut | statutLabel }}
           </span>
           <div class="att-actions">
             <button mat-raised-button class="btn-approuver"

@@ -53,14 +53,14 @@
       <mat-label>Statut</mat-label>
       <mat-select name="statut" [(ngModel)]="selectedStatut" (selectionChange)="onFilterChange()">
         <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let s of statuts" [value]="s">{{ s.replace('_', ' ') }}</mat-option>
+        <mat-option *ngFor="let s of statuts" [value]="s">{{ s | statutLabel }}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Type</mat-label>
       <mat-select name="typeStage" [(ngModel)]="selectedTypeStage" (selectionChange)="onFilterChange()">
         <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let t of typesStage" [value]="t">{{ t.replace('_', ' ') }}</mat-option>
+        <mat-option *ngFor="let t of typesStage" [value]="t">{{ t | statutLabel }}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="filter-field">
@@ -94,11 +94,11 @@
       <button mat-icon-button (click)="keyword=''; onFilterChange()"><mat-icon>close</mat-icon></button>
     </span>
     <span class="filter-pill" *ngIf="selectedStatut">
-      <mat-icon>flag</mat-icon> {{ selectedStatut.replace('_', ' ') }}
+      <mat-icon>flag</mat-icon> {{ selectedStatut | statutLabel }}
       <button mat-icon-button (click)="selectedStatut=''; onFilterChange()"><mat-icon>close</mat-icon></button>
     </span>
     <span class="filter-pill" *ngIf="selectedTypeStage">
-      <mat-icon>category</mat-icon> {{ selectedTypeStage.replace('_', ' ') }}
+      <mat-icon>category</mat-icon> {{ selectedTypeStage | statutLabel }}
       <button mat-icon-button (click)="selectedTypeStage=''; onFilterChange()"><mat-icon>close</mat-icon></button>
     </span>
     <span class="filter-pill" *ngIf="selectedDepartement">
@@ -151,7 +151,7 @@
       <div class="card-top">
         <div class="card-title-row">
           <h4>{{ s.sujet }}</h4>
-          <span class="type-chip">{{ s.typeStage?.replace('_', ' ') }}</span>
+          <span class="type-chip">{{ s.typeStage | statutLabel }}</span>
         </div>
         <div class="progression-row">
           <mat-progress-bar mode="determinate" [value]="getProgression(s.statut)"
@@ -160,7 +160,7 @@
           <span [style.color]="getProgressionColor(s.statut)" style="font-weight:700">{{ getProgression(s.statut) }}%</span>
         </div>
         <span class="statut-badge" [class]="getStatutClass(s.statut)">
-          {{ s.statut?.replace('_', ' ') }}
+          {{ s.statut | statutLabel }}
         </span>
       </div>
 
@@ -217,7 +217,7 @@
         </button>
         <mat-menu #statutMenu="matMenu">
           <button *ngFor="let st of statuts" mat-menu-item (click)="updateStatut(s.id, st)">
-            <span class="statut-badge" [class]="getStatutClass(st)">{{ st.replace('_', ' ') }}</span>
+            <span class="statut-badge" [class]="getStatutClass(st)">{{ st | statutLabel }}</span>
           </button>
         </mat-menu>
         <button mat-icon-button color="warn" matTooltip="Supprimer" (click)="delete(s.id)">
@@ -248,7 +248,7 @@
     <div>
       <h3>{{ selectedStage?.sujet }}</h3>
       <span class="statut-badge" [class]="getStatutClass(selectedStage?.statut)">
-        {{ selectedStage?.statut?.replace('_', ' ') }}
+        {{ selectedStage?.statut | statutLabel }}
       </span>
     </div>
     <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
@@ -271,7 +271,7 @@
     <div class="detail-grid">
       <div class="detail-section">
         <p class="section-title">Stage</p>
-        <div class="detail-row"><mat-icon>category</mat-icon><span>{{ selectedStage?.typeStage?.replace('_',' ') ?? '—' }}</span></div>
+        <div class="detail-row"><mat-icon>category</mat-icon><span>{{ selectedStage?.typeStage | statutLabel }}</span></div>
         <div class="detail-row"><mat-icon>business</mat-icon><span>{{ selectedStage?.departementNom ?? '—' }}</span></div>
         <div class="detail-row"><mat-icon>date_range</mat-icon>
           <span>{{ selectedStage?.dateDebut | date:'dd/MM/yyyy' }} → {{ selectedStage?.dateFin | date:'dd/MM/yyyy' }}</span>

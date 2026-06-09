@@ -1,4 +1,4 @@
-.enc-container { min-height: 100vh; background: #F1F5F9; }
+.enc-container { min-height: 100vh; background: #F8FAFC; }
 .top-loader { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
 
 // ── Hero Header
@@ -181,6 +181,16 @@
   }
 }
 
+// ── Section groups
+.section-group { margin-bottom: 20px; }
+.section-header { display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+  border-radius: 10px; font-weight: 700; font-size: 14px; margin-bottom: 10px;
+  &.amber { background: #FEF3C7; color: #92400E; }
+  .section-count { margin-left: auto; background: rgba(255,255,255,0.6); padding: 2px 10px;
+    border-radius: 12px; font-size: 12px; } }
+.stagiaires-grid.mini .stag-card { padding: 12px 16px; }
+.stag-card.pending-rh { border-left: 3px solid #F59E0B; }
+
 // ── Stagiaire Cards
 .stagiaires-grid { display: flex; flex-direction: column; gap: 12px; }
 
@@ -322,4 +332,65 @@
   h3 { margin: 0 0 6px; color: #475569; font-size: 18px; }
   p { margin: 0; font-size: 14px; }
   &.full { padding: 100px; }
+}
+
+// ── Bouton IA
+.btn-ia {
+  color: #7C3AED !important; border-color: #ddd6fe !important; background: #f5f3ff !important;
+  &:hover { background: #ede9fe !important; }
+}
+
+// ── Dialog Analyse IA
+.ia-dialog-header {
+  display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+  background: linear-gradient(135deg, #7C3AED, #a855f7); border-radius: 14px 14px 0 0;
+  color: white;
+  mat-icon { font-size: 28px; }
+  h3 { margin: 0; font-size: 16px; font-weight: 700; }
+  p { margin: 2px 0 0; font-size: 12px; opacity: .8; }
+  button { margin-left: auto; color: white; }
+}
+
+.ia-result { padding: 8px 0; }
+
+.ia-score-circle {
+  width: 90px; height: 90px; border-radius: 50%; border: 4px solid;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 auto 12px;
+  .ia-score-val { font-size: 32px; font-weight: 800; line-height: 1; }
+  .ia-score-lbl { font-size: 12px; color: #94a3b8; }
+}
+
+.ia-reco {
+  text-align: center; font-weight: 700; font-size: 14px;
+  padding: 6px 16px; border-radius: 20px; display: inline-block;
+  margin: 0 auto 16px; width: fit-content;
+}
+
+.ia-synthese { margin-bottom: 12px;
+  strong { font-size: 13px; color: #475569; }
+  p { margin: 4px 0 0; font-size: 13px; color: #1e293b; }
+}
+
+.ia-lists { margin-bottom: 10px; }
+.ia-list {
+  padding: 10px 14px; border-radius: 10px; font-size: 12px;
+  strong { display: flex; align-items: center; gap: 4px; margin-bottom: 4px;
+    mat-icon { font-size: 16px; } }
+  ul { margin: 0; padding-left: 18px; }
+  li { margin-bottom: 2px; }
+  &.green { background: #f0fdf4; color: #166534; }
+  &.orange { background: #fff7ed; color: #9a3412; }
+}
+
+.ia-conseil {
+  background: #f5f3ff; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;
+  strong { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #7C3AED;
+    mat-icon { font-size: 16px; } }
+  p { margin: 4px 0 0; font-size: 12px; color: #475569; }
+}
+
+.ia-embauche {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: #f8fafc; border-radius: 10px; font-size: 13px; font-weight: 600; color: #1e293b;
 }

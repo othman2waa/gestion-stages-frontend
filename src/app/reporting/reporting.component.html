@@ -138,5 +138,72 @@
       </div>
     </div>
 
+    <!-- ═══ RAPPORT PFE BAC+5 ═══ -->
+    <div class="section-title pfe-section">
+      <mat-icon>school</mat-icon> Rapport Stages PFE Bac+5
+    </div>
+    <div class="pfe-panel">
+      <div class="pfe-toolbar">
+        <div class="pfe-filters">
+          <div class="year-pills">
+            <button *ngFor="let y of pfeBac5Years" class="yr-pill"
+                    [class.active]="pfeBac5Year === y"
+                    (click)="pfeBac5Year = y; loadPfeBac5()">{{ y }}</button>
+            <button class="yr-pill" [class.active]="!pfeBac5Year"
+                    (click)="pfeBac5Year = null; loadPfeBac5()">Tous</button>
+          </div>
+          <select class="dept-select" [(ngModel)]="pfeBac5Dept" *ngIf="pfeDepartements.length > 0">
+            <option value="">Tous les départements</option>
+            <option *ngFor="let d of pfeDepartements" [value]="d">{{ d }}</option>
+          </select>
+        </div>
+        <div class="pfe-actions">
+          <button mat-stroked-button (click)="loadPfeBac5()" class="hero-btn">
+            <mat-icon>refresh</mat-icon> Charger
+          </button>
+          <button mat-stroked-button (click)="exportPfeBac5()" [disabled]="filteredPfeBac5.length === 0" class="hero-btn">
+            <mat-icon>table_view</mat-icon> Export Excel
+          </button>
+          <button mat-stroked-button (click)="printReport()" [disabled]="filteredPfeBac5.length === 0" class="hero-btn">
+            <mat-icon>print</mat-icon> PDF
+          </button>
+        </div>
+      </div>
+
+      <mat-progress-bar *ngIf="pfeBac5Loading" mode="indeterminate"></mat-progress-bar>
+
+      <div class="pfe-count" *ngIf="!pfeBac5Loading && pfeBac5.length > 0">
+        {{ filteredPfeBac5.length }} stagiaire(s) PFE Bac+5
+      </div>
+
+      <div class="pfe-table" *ngIf="filteredPfeBac5.length > 0">
+        <div class="pfe-row header">
+          <span class="pfe-col name">Nom & Prénom</span>
+          <span class="pfe-col etab">Établissement</span>
+          <span class="pfe-col dept">Département</span>
+          <span class="pfe-col sujet">Sujet</span>
+          <span class="pfe-col date">Début</span>
+          <span class="pfe-col date">Fin</span>
+          <span class="pfe-col duree">Durée</span>
+          <span class="pfe-col enc">Encadrant</span>
+        </div>
+        <div class="pfe-row" *ngFor="let s of filteredPfeBac5">
+          <span class="pfe-col name"><strong>{{ s.nom }}</strong> {{ s.prenom }}</span>
+          <span class="pfe-col etab">{{ s.etablissement }}</span>
+          <span class="pfe-col dept">{{ s.departement }}</span>
+          <span class="pfe-col sujet">{{ s.sujet ?? '—' }}</span>
+          <span class="pfe-col date">{{ s.dateDebut | date:'dd/MM/yy' }}</span>
+          <span class="pfe-col date">{{ s.dateFin | date:'dd/MM/yy' }}</span>
+          <span class="pfe-col duree">{{ s.dureeMois ?? '—' }} mois</span>
+          <span class="pfe-col enc">{{ s.encadrant }}</span>
+        </div>
+      </div>
+
+      <div class="pfe-empty" *ngIf="!pfeBac5Loading && pfeBac5.length === 0">
+        <mat-icon>school</mat-icon>
+        <p>Cliquez sur "Charger" pour générer le rapport PFE Bac+5</p>
+      </div>
+    </div>
+
   </ng-container>
 </div>

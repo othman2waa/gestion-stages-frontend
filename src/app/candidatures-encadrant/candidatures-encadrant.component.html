@@ -18,9 +18,9 @@
       <mat-icon>event</mat-icon>
       <div><span class="kv">{{ meetingPlanifie }}</span><span class="kl">Meeting planifié</span></div>
     </div>
-    <div class="kpi-card green" (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'; applyFilter()">
-      <mat-icon>check_circle</mat-icon>
-      <div><span class="kv">{{ acceptes }}</span><span class="kl">Acceptés</span></div>
+    <div class="kpi-card blue" (click)="filterStatut = ''; applyFilter()">
+      <mat-icon>psychology</mat-icon>
+      <div><span class="kv">{{ avecScore }}</span><span class="kl">Avec score IA</span></div>
     </div>
     <div class="kpi-card gray" (click)="filterStatut = ''; applyFilter()">
       <mat-icon>list</mat-icon>
@@ -44,9 +44,6 @@
       <button class="pill teal" [class.active]="filterStatut === 'MEETING_PLANIFIE'"
               (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'; applyFilter()">
         Meeting</button>
-      <button class="pill green" [class.active]="filterStatut === 'ACCEPTEE_ENCADRANT'"
-              (click)="filterStatut = filterStatut === 'ACCEPTEE_ENCADRANT' ? '' : 'ACCEPTEE_ENCADRANT'; applyFilter()">
-        Acceptés</button>
 
           <select class="spec-select" [(ngModel)]="filterSpecialite" (change)="applyFilter()">
      <option value="">🎯 Toutes spécialités</option>
@@ -95,7 +92,8 @@
             {{ c.scoreMatching }}% — {{ getScoreLabel(c.scoreMatching) }}
           </span>
         </div>
-        <div class="score-circle" [style.background]="getScoreColor(c.scoreMatching)">
+        <div class="score-circle" [style.background]="getScoreColor(c.scoreMatching)"
+             (click)="voirScoreDetail(c)" matTooltip="Cliquer pour voir le détail">
           {{ c.scoreMatching }}%
         </div>
       </div>
@@ -224,7 +222,37 @@
           <mat-icon>cancel</mat-icon> Refuser
         </button>
       </div>
-      <mat-form-field appearance="outline" class="full-width" style="margin-top:16px">
+      <!-- Sujet de stage (visible si acceptation) -->
+      <div *ngIf="decisionForm.value.decision === 'ACCEPTE'" style="margin-top:16px">
+        <label class="sujet-label"><mat-icon>assignment</mat-icon> Sujet de stage</label>
+        <div class="sujet-options">
+          <button type="button" class="sujet-chip"
+                  *ngFor="let s of mesSujets"
+                  [class.active]="decisionForm.value.sujet === s.titre"
+                  (click)="decisionForm.patchValue({sujet: s.titre})">
+            {{ s.titre }}
+          </button>
+        </div>
+        <mat-form-field appearance="outline" class="full-width" style="margin-top:8px">
+          <mat-label>Ou saisir un sujet personnalisé</mat-label>
+          <input matInput formControlName="sujet" placeholder="Titre du sujet de stage...">
+          <mat-icon matPrefix>edit</mat-icon>
+        </mat-form-field>
+
+        <label class="sujet-label" style="margin-top:12px"><mat-icon>event</mat-icon> Période du stage</label>
+        <div style="display:flex; gap:12px">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Date de début</mat-label>
+            <input matInput type="date" formControlName="dateDebut">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Date de fin</mat-label>
+            <input matInput type="date" formControlName="dateFin">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width" style="margin-top:8px">
         <mat-label>Note / Commentaire</mat-label>
         <textarea matInput formControlName="note" rows="3"
                   placeholder="Observations après le meeting..."></textarea>
@@ -244,6 +272,60 @@
       <mat-icon>send</mat-icon> Confirmer et envoyer email
     </button>
   </mat-dialog-actions>
+</ng-template>
+
+<!-- ═══ DIALOG SCORE DÉTAILLÉ ═══ -->
+<ng-template #scoreDetailDialog>
+  <div class="dialog-header purple">
+    <mat-icon>psychology</mat-icon>
+    <div>
+      <h3>Score IA détaillé</h3>
+      <p>{{ selected?.prenom }} {{ selected?.nom }}</p>
+    </div>
+    <button mat-icon-button mat-dialog-close><mat-icon>close</mat-icon></button>
+  </div>
+  <mat-dialog-content>
+    <mat-progress-bar *ngIf="scoreDetailLoading" mode="indeterminate"></mat-progress-bar>
+    <div *ngIf="scoreDetail && !scoreDetailLoading" class="score-detail-content">
+      <div class="score-global-circle" [style.border-color]="getScoreColor(scoreDetail.scoreGlobal)">
+        <span class="sg-val" [style.color]="getScoreColor(scoreDetail.scoreGlobal)">{{ scoreDetail.scoreGlobal }}%</span>
+        <span class="sg-lbl">Score global</span>
+      </div>
+      <div class="score-criteres">
+        <div class="critere-row" *ngFor="let cr of scoreDetailCriteres">
+          <div class="critere-info">
+            <mat-icon>{{ cr.icon }}</mat-icon>
+            <span>{{ cr.label }}</span>
+          </div>
+          <div class="critere-bar-wrap">
+            <div class="critere-bar-track">
+              <div class="critere-bar-fill"
+                   [style.width]="(scoreDetail[cr.key] ?? 0) + '%'"
+                   [style.background]="getScoreColor(scoreDetail[cr.key] ?? 0)"></div>
+            </div>
+            <span class="critere-val">{{ scoreDetail[cr.key] ?? 0 }}%</span>
+          </div>
+        </div>
+      </div>
+      <div class="score-feedback" *ngIf="scoreDetail.pointsForts || scoreDetail.pointsFaibles">
+        <div class="sf-block green" *ngIf="scoreDetail.pointsForts">
+          <strong><mat-icon>thumb_up</mat-icon> Points forts</strong>
+          <p>{{ scoreDetail.pointsForts }}</p>
+        </div>
+        <div class="sf-block red" *ngIf="scoreDetail.pointsFaibles">
+          <strong><mat-icon>thumb_down</mat-icon> Points faibles</strong>
+          <p>{{ scoreDetail.pointsFaibles }}</p>
+        </div>
+      </div>
+      <div class="score-reco" *ngIf="scoreDetail.recommendation"
+           [class.reco-green]="scoreDetail.recommendation === 'RECOMMANDE'"
+           [class.reco-orange]="scoreDetail.recommendation === 'ACCEPTABLE'"
+           [class.reco-red]="scoreDetail.recommendation === 'NON_RECOMMANDE'">
+        <mat-icon>{{ scoreDetail.recommendation === 'RECOMMANDE' ? 'verified' : scoreDetail.recommendation === 'ACCEPTABLE' ? 'info' : 'warning' }}</mat-icon>
+        {{ scoreDetail.recommendation }}
+      </div>
+    </div>
+  </mat-dialog-content>
 </ng-template>
 
 <!-- ═══ DIALOG CV ═══ -->

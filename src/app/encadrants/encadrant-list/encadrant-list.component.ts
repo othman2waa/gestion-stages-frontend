@@ -19,6 +19,7 @@ import { EncadrantFormComponent } from '../encadrant-form/encadrant-form.compone
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { StageService } from '../../core/services/stage.service';
 import { ExportService } from '../../core/services/export.service';
+import { StatutLabelPipe } from '../../shared/pipes/statut-label.pipe';
 
 @Component({
   selector: 'app-encadrant-list',
@@ -27,7 +28,7 @@ import { ExportService } from '../../core/services/export.service';
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
     MatTooltipModule, MatProgressBarModule, MatChipsModule,
-    MatSelectModule, MatFormFieldModule, MatPaginatorModule
+    MatSelectModule, MatFormFieldModule, MatPaginatorModule, StatutLabelPipe
   ],
   templateUrl: './encadrant-list.component.html',
   styleUrls: ['./encadrant-list.component.scss']

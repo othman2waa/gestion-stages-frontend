@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,8 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { EncadrantService } from '../core/services/encadrant.service';
 import { RapportService } from '../core/services/rapport.service';
 import { FicheAppreciationService } from '../core/services/fiche-appreciation.service';
@@ -31,6 +33,8 @@ import { ExportService } from '../core/services/export.service';
   styleUrls: ['./encadrant-dashboard.component.scss']
 })
 export class EncadrantDashboardComponent implements OnInit {
+  @ViewChild('analyseIaDialog') analyseIaDialog!: TemplateRef<any>;
+
   profil: any = null;
   isLoading = true;
   selectedStagiaire: any = null;
@@ -60,8 +64,12 @@ export class EncadrantDashboardComponent implements OnInit {
   rapportStatus: Record<number, boolean> = {};
   ficheStageStatus: Record<number, any> = {};
   ficheStagiaireStatus: Record<number, any> = {};
+  analyseIa: any = null;
+  analyseIaLoading = false;
+  analyseIaStagiaire: any = null;
 
   constructor(
+    private http: HttpClient,
     private encadrantService: EncadrantService,
     private rapportService: RapportService,
     private ficheService: FicheAppreciationService,
@@ -122,9 +130,22 @@ export class EncadrantDashboardComponent implements OnInit {
 
   get allStagiaires(): any[] { return this.profil?.stagiaires ?? []; }
 
+  // Stagiaires acceptés par encadrant mais en attente validation RH
+  private readonly STATUTS_EN_ATTENTE_RH = ['VALIDEE', 'CONVENTION_GENEREE'];
+  private readonly STATUTS_ACTIFS = ['CONVENTION_SIGNEE', 'EN_COURS'];
+
+  get stagiairesEnAttenteRH(): any[] {
+    return this.allStagiaires.filter((s: any) => this.STATUTS_EN_ATTENTE_RH.includes(s.statut));
+  }
+
+  get stagiairesActifs(): any[] {
+    return this.allStagiaires.filter((s: any) => this.STATUTS_ACTIFS.includes(s.statut));
+  }
+
   get enCours(): number { return this.allStagiaires.filter((s:any) => s.statut === 'EN_COURS').length; }
   get aEvaluer(): number { return this.allStagiaires.filter((s:any) => s.statut === 'EN_ATTENTE_EVALUATION').length; }
   get termines(): number { return this.allStagiaires.filter((s:any) => s.statut === 'TERMINE').length; }
+  get enAttenteRH(): number { return this.stagiairesEnAttenteRH.length; }
 
   // Pending fiches notifications
   get pendingFiches(): { stageId: number; nom: string; missingStage: boolean; missingStagiaire: boolean }[] {
@@ -236,5 +257,34 @@ export class EncadrantDashboardComponent implements OnInit {
 
   allerAuxEvaluations(): void {
     this.router.navigate(['/evaluations']);
+  }
+
+  lancerAnalyseIA(s: any, event: Event): void {
+    event.stopPropagation();
+    this.analyseIaStagiaire = s;
+    this.analyseIa = null;
+    this.analyseIaLoading = true;
+    this.dialog.open(this.analyseIaDialog, { width: '550px' });
+
+    const body = {
+      tauxPresence: s.tauxPresence ?? 80,
+      moyenneNotes: s.moyenneNotes ?? 14,
+      remarques: this.ficheStageStatus[s.stageId]?.appreciationGenerale ?? '',
+      appreciationGlobale: this.ficheStagiaireStatus[s.stageId]?.appreciationGenerale ?? ''
+    };
+    this.http.post<any>(`${environment.apiUrl}/fiches-appreciation/analyse-ia`, body).subscribe({
+      next: (data) => { this.analyseIa = data; this.analyseIaLoading = false; },
+      error: () => {
+        this.analyseIa = { scoreGlobal: 0, synthese: 'Service IA indisponible' };
+        this.analyseIaLoading = false;
+      }
+    });
+  }
+
+  getRecoColor(reco: string): string {
+    if (reco === 'EXCELLENT') return '#00843D';
+    if (reco === 'BIEN') return '#1E40AF';
+    if (reco === 'SATISFAISANT') return '#F47920';
+    return '#DC2626';
   }
 }

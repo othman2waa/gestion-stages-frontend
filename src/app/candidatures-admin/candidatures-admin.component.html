@@ -233,6 +233,9 @@
           </span>
           <small>{{ d.commentaireIa }}</small>
         </div>
+        <button mat-icon-button matTooltip="Voir le document" (click)="voirDocument(d.id)">
+          <mat-icon>visibility</mat-icon>
+        </button>
       </div>
     </div>
 

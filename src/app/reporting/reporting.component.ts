@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { BaseChartDirective } from 'ng2-charts';
@@ -15,7 +17,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-reporting',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatTooltipModule, BaseChartDirective],
+  imports: [CommonModule, FormsModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatTooltipModule, MatTabsModule, BaseChartDirective],
   templateUrl: './reporting.component.html',
   styleUrls: ['./reporting.component.scss']
 })
@@ -206,14 +208,53 @@ export class ReportingComponent implements OnInit {
   exportExcel(): void {
     if (!this.stats) return;
     const rows: any[] = [];
-    // KPIs
     this.kpis.forEach(k => rows.push({ Section: 'KPI', Indicateur: k.label, Valeur: k.value }));
-    // Pipeline
     this.pipelineSteps.forEach(s => rows.push({ Section: 'Pipeline', Indicateur: s.label, Valeur: s.value }));
-    // Départements
     (this.stats.stagesParDepartement ?? []).forEach((d: any) =>
       rows.push({ Section: 'Département', Indicateur: d[0] ?? 'N/A', Valeur: d[1] ?? 0, 'En cours': d[2] ?? 0, 'Terminés': d[3] ?? 0 })
     );
     this.exportService.exportGeneric(rows, 'reporting-ocp');
+  }
+
+  // ── Rapport PFE Bac+5 ──
+  pfeBac5: any[] = [];
+  pfeBac5Loading = false;
+  pfeBac5Year: number | null = new Date().getFullYear();
+  pfeBac5Dept = '';
+
+  get pfeBac5Years(): number[] {
+    const y = new Date().getFullYear();
+    return [y, y - 1, y - 2, y - 3];
+  }
+
+  loadPfeBac5(): void {
+    this.pfeBac5Loading = true;
+    let url = `${environment.apiUrl}/reporting/pfe-bac5`;
+    const params: string[] = [];
+    if (this.pfeBac5Year) params.push(`annee=${this.pfeBac5Year}`);
+    if (url && params.length) url += '?' + params.join('&');
+    this.http.get<any[]>(url).subscribe({
+      next: (data) => { this.pfeBac5 = data; this.pfeBac5Loading = false; },
+      error: () => { this.pfeBac5 = []; this.pfeBac5Loading = false; }
+    });
+  }
+
+  get filteredPfeBac5(): any[] {
+    if (!this.pfeBac5Dept) return this.pfeBac5;
+    return this.pfeBac5.filter(s => s.departement === this.pfeBac5Dept);
+  }
+
+  get pfeDepartements(): string[] {
+    return [...new Set(this.pfeBac5.map((s: any) => s.departement).filter(Boolean))];
+  }
+
+  exportPfeBac5(): void {
+    const rows = this.filteredPfeBac5.map(s => ({
+      Nom: s.nom, Prénom: s.prenom, Établissement: s.etablissement,
+      Département: s.departement, Sujet: s.sujet,
+      'Date début': s.dateDebut, 'Date fin': s.dateFin,
+      'Durée (mois)': s.dureeMois, Encadrant: s.encadrant, Statut: s.statut
+    }));
+    this.exportService.exportGeneric(rows, `rapport-pfe-bac5-${this.pfeBac5Year ?? 'all'}`);
   }
 }

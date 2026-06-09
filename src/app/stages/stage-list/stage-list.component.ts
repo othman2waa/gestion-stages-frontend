@@ -25,6 +25,7 @@ import { DepartementService } from '../../core/services/departement.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
+import { StatutLabelPipe } from '../../shared/pipes/statut-label.pipe';
 
 @Component({
   selector: 'app-stage-list',
@@ -34,7 +35,7 @@ import { AuthService } from '../../core/services/auth.service';
     MatInputModule, MatFormFieldModule, MatCardModule,
     MatSnackBarModule, MatDialogModule, MatTooltipModule,
     MatProgressBarModule, MatSelectModule, MatChipsModule,
-    MatPaginatorModule, MatMenuModule, RouterModule
+    MatPaginatorModule, MatMenuModule, RouterModule, StatutLabelPipe
   ],
   templateUrl: './stage-list.component.html',
   styleUrls: ['./stage-list.component.scss']

@@ -87,7 +87,7 @@
           <mat-form-field appearance="outline">
             <mat-label>Statut initial</mat-label>
             <mat-select formControlName="statut">
-              <mat-option *ngFor="let s of statuts" [value]="s">{{ s.replace('_', ' ') }}</mat-option>
+              <mat-option *ngFor="let s of statuts" [value]="s">{{ s | statutLabel }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>

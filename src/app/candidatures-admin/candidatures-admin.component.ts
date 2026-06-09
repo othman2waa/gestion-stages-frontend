@@ -286,6 +286,17 @@ get departementsDisponibles(): string[] {
   return this.candidatures.filter(c => c.statut === 'DOCUMENTS_SOUMIS');
 }
 
+  voirDocument(docId: number): void {
+    if (!this.selectedCandidature) return;
+    this.http.get(
+      `${environment.apiUrl}/candidatures/${this.selectedCandidature.id}/documents/${docId}/download`,
+      { responseType: 'blob' }
+    ).subscribe({
+      next: (blob) => window.open(window.URL.createObjectURL(blob), '_blank'),
+      error: () => this.snackBar.open('Erreur téléchargement document', 'Fermer', { duration: 3000 })
+    });
+  }
+
   exportExcel(): void { this.exportService.exportCandidatures(this.candidatures); }
   exportPdf():   void { this.exportService.exportCandidaturesPdf(this.candidatures); }
 

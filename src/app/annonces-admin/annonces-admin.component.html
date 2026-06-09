@@ -254,7 +254,7 @@
 
         <div class="candidature-actions">
           <span class="statut-badge" [class]="'statut-' + c.statut?.toLowerCase()">
-            {{ c.statut?.replace('_', ' ') }}
+            {{ c.statut | statutLabel }}
           </span>
           <div class="action-btns" *ngIf="c.statut === 'EN_ATTENTE'">
             <button mat-raised-button class="btn-accepter" (click)="accepter(c)">

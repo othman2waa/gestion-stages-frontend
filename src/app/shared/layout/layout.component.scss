@@ -1,21 +1,33 @@
+// Coque en flex : la sidebar est dans le flux et pousse le contenu
+// (plus de position:fixed ni de margin-left).
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;          // chaque colonne scrolle indépendamment
 }
 
 .main-content {
-  flex: 1;
-  margin-left: 260px;
-  transition: margin-left 0.3s ease;
+  flex: 1;                   // remplit l'espace restant à droite de la sidebar
+  min-width: 0;              // autorise le rétrécissement sans débordement
+  height: 100vh;
+  overflow-y: auto;
   background: #f5f7fa;
-  min-height: 100vh;
-
-  &.collapsed {
-    margin-left: 70px;
-  }
 }
 
 .page-content {
   padding: 24px;
-  margin-top: 64px;
+}
+
+// ── Responsive ──
+@media (max-width: 1024px) {
+  .page-content { padding: 18px; }
+}
+@media (max-width: 768px) {
+  .page-content { padding: 14px; }
+}
+
+// ── Impression ──
+@media print {
+  .app-layout  { display: block; height: auto; overflow: visible; }
+  .main-content { height: auto; overflow: visible; }
 }

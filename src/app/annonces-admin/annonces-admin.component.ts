@@ -19,6 +19,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { AnnonceService } from '../core/services/annonce.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { CandidatureService } from '../core/services/candidature.service';
+import { StatutLabelPipe } from '../shared/pipes/statut-label.pipe';
 
 @Component({
   selector: 'app-annonces-admin',
@@ -29,7 +30,7 @@ import { CandidatureService } from '../core/services/candidature.service';
     MatFormFieldModule, MatInputModule, MatSelectModule,
     MatDatepickerModule, MatNativeDateModule, MatChipsModule,
     MatTooltipModule, MatSnackBarModule, MatProgressBarModule,
-    MatDialogModule, MatSlideToggleModule, MatBadgeModule
+    MatDialogModule, MatSlideToggleModule, MatBadgeModule, StatutLabelPipe
   ],
   templateUrl: './annonces-admin.component.html',
   styleUrls: ['./annonces-admin.component.scss']

@@ -154,7 +154,7 @@
             <span class="stage-stagiaire">{{ s.stagiairePrenom }} {{ s.stagiaireNom }}</span>
           </div>
           <span class="statut-badge" [class]="getStatutClass(s.statut)">
-            {{ s.statut?.replace('_', ' ') }}
+            {{ s.statut | statutLabel }}
           </span>
         </div>
       </div>

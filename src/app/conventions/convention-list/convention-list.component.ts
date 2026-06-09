@@ -18,6 +18,7 @@ import { ConventionFormComponent } from '../convention-form/convention-form.comp
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { SignaturePadComponent } from '../../signature-pad/signature-pad.component';
 import { ExportService } from '../../core/services/export.service';
+import { StatutLabelPipe } from '../../shared/pipes/statut-label.pipe';
 
 @Component({
   selector: 'app-convention-list',
@@ -26,7 +27,7 @@ import { ExportService } from '../../core/services/export.service';
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
     MatTooltipModule, MatProgressBarModule, MatSelectModule,
-    MatChipsModule, MatPaginatorModule, SignaturePadComponent
+    MatChipsModule, MatPaginatorModule, SignaturePadComponent, StatutLabelPipe
   ],
   templateUrl: './convention-list.component.html',
   styleUrls: ['./convention-list.component.scss']

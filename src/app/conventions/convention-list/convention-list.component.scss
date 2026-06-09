@@ -2,9 +2,10 @@
 
 .page-header {
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 24px; color: #1e40af;
-    mat-icon { font-size: 28px; } }
-  p { margin: 4px 0 0; color: #666; font-size: 13px; }
+  h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 22px; color: #1E293B;
+    font-weight: 800; letter-spacing: -0.02em;
+    mat-icon { font-size: 26px; color: #00843D; } }
+  p { margin: 4px 0 0; color: #94A3B8; font-size: 13px; }
   .header-actions { display: flex; gap: 8px; align-items: center; }
 }
 

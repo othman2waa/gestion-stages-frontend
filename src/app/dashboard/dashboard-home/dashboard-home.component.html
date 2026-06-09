@@ -20,25 +20,25 @@
 
     <ng-container *ngIf="!isLoading && stats && !isError">
 
-      <!-- HERO -->
-      <div class="hero">
-        <div>
-          <div class="hero-live"><span class="dot"></span>En direct</div>
-          <h1>Tableau de Bord RH</h1>
-          <p>OCP Group · Direction Capital Humain · {{ today | date:'EEEE d MMMM yyyy' }}</p>
+      <!-- HEADER -->
+      <header class="page-head">
+        <div class="ph-title">
+          <span class="ph-eyebrow">Direction Capital Humain — OCP Group</span>
+          <h1>Tableau de bord</h1>
+          <p>{{ today | date:'EEEE d MMMM yyyy' }}</p>
         </div>
-        <div class="hero-actions">
-          <button mat-stroked-button class="hero-btn" matTooltip="Exporter en Excel" (click)="exportExcel()">
-            <mat-icon>table_view</mat-icon> Excel
+        <div class="ph-actions">
+          <button mat-stroked-button class="ph-btn" matTooltip="Exporter en Excel" (click)="exportExcel()">
+            <mat-icon>table_view</mat-icon> Exporter
           </button>
-          <button mat-stroked-button class="hero-btn" matTooltip="Imprimer le dashboard" (click)="printDashboard()">
+          <button mat-stroked-button class="ph-btn" matTooltip="Imprimer" (click)="printDashboard()">
             <mat-icon>print</mat-icon> Imprimer
           </button>
-          <button mat-stroked-button class="hero-btn" matTooltip="Reporting détaillé" routerLink="/reporting">
+          <button mat-flat-button class="ph-btn primary" matTooltip="Reporting détaillé" routerLink="/reporting">
             <mat-icon>analytics</mat-icon> Reporting
           </button>
         </div>
-      </div>
+      </header>
 
       <!-- KPIs -->
       <div class="kpis">
