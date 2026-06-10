@@ -284,6 +284,16 @@
                       <div class="rapport-comment" *ngIf="rap.commentaireValidation">
                         <mat-icon>comment</mat-icon> {{ rap.commentaireValidation }}
                       </div>
+
+                      <button mat-stroked-button class="btn-sm btn-ia" (click)="genererResumeRapport(s.stageId, $event)"
+                              [disabled]="resumeLoading[s.stageId]">
+                        <mat-icon>auto_awesome</mat-icon>
+                        {{ resumeLoading[s.stageId] ? 'Analyse en cours…' : 'Résumé IA du rapport' }}
+                      </button>
+                      <div class="rapport-resume" *ngIf="rapportResume[s.stageId]">
+                        <mat-icon>auto_awesome</mat-icon>
+                        <p>{{ rapportResume[s.stageId] }}</p>
+                      </div>
                     </ng-container>
 
                     <span class="extras-pending" *ngIf="!rapportStatus[s.stageId]">

@@ -34,4 +34,8 @@ export class RapportService {
   valider(stageId: number, decision: 'VALIDE' | 'REFUSE', commentaire: string): Observable<RapportResponse> {
     return this.http.patch<RapportResponse>(`${this.api}/stage/${stageId}/validation`, { decision, commentaire });
   }
+
+  resume(stageId: number): Observable<{ resume: string }> {
+    return this.http.get<{ resume: string }>(`${this.api}/stage/${stageId}/resume`);
+  }
 }

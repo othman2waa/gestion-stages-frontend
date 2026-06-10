@@ -149,6 +149,19 @@ applyFilter(): void {
     this.dialog.open(this.meetingDialog, { width: '480px', disableClose: true });
   }
 
+  telechargerIcs(c: any, event: Event): void {
+    event.stopPropagation();
+    this.http.get(`${this.api}/${c.id}/meeting.ics`, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `entretien-${c.id}.ics`;
+        a.click(); window.URL.revokeObjectURL(url);
+      },
+      error: () => this.snackBar.open('Export calendrier indisponible', 'Fermer', { duration: 3000 })
+    });
+  }
+
   planifierMeeting(): void {
     if (this.meetingForm.invalid || !this.selected) return;
     this.http.patch(`${this.api}/${this.selected.id}/planifier-meeting`,

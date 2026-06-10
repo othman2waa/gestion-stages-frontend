@@ -264,6 +264,23 @@ export class EncadrantDashboardComponent implements OnInit {
     });
   }
 
+  rapportResume: Record<number, string> = {};
+  resumeLoading: Record<number, boolean> = {};
+
+  genererResumeRapport(stageId: number, event: Event): void {
+    event.stopPropagation();
+    if (this.resumeLoading[stageId]) { return; }
+    this.resumeLoading[stageId] = true;
+    this.rapportResume[stageId] = '';
+    this.rapportService.resume(stageId).subscribe({
+      next: (r) => { this.rapportResume[stageId] = r.resume; this.resumeLoading[stageId] = false; },
+      error: () => {
+        this.resumeLoading[stageId] = false;
+        this.snackBar.open('Résumé IA indisponible', 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
   rapportStatutLabel(statut: string): string {
     switch (statut) {
       case 'VALIDE':  return 'Validé';

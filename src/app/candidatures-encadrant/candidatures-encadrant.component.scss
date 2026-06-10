@@ -196,3 +196,10 @@
   &.reco-orange { background: #fff7ed; color: #c2410c; }
   &.reco-red { background: #fef2f2; color: #dc2626; }
 }
+// Bouton export iCalendar (.ics) à côté de l'entretien
+.ics-btn {
+  border: none; background: transparent; cursor: pointer; padding: 0 0 0 4px;
+  vertical-align: middle; color: #0891B2;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { color: #00843D; }
+}

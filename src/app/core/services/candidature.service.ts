@@ -28,6 +28,10 @@ export class CandidatureService {
     return this.http.get<CandidatureResponse>(`${this.api}/${id}`);
   }
 
+  meetingIcs(id: number): Observable<Blob> {
+    return this.http.get(`${this.api}/${id}/meeting.ics`, { responseType: 'blob' });
+  }
+
   traiter(id: number, data: TraiterCandidatureRequest): Observable<CandidatureResponse> {
     return this.http.patch<CandidatureResponse>(`${this.api}/${id}/traiter`, data);
   }
