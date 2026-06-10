@@ -126,7 +126,7 @@ export class EncadrantDashboardComponent implements OnInit {
           .includes(this.searchTerm.toLowerCase());
       const matchEtat = !this.etatFilter
         || (this.etatFilter === 'ACTIF' && this.STATUTS_ACTIFS_FULL.includes(s.statut))
-        || (this.etatFilter === 'TERMINE' && s.statut === 'TERMINE');
+        || (this.etatFilter === 'TERMINE' && this.STATUTS_TERMINES_FULL.includes(s.statut));
       return matchSearch && matchEtat;
     });
   }
@@ -136,11 +136,14 @@ export class EncadrantDashboardComponent implements OnInit {
   // Stagiaires acceptés par encadrant mais en attente validation RH
   private readonly STATUTS_EN_ATTENTE_RH = ['VALIDEE', 'CONVENTION_GENEREE'];
   private readonly STATUTS_ACTIFS = ['CONVENTION_SIGNEE', 'EN_COURS'];
-  // Stage « actif » au sens large : en cours ou à clôturer (à évaluer)
-  private readonly STATUTS_ACTIFS_FULL = ['EN_COURS', 'CONVENTION_SIGNEE', 'EN_ATTENTE_EVALUATION'];
+  // Stage « actif » : stage en cours
+  private readonly STATUTS_ACTIFS_FULL = ['EN_COURS', 'CONVENTION_SIGNEE'];
+  // Stage « terminé / fin de stage » : à évaluer ou clôturé
+  private readonly STATUTS_TERMINES_FULL = ['EN_ATTENTE_EVALUATION', 'TERMINE'];
 
   // Compteurs pour la séparation actifs / terminés
   get nbActifs(): number { return this.allStagiaires.filter((s:any) => this.STATUTS_ACTIFS_FULL.includes(s.statut)).length; }
+  get nbTermines(): number { return this.allStagiaires.filter((s:any) => this.STATUTS_TERMINES_FULL.includes(s.statut)).length; }
 
   get stagiairesEnAttenteRH(): any[] {
     return this.allStagiaires.filter((s: any) => this.STATUTS_EN_ATTENTE_RH.includes(s.statut));

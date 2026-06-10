@@ -50,8 +50,10 @@ export class StagiaireListComponent implements OnInit {
   isLoading = true;
   selectedStagiaire: any = null;
 
-  // Statuts du stage considérés comme « actif » (stage en cours / à clôturer)
-  private readonly STATUTS_ACTIFS = ['EN_COURS', 'CONVENTION_SIGNEE', 'EN_ATTENTE_EVALUATION'];
+  // Statuts du stage considérés comme « actif » (stage en cours)
+  private readonly STATUTS_ACTIFS = ['EN_COURS', 'CONVENTION_SIGNEE'];
+  // Statuts considérés comme « terminé / fin de stage » (à évaluer ou clôturé)
+  private readonly STATUTS_TERMINES = ['EN_ATTENTE_EVALUATION', 'TERMINE'];
 
   // Pagination
   pageSize = 12;
@@ -169,7 +171,7 @@ export class StagiaireListComponent implements OnInit {
     if (this.etatStage === 'ACTIF') {
       result = result.filter(s => this.STATUTS_ACTIFS.includes(s.stageStatut));
     } else if (this.etatStage === 'TERMINE') {
-      result = result.filter(s => s.stageStatut === 'TERMINE');
+      result = result.filter(s => this.STATUTS_TERMINES.includes(s.stageStatut));
     }
     this.filteredStagiaires = result;
   }
@@ -186,6 +188,7 @@ export class StagiaireListComponent implements OnInit {
 
   getStageEtat(s: any): { label: string; cls: string } | null {
     if (this.STATUTS_ACTIFS.includes(s.stageStatut)) return { label: 'En cours', cls: 'etat-actif' };
+    if (s.stageStatut === 'EN_ATTENTE_EVALUATION') return { label: 'À évaluer', cls: 'etat-termine' };
     if (s.stageStatut === 'TERMINE') return { label: 'Terminé', cls: 'etat-termine' };
     return null;
   }
