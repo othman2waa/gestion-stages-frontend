@@ -70,19 +70,19 @@ $radius:    8px;
 
 // ─── KPIs ───
 .kpis {
-  display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin-bottom: 8px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 8px;
   .kpi {
-    background: $surface; border: 1px solid $line; border-radius: $radius; padding: 14px;
-    display: flex; align-items: center; gap: 11px; cursor: pointer;
+    background: $surface; border: 1px solid $line; border-radius: $radius; padding: 18px 20px;
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
     &:hover { border-color: $ocp; background: #FBFEFC; }
     .kpi-ico {
-      width: 34px; height: 34px; border-radius: 7px; flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 9px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      mat-icon { font-size: 18px; }
+      mat-icon { font-size: 21px; }
     }
-    .kv { display: block; font-size: 21px; font-weight: 700; color: $ink; line-height: 1.1; font-variant-numeric: tabular-nums; }
-    .kl { font-size: 10px; color: $ink-3; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+    .kv { display: block; font-size: 26px; font-weight: 700; color: $ink; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .kl { font-size: 11px; color: $ink-3; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
   }
 }
 
@@ -162,18 +162,6 @@ $radius:    8px;
   .dept-pct { font-size: 12px; color: $ink-2; font-weight: 600; min-width: 36px; font-variant-numeric: tabular-nums; }
 }
 
-// ─── Résumé rapide ───
-.quick-summary {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 24px;
-  .qs-card {
-    background: $surface; border: 1px solid $line; border-radius: $radius; padding: 18px;
-    display: flex; flex-direction: column; gap: 2px;
-    mat-icon { font-size: 20px; color: $ocp; margin-bottom: 6px; }
-    .qs-val { display: block; font-size: 24px; font-weight: 700; color: $ink; font-variant-numeric: tabular-nums; }
-    .qs-lbl { font-size: 11px; color: $ink-3; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
-  }
-}
-
 // ─── Conformité ───
 .compliance-section {
   background: $surface; border: 1px solid $line; border-radius: $radius; padding: 20px; margin-bottom: 4px;
@@ -244,5 +232,4 @@ $radius:    8px;
   .kpis { grid-template-columns: repeat(2, 1fr); }
   .charts-row { grid-template-columns: 1fr; &.two { grid-template-columns: 1fr; } }
   .insights { grid-template-columns: 1fr; }
-  .quick-summary { grid-template-columns: repeat(2, 1fr); }
 }

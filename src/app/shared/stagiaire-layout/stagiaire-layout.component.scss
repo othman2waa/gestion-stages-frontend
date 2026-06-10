@@ -19,6 +19,7 @@
 
   .ocp-logo {
     display: flex; align-items: center; gap: 12px;
+    .logo-img { height: 38px; width: auto; max-width: 140px; object-fit: contain; display: block; }
     .logo-ocp {
       background: #00843D; color: white; font-weight: 900;
       font-size: 18px; padding: 6px 12px; border-radius: 6px; letter-spacing: 2px;

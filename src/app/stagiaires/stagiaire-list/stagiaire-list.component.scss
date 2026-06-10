@@ -147,6 +147,29 @@
   }
 }
 
+// Section Fiche de renseignement OCP (dialog détail RH)
+.fiche-section {
+  .section-title { display: flex; align-items: center; gap: 8px; }
+  .detail-row { align-items: flex-start;
+    mat-icon { color: #00843D; margin-top: 1px; }
+    b { color: #1e293b; font-weight: 600; }
+  }
+}
+.fiche-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+  text-transform: none; letter-spacing: 0;
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+  &.ok { background: #dcfce7; color: #15803d; }
+  &.pending { background: #fef3c7; color: #92400e; }
+}
+.fiche-empty {
+  display: flex; align-items: center; gap: 8px; padding: 11px 13px; margin-top: 4px;
+  background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px;
+  font-size: 12.5px; color: #64748b;
+  mat-icon { font-size: 18px; color: #94a3b8; flex-shrink: 0; }
+}
+
 .empty-state { grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8;
   mat-icon { font-size: 56px; display: block; margin-bottom: 12px; }
   p { margin-bottom: 16px; } }

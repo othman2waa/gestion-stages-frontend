@@ -191,6 +191,46 @@
           <span>Créé le {{ selectedStagiaire?.createdAt | date:'dd/MM/yyyy' }}</span>
         </div>
       </div>
+
+      <!-- Fiche de renseignement OCP (remplie par le stagiaire) -->
+      <div class="detail-section fiche-section">
+        <p class="section-title">
+          Fiche de renseignement OCP
+          <span class="fiche-chip ok" *ngIf="selectedStagiaire?.ficheRenseignementCompletee">
+            <mat-icon>check_circle</mat-icon> Complétée
+          </span>
+          <span class="fiche-chip pending" *ngIf="!selectedStagiaire?.ficheRenseignementCompletee">
+            <mat-icon>hourglass_empty</mat-icon> Non remplie
+          </span>
+        </p>
+
+        <div class="fiche-empty" *ngIf="!selectedStagiaire?.ficheRenseignementCompletee
+              && !selectedStagiaire?.adressePersonnelle && !selectedStagiaire?.contactUrgenceNom">
+          <mat-icon>info</mat-icon>
+          <span>Le stagiaire n'a pas encore rempli sa fiche de renseignement.</span>
+        </div>
+
+        <ng-container *ngIf="selectedStagiaire?.ficheRenseignementCompletee
+              || selectedStagiaire?.adressePersonnelle || selectedStagiaire?.contactUrgenceNom">
+          <div class="detail-row"><mat-icon>workspace_premium</mat-icon>
+            <span><b>Diplôme :</b> {{ selectedStagiaire?.diplome ?? '—' }}</span></div>
+          <div class="detail-row"><mat-icon>home</mat-icon>
+            <span><b>Adresse :</b> {{ selectedStagiaire?.adressePersonnelle ?? '—' }}</span></div>
+          <div class="detail-row"><mat-icon>location_city</mat-icon>
+            <span><b>Ville établissement :</b> {{ selectedStagiaire?.villeEtablissement ?? '—' }}</span></div>
+          <div class="detail-row"><mat-icon>hotel</mat-icon>
+            <span><b>Logement pendant le stage :</b> {{ selectedStagiaire?.adresseLogementStage ?? '—' }}</span></div>
+          <div class="detail-row"><mat-icon>emergency</mat-icon>
+            <span><b>Contact d'urgence :</b>
+              {{ selectedStagiaire?.contactUrgenceNom ?? '—' }}
+              <ng-container *ngIf="selectedStagiaire?.contactUrgenceTel"> · {{ selectedStagiaire?.contactUrgenceTel }}</ng-container>
+            </span></div>
+          <div class="detail-row" *ngIf="selectedStagiaire?.serviceAccueil"><mat-icon>business</mat-icon>
+            <span><b>Service d'accueil :</b> {{ selectedStagiaire?.serviceAccueil }}</span></div>
+          <div class="detail-row" *ngIf="selectedStagiaire?.observation"><mat-icon>notes</mat-icon>
+            <span><b>Observation :</b> {{ selectedStagiaire?.observation }}</span></div>
+        </ng-container>
+      </div>
     </div>
   </mat-dialog-content>
 

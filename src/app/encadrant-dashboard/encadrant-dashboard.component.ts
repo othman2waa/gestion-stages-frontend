@@ -61,8 +61,8 @@ export class EncadrantDashboardComponent implements OnInit {
     ANNULE:                 { label:'Annulé',            color:'#DC2626', icon:'cancel' },
   };
 
-  // Track rapport/fiche status per stage
-  rapportStatus: Record<number, boolean> = {};
+  // Track rapport/fiche status per stage (rapportStatus stocke la méta du rapport ou null)
+  rapportStatus: Record<number, any> = {};
   ficheStageStatus: Record<number, any> = {};
   ficheStagiaireStatus: Record<number, any> = {};
   analyseIa: any = null;
@@ -215,10 +215,10 @@ export class EncadrantDashboardComponent implements OnInit {
   }
 
   private loadStageExtras(stageId: number): void {
-    // Check rapport
+    // Check rapport (méta complète : nom, statut de validation…)
     this.rapportService.getMeta(stageId).subscribe({
-      next: () => this.rapportStatus[stageId] = true,
-      error: () => this.rapportStatus[stageId] = false
+      next: (meta) => this.rapportStatus[stageId] = meta,
+      error: () => this.rapportStatus[stageId] = null
     });
     // Check fiche stage
     this.ficheService.getFicheStageByStageId(stageId).subscribe({
@@ -241,6 +241,35 @@ export class EncadrantDashboardComponent implements OnInit {
       },
       error: () => this.snackBar.open('Erreur téléchargement rapport', 'Fermer', { duration: 3000 })
     });
+  }
+
+  validerRapport(stageId: number, decision: 'VALIDE' | 'REFUSE', event: Event): void {
+    event.stopPropagation();
+    let commentaire = '';
+    if (decision === 'REFUSE') {
+      const c = window.prompt('Motif du refus (visible par le stagiaire) :', '');
+      if (c === null) { return; }
+      commentaire = c;
+    } else {
+      commentaire = window.prompt('Commentaire (optionnel) :', '') ?? '';
+    }
+    this.rapportService.valider(stageId, decision, commentaire).subscribe({
+      next: (meta) => {
+        this.rapportStatus[stageId] = meta;
+        this.snackBar.open(
+          decision === 'VALIDE' ? 'Rapport validé ✓ (archivé dans les documents)' : 'Rapport refusé',
+          'Fermer', { duration: 3500 });
+      },
+      error: () => this.snackBar.open('Erreur lors de la validation', 'Fermer', { duration: 3000 })
+    });
+  }
+
+  rapportStatutLabel(statut: string): string {
+    switch (statut) {
+      case 'VALIDE':  return 'Validé';
+      case 'REFUSE':  return 'Refusé';
+      default:        return 'En attente';
+    }
   }
 
   openFicheForm(stageId: number, stagiaireNom: string, type: 'STAGE' | 'STAGIAIRE', event: Event): void {

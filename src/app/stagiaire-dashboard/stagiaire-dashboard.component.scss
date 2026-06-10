@@ -244,6 +244,20 @@
   }
 }
 
+// Bannière statut de validation du rapport
+.rapport-statut-banner {
+  display: flex; align-items: flex-start; gap: 12px;
+  border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+  border: 1px solid;
+  mat-icon { font-size: 26px; width: 26px; height: 26px; flex-shrink: 0; }
+  strong { display: block; font-size: 14px; }
+  p { margin: 6px 0 0; font-size: 13px; line-height: 1.5; }
+  .rsb-note { opacity: 0.85; }
+  &.rsb-VALIDE     { background: #f0fdf4; border-color: #86efac; color: #15803d; mat-icon { color: #16a34a; } }
+  &.rsb-REFUSE     { background: #fef2f2; border-color: #fecaca; color: #b91c1c; mat-icon { color: #dc2626; } }
+  &.rsb-EN_ATTENTE { background: #fffbeb; border-color: #fde68a; color: #92400e; mat-icon { color: #d97706; } }
+}
+
 // Fiches d'appréciation
 .fiche-card {
   border-radius: 16px; overflow: hidden;

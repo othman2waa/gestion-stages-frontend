@@ -1,15 +1,116 @@
 <div class="portail-container">
 
-  <!-- Header OCP -->
-  <div class="portail-header">
-    <div class="logo-wrap">
-      <div class="logo-circle">OCP</div>
-      <div>
-        <h1>OCP Group</h1>
-        <p>Portail de candidature aux stages</p>
+  <!-- Hero careers OCP -->
+  <header class="hero">
+    <div class="hero-overlay"></div>
+    <nav class="hero-nav">
+      <div class="brand">
+        <img src="/ocp-logo.png" alt="OCP" class="brand-img"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex'">
+        <span class="brand-logo" style="display:none">OCP</span>
+        <span class="brand-text">Group</span>
+      </div>
+      <span class="hero-site"><mat-icon>place</mat-icon> Site de Benguérir</span>
+    </nav>
+    <div class="hero-content">
+      <span class="hero-eyebrow">Carrières &amp; Stages — OCP Benguérir</span>
+      <h1>Construisez votre avenir<br>au cœur de l'innovation OCP</h1>
+      <p>Rejoignez les équipes du site de Benguérir et réalisez votre stage
+         dans un environnement industriel de référence mondiale.</p>
+      <div class="hero-tags">
+        <span class="h-tag"><mat-icon>school</mat-icon> Stage PFE</span>
+        <span class="h-tag"><mat-icon>visibility</mat-icon> Observation</span>
+        <span class="h-tag"><mat-icon>engineering</mat-icon> Initiation</span>
+      </div>
+      <a class="hero-cta" href="#postuler">
+        Postuler maintenant <mat-icon>arrow_downward</mat-icon>
+      </a>
+    </div>
+  </header>
+
+  <!-- ===================== PRÉSENTATION OCP ===================== -->
+  <section class="about" *ngIf="!submitted">
+    <div class="about-inner">
+      <div class="about-text">
+        <span class="sec-kicker">À propos du Groupe OCP</span>
+        <h2>Un leader mondial, un acteur de l'innovation</h2>
+        <p>Fondé en 1920, le Groupe OCP est le premier exportateur mondial de phosphate
+           et de ses dérivés. De l'extraction minière à la production d'engrais, le Groupe
+           contribue à la sécurité alimentaire de la planète et investit massivement dans
+           la recherche, les énergies renouvelables et le développement durable.</p>
+        <p>Le site de <strong>Benguérir</strong> incarne cette ambition : il accueille la
+           <strong>Mohammed VI Polytechnic University (UM6P)</strong> et la
+           <strong>Mohammed VI Green City</strong>, un écosystème dédié à la recherche,
+           à l'entrepreneuriat et aux technologies vertes.</p>
+        <div class="about-stats">
+          <div class="stat"><span class="stat-val">1er</span><span class="stat-lbl">Exportateur mondial de phosphate</span></div>
+          <div class="stat"><span class="stat-val">+20 000</span><span class="stat-lbl">Collaborateurs</span></div>
+          <div class="stat"><span class="stat-val">1920</span><span class="stat-lbl">Année de création</span></div>
+        </div>
+      </div>
+      <div class="about-media">
+        <img src="/about-ocp.jpg" alt="OCP Group" class="about-img"
+             onerror="this.style.display='none'">
+        <div class="about-img-fallback"></div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- ===================== ACTIVITÉS ===================== -->
+  <section class="activities" *ngIf="!submitted">
+    <div class="sec-head">
+      <span class="sec-kicker center">Nos métiers</span>
+      <h2>Des activités au cœur d'une chaîne de valeur intégrée</h2>
+    </div>
+    <div class="acts-grid">
+      <article class="act-card">
+        <div class="act-ico"><mat-icon>landscape</mat-icon></div>
+        <h3>Extraction minière</h3>
+        <p>Exploitation des plus importantes réserves de phosphate au monde, avec des
+           procédés responsables et durables.</p>
+      </article>
+      <article class="act-card">
+        <div class="act-ico"><mat-icon>science</mat-icon></div>
+        <h3>Transformation chimique</h3>
+        <p>Production d'acide phosphorique et d'engrais à haute valeur ajoutée pour
+           l'agriculture mondiale.</p>
+      </article>
+      <article class="act-card">
+        <div class="act-ico"><mat-icon>biotech</mat-icon></div>
+        <h3>Recherche &amp; Innovation</h3>
+        <p>UM6P, laboratoires et partenariats : la R&amp;D au service de l'agriculture
+           de précision et des technologies vertes.</p>
+      </article>
+      <article class="act-card">
+        <div class="act-ico"><mat-icon>eco</mat-icon></div>
+        <h3>Développement durable</h3>
+        <p>Énergies renouvelables, gestion de l'eau et villes vertes : un engagement
+           fort pour une industrie bas-carbone.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===================== GALERIE SITE BENGUÉRIR ===================== -->
+  <section class="gallery" *ngIf="!submitted">
+    <div class="sec-head">
+      <span class="sec-kicker center">Le site de Benguérir</span>
+      <h2>Un environnement de travail d'exception</h2>
+    </div>
+    <div class="gal-grid">
+      <figure class="gal-item tall">
+        <img src="/site-benguerir-1.jpg" alt="Site OCP Benguérir" onerror="this.classList.add('empty')">
+        <figcaption>Mohammed VI Green City</figcaption>
+      </figure>
+      <figure class="gal-item">
+        <img src="/site-benguerir-2.jpg" alt="UM6P Benguérir" onerror="this.classList.add('empty')">
+        <figcaption>Campus UM6P</figcaption>
+      </figure>
+      <figure class="gal-item">
+        <img src="/site-benguerir-3.jpg" alt="Installations OCP" onerror="this.classList.add('empty')">
+        <figcaption>Installations industrielles</figcaption>
+      </figure>
+    </div>
+  </section>
 
   <!-- Succès -->
   <div class="success-card" *ngIf="submitted">
@@ -26,7 +127,12 @@
   </div>
 
   <!-- Formulaire -->
-  <div class="form-card" *ngIf="!submitted">
+  <div class="form-card" id="postuler" *ngIf="!submitted">
+    <div class="form-intro">
+      <span class="form-kicker">Candidature en ligne</span>
+      <h2>Déposez votre candidature</h2>
+      <p>Quelques minutes suffisent. Votre dossier est transmis directement au département concerné.</p>
+    </div>
     <mat-stepper [linear]="true" orientation="horizontal" class="stepper">
 
       <!-- STEP 1 : Informations personnelles -->

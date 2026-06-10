@@ -3,7 +3,9 @@
   <!-- Header -->
   <div class="sidebar-header">
     <div class="logo-wrap">
-      <div class="logo-circle">OCP</div>
+      <img src="/ocp-logo.png" alt="OCP" class="logo-img"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="logo-circle" style="display:none">OCP</div>
       <div class="logo-text" *ngIf="!isCollapsed">
         <span class="logo-title">Gestion Stages</span>
         <span class="logo-sub">OCP Group</span>

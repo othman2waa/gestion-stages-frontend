@@ -46,7 +46,7 @@
 
       <!-- KPIs -->
       <div class="kpis">
-        <div class="kpi" *ngFor="let k of topKpis" (click)="navigate('/' + k.label.toLowerCase())">
+        <div class="kpi" *ngFor="let k of topKpis" (click)="navigate(k.route)">
           <div class="kpi-ico" [style.background]="k.color + '18'" [style.color]="k.color">
             <mat-icon>{{ k.icon }}</mat-icon>
           </div>
@@ -218,30 +218,6 @@
             </div>
             <span class="dept-pct">{{ (d[1] / stats.totalStages * 100) | number:'1.0-0' }}%</span>
           </span>
-        </div>
-      </div>
-
-      <!-- RÉSUMÉ RAPIDE -->
-      <div class="quick-summary">
-        <div class="qs-card">
-          <mat-icon>play_circle</mat-icon>
-          <span class="qs-val">{{ stats.stagesEnCours }}</span>
-          <span class="qs-lbl">Stages actifs</span>
-        </div>
-        <div class="qs-card">
-          <mat-icon>event_note</mat-icon>
-          <span class="qs-val">{{ stats.totalSuivis }}</span>
-          <span class="qs-lbl">Suivis total</span>
-        </div>
-        <div class="qs-card">
-          <mat-icon>supervisor_account</mat-icon>
-          <span class="qs-val">{{ stats.totalEncadrants }}</span>
-          <span class="qs-lbl">Encadrants</span>
-        </div>
-        <div class="qs-card">
-          <mat-icon>check_circle</mat-icon>
-          <span class="qs-val">{{ stats.stagesTermines }}</span>
-          <span class="qs-lbl">Terminés</span>
         </div>
       </div>
 

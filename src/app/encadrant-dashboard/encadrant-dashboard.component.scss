@@ -313,6 +313,30 @@
         color: #059669 !important; border-color: #bbf7d0 !important;
         background: #f0fdf4 !important;
       }
+
+      // ── Rapport : statut + validation
+      .rapport-row { display: flex; align-items: center; gap: 10px; width: 100%; }
+      .rapport-actions { display: flex; gap: 8px; width: 100%; }
+      .rapport-statut {
+        font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+        &.rs-VALIDE     { background: #dcfce7; color: #15803d; }
+        &.rs-REFUSE     { background: #fee2e2; color: #b91c1c; }
+        &.rs-EN_ATTENTE { background: #fef3c7; color: #92400e; }
+      }
+      .btn-valider {
+        background: #00843D !important; color: #fff !important;
+        mat-icon { font-size: 16px; }
+      }
+      .btn-refuser {
+        color: #b91c1c !important; border-color: #fecaca !important;
+        mat-icon { font-size: 16px; }
+      }
+      .rapport-comment {
+        display: flex; align-items: flex-start; gap: 6px; width: 100%;
+        font-size: 12px; color: #64748b; background: #f8fafc;
+        border-radius: 8px; padding: 8px 10px;
+        mat-icon { font-size: 15px; color: #94a3b8; flex-shrink: 0; }
+      }
     }
   }
 }

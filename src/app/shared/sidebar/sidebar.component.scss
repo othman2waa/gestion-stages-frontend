@@ -11,6 +11,7 @@
   &.collapsed {
     width: 72px;
     .logo-circle { margin: 0; }
+    .logo-img { max-width: 48px; height: 38px; padding: 4px 6px; }
   }
 }
 
@@ -20,6 +21,14 @@
   padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
 
   .logo-wrap { display: flex; align-items: center; gap: 10px; }
+
+  // Logo OCP (image) sur pastille blanche — lisible sur le fond vert foncé
+  .logo-img {
+    height: 42px; width: auto; max-width: 150px; object-fit: contain;
+    display: block; flex-shrink: 0;
+    background: #fff; border-radius: 10px; padding: 5px 9px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  }
 
   .logo-circle {
     width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;

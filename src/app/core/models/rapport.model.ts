@@ -7,4 +7,7 @@ export interface RapportResponse {
   typeContenu: string;
   taille: number;
   uploadedAt: string;
+  statut?: string;                 // EN_ATTENTE, VALIDE, REFUSE
+  commentaireValidation?: string;
+  valideAt?: string;
 }

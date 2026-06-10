@@ -610,7 +610,20 @@
       </button>
     </div>
 
-    <div class="upload-section">
+    <!-- Statut de validation par l'encadrant -->
+    <div *ngIf="rapport" class="rapport-statut-banner" [ngClass]="'rsb-' + (rapport.statut || 'EN_ATTENTE')">
+      <mat-icon>{{ rapport.statut === 'VALIDE' ? 'verified' : (rapport.statut === 'REFUSE' ? 'error' : 'hourglass_top') }}</mat-icon>
+      <div>
+        <strong *ngIf="rapport.statut === 'VALIDE'">Rapport validé par votre encadrant</strong>
+        <strong *ngIf="rapport.statut === 'REFUSE'">Rapport à corriger</strong>
+        <strong *ngIf="!rapport.statut || rapport.statut === 'EN_ATTENTE'">En attente de validation par l'encadrant</strong>
+        <p *ngIf="rapport.commentaireValidation"><b>Commentaire :</b> {{ rapport.commentaireValidation }}</p>
+        <p *ngIf="rapport.statut === 'VALIDE'" class="rsb-note">Il est archivé dans vos documents.</p>
+        <p *ngIf="rapport.statut === 'REFUSE'" class="rsb-note">Corrigez votre rapport et redéposez-le ci-dessous.</p>
+      </div>
+    </div>
+
+    <div class="upload-section" *ngIf="rapport?.statut !== 'VALIDE'">
       <h4>{{ rapport ? 'Remplacer le rapport' : 'Déposer votre rapport de stage' }}</h4>
       <p class="upload-hint">Format PDF uniquement · Taille max 10 MB</p>
       <div class="drop-zone" (click)="rapportInput.click()" [class.has-file]="selectedRapportFile">

@@ -30,4 +30,8 @@ export class RapportService {
   getMesRapports(): Observable<RapportResponse[]> {
     return this.http.get<RapportResponse[]>(`${this.api}/mes-rapports`);
   }
+
+  valider(stageId: number, decision: 'VALIDE' | 'REFUSE', commentaire: string): Observable<RapportResponse> {
+    return this.http.patch<RapportResponse>(`${this.api}/stage/${stageId}/validation`, { decision, commentaire });
+  }
 }

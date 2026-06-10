@@ -263,10 +263,29 @@
                   <!-- Rapport -->
                   <div class="extras-section">
                     <span class="extras-title"><mat-icon>description</mat-icon> Rapport de stage</span>
-                    <button mat-stroked-button class="btn-sm" *ngIf="rapportStatus[s.stageId]"
-                            (click)="downloadRapport(s.stageId, $event)">
-                      <mat-icon>download</mat-icon> Télécharger
-                    </button>
+
+                    <ng-container *ngIf="rapportStatus[s.stageId] as rap">
+                      <div class="rapport-row">
+                        <span class="rapport-statut" [ngClass]="'rs-' + (rap.statut || 'EN_ATTENTE')">
+                          {{ rapportStatutLabel(rap.statut) }}
+                        </span>
+                        <button mat-stroked-button class="btn-sm" (click)="downloadRapport(s.stageId, $event)">
+                          <mat-icon>visibility</mat-icon> Consulter
+                        </button>
+                      </div>
+                      <div class="rapport-actions" *ngIf="rap.statut !== 'VALIDE'">
+                        <button mat-flat-button class="btn-sm btn-valider" (click)="validerRapport(s.stageId, 'VALIDE', $event)">
+                          <mat-icon>check</mat-icon> Valider
+                        </button>
+                        <button mat-stroked-button class="btn-sm btn-refuser" (click)="validerRapport(s.stageId, 'REFUSE', $event)">
+                          <mat-icon>close</mat-icon> Refuser
+                        </button>
+                      </div>
+                      <div class="rapport-comment" *ngIf="rap.commentaireValidation">
+                        <mat-icon>comment</mat-icon> {{ rap.commentaireValidation }}
+                      </div>
+                    </ng-container>
+
                     <span class="extras-pending" *ngIf="!rapportStatus[s.stageId]">
                       <mat-icon>hourglass_empty</mat-icon> Non déposé
                     </span>

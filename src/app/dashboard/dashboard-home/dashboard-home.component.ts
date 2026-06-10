@@ -48,15 +48,12 @@ export class DashboardHomeComponent implements OnInit {
   // ── KPIs ──
   get topKpis(): any[] {
     if (!this.stats) return [];
+    // KPIs essentiels uniquement (dashboard épuré)
     return [
-      { label:'Stagiaires',   value: this.stats.totalStagiaires,  icon:'school',            color:'#1E40AF' },
-      { label:'Stages',       value: this.stats.totalStages,      icon:'work',              color:'#00843D' },
-      { label:'En cours',     value: this.stats.stagesEnCours,    icon:'play_circle',       color:'#059669' },
-      { label:'Convocations',  value: this.stats.totalConventions, icon:'description',       color:'#F47920' },
-      { label:'Évaluations',  value: this.stats.totalEvaluations, icon:'star_rate',         color:'#7C3AED' },
-      { label:'Encadrants',   value: this.stats.totalEncadrants,  icon:'supervisor_account',color:'#0891B2' },
-      { label:'Candidatures', value: this.stats.totalCandidatures,icon:'inbox',             color:'#DC2626' },
-      { label:'Annonces',     value: this.stats.totalAnnonces,    icon:'campaign',          color:'#D97706' },
+      { label:'Stagiaires',           value: this.stats.totalStagiaires,        icon:'school',      color:'#1E40AF', route:'/stagiaires' },
+      { label:'Stages en cours',      value: this.stats.stagesEnCours,          icon:'play_circle', color:'#059669', route:'/stages' },
+      { label:'Candidatures à traiter', value: this.stats.candidaturesEnAttente, icon:'inbox',       color:'#DC2626', route:'/candidatures' },
+      { label:'Évaluations',          value: this.stats.totalEvaluations,       icon:'star_rate',   color:'#7C3AED', route:'/evaluations' },
     ];
   }
 
