@@ -93,6 +93,32 @@
   &.n6 { background: #fce7f3; color: #9d174d; }
 }
 
+.card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+
+.etat-badge {
+  padding: 3px 10px; border-radius: 20px; font-size: 10.5px; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  &.etat-actif   { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+  &.etat-termine { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
+}
+
+// Segmented control : séparation actifs / terminés
+.etat-segments {
+  display: flex; gap: 8px; margin: 14px 0 4px; flex-wrap: wrap;
+  .seg {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    background: #fff; border: 1px solid #e2e8f0; color: #475569;
+    transition: all .15s ease;
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    &:hover { border-color: #00843D; color: #00843D; }
+    &.active {
+      background: #00843D; border-color: #00843D; color: #fff;
+      box-shadow: 0 2px 8px rgba(0,132,61,.25);
+    }
+  }
+}
+
 // Dialog
 .detail-dialog-header {
   background: linear-gradient(135deg, #1e40af, #7c3aed);

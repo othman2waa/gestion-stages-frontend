@@ -64,8 +64,21 @@
       </mat-select>
     </mat-form-field>
     <button mat-stroked-button color="warn" (click)="resetFiltres()"
-            *ngIf="searchKeyword || selectedNiveau || selectedFiliere">
+            *ngIf="searchKeyword || selectedNiveau || selectedFiliere || etatStage">
       <mat-icon>filter_alt_off</mat-icon> Reset
+    </button>
+  </div>
+
+  <!-- Séparation actifs / terminés -->
+  <div class="etat-segments">
+    <button class="seg" [class.active]="etatStage === ''" (click)="setEtat('')">
+      <mat-icon>groups</mat-icon> Tous
+    </button>
+    <button class="seg" [class.active]="etatStage === 'ACTIF'" (click)="setEtat('ACTIF')">
+      <mat-icon>play_circle</mat-icon> En cours de stage
+    </button>
+    <button class="seg" [class.active]="etatStage === 'TERMINE'" (click)="setEtat('TERMINE')">
+      <mat-icon>check_circle</mat-icon> Stage terminé
     </button>
   </div>
 
@@ -91,7 +104,10 @@
             <span class="email">{{ s.email }}</span>
           </div>
         </div>
-        <span class="niveau-badge" [class]="getNiveauClass(s.niveau)">{{ s.niveau }}</span>
+        <div class="card-badges">
+          <span class="etat-badge" *ngIf="getStageEtat(s) as etat" [class]="etat.cls">{{ etat.label }}</span>
+          <span class="niveau-badge" [class]="getNiveauClass(s.niveau)">{{ s.niveau }}</span>
+        </div>
       </div>
 
       <div class="card-body">

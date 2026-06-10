@@ -147,11 +147,16 @@
               <mat-icon>search</mat-icon>
               <input [(ngModel)]="searchTerm" placeholder="Rechercher stagiaire, sujet...">
             </div>
-            <div class="filter-pills">
-              <button class="pill" [class.active]="filterStatut === ''" (click)="filterStatut = ''">Tous</button>
-              <button class="pill" [class.active]="filterStatut === 'EN_COURS'" (click)="filterStatut = 'EN_COURS'">En cours</button>
-              <button class="pill" [class.active]="filterStatut === 'EN_ATTENTE_EVALUATION'" (click)="filterStatut = 'EN_ATTENTE_EVALUATION'">À évaluer</button>
-              <button class="pill" [class.active]="filterStatut === 'TERMINE'" (click)="filterStatut = 'TERMINE'">Terminés</button>
+            <div class="etat-segments">
+              <button class="seg" [class.active]="etatFilter === ''" (click)="etatFilter = ''">
+                <mat-icon>groups</mat-icon> Tous <span class="seg-count">{{ allStagiaires.length }}</span>
+              </button>
+              <button class="seg" [class.active]="etatFilter === 'ACTIF'" (click)="etatFilter = 'ACTIF'">
+                <mat-icon>play_circle</mat-icon> En cours <span class="seg-count">{{ nbActifs }}</span>
+              </button>
+              <button class="seg" [class.active]="etatFilter === 'TERMINE'" (click)="etatFilter = 'TERMINE'">
+                <mat-icon>check_circle</mat-icon> Terminés <span class="seg-count">{{ termines }}</span>
+              </button>
             </div>
           </div>
 
@@ -326,6 +331,16 @@
         </ng-template>
         <div class="tab-content">
           <app-sujets-encadrant></app-sujets-encadrant>
+        </div>
+      </mat-tab>
+
+      <!-- TAB 4 : ASSISTANT IA -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>smart_toy</mat-icon>&nbsp;Assistant IA
+        </ng-template>
+        <div class="tab-content">
+          <app-chatbot-encadrant></app-chatbot-encadrant>
         </div>
       </mat-tab>
 

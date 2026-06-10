@@ -46,8 +46,12 @@ export class StagiaireListComponent implements OnInit {
   searchKeyword = '';
   selectedNiveau = '';
   selectedFiliere = '';
+  etatStage = ''; // '' = tous, 'ACTIF' = en cours, 'TERMINE' = stage terminé
   isLoading = true;
   selectedStagiaire: any = null;
+
+  // Statuts du stage considérés comme « actif » (stage en cours / à clôturer)
+  private readonly STATUTS_ACTIFS = ['EN_COURS', 'CONVENTION_SIGNEE', 'EN_ATTENTE_EVALUATION'];
 
   // Pagination
   pageSize = 12;
@@ -108,6 +112,7 @@ export class StagiaireListComponent implements OnInit {
       if (this.searchKeyword.trim()) params['keyword'] = this.searchKeyword.trim();
       if (this.selectedNiveau) params['niveau'] = this.selectedNiveau;
       if (this.selectedFiliere) params['filiere'] = this.selectedFiliere;
+      if (this.etatStage) params['etatStage'] = this.etatStage;
 
       this.stagiaireService.rechercher(params).subscribe({
         next: (data) => {
@@ -161,13 +166,35 @@ export class StagiaireListComponent implements OnInit {
     if (this.selectedFiliere) {
       result = result.filter(s => s.filiere === this.selectedFiliere);
     }
+    if (this.etatStage === 'ACTIF') {
+      result = result.filter(s => this.STATUTS_ACTIFS.includes(s.stageStatut));
+    } else if (this.etatStage === 'TERMINE') {
+      result = result.filter(s => s.stageStatut === 'TERMINE');
+    }
     this.filteredStagiaires = result;
+  }
+
+  setEtat(etat: string): void {
+    this.etatStage = etat;
+    this.pageIndex = 0;
+    if (this.isEncadrant) {
+      this.applyFilters();
+    } else {
+      this.loadStagiaires();
+    }
+  }
+
+  getStageEtat(s: any): { label: string; cls: string } | null {
+    if (this.STATUTS_ACTIFS.includes(s.stageStatut)) return { label: 'En cours', cls: 'etat-actif' };
+    if (s.stageStatut === 'TERMINE') return { label: 'Terminé', cls: 'etat-termine' };
+    return null;
   }
 
   resetFiltres(): void {
     this.searchKeyword = '';
     this.selectedNiveau = '';
     this.selectedFiliere = '';
+    this.etatStage = '';
     this.pageIndex = 0;
     if (this.isEncadrant) {
       this.filteredStagiaires = this.stagiaires;

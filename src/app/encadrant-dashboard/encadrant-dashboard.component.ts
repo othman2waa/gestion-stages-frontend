@@ -19,6 +19,7 @@ import { RapportService } from '../core/services/rapport.service';
 import { FicheAppreciationService } from '../core/services/fiche-appreciation.service';
 import { FicheAppreciationFormComponent, FicheDialogData } from '../fiche-appreciation-form/fiche-appreciation-form.component';
 import { SujetsEncadrantComponent } from '../sujets-encadrant/sujets-encadrant.component';
+import { ChatbotEncadrantComponent } from '../chatbot-encadrant/chatbot-encadrant.component';
 import { ExportService } from '../core/services/export.service';
 
 @Component({
@@ -27,7 +28,7 @@ import { ExportService } from '../core/services/export.service';
   imports: [
     CommonModule, FormsModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatChipsModule, MatTooltipModule,
-    MatTabsModule, MatBadgeModule, MatDialogModule, MatSnackBarModule,SujetsEncadrantComponent 
+    MatTabsModule, MatBadgeModule, MatDialogModule, MatSnackBarModule, SujetsEncadrantComponent, ChatbotEncadrantComponent
   ],
   templateUrl: './encadrant-dashboard.component.html',
   styleUrls: ['./encadrant-dashboard.component.scss']
@@ -39,7 +40,7 @@ export class EncadrantDashboardComponent implements OnInit {
   isLoading = true;
   selectedStagiaire: any = null;
   searchTerm = '';
-  filterStatut = '';
+  etatFilter = ''; // '' = tous, 'ACTIF' = en cours, 'TERMINE' = stage terminé
   notifDismissed = false;
 
   // Year filter
@@ -123,8 +124,10 @@ export class EncadrantDashboardComponent implements OnInit {
       const matchSearch = !this.searchTerm ||
         `${s.stagiairePrenom} ${s.stagiaireNom} ${s.sujet}`.toLowerCase()
           .includes(this.searchTerm.toLowerCase());
-      const matchStatut = !this.filterStatut || s.statut === this.filterStatut;
-      return matchSearch && matchStatut;
+      const matchEtat = !this.etatFilter
+        || (this.etatFilter === 'ACTIF' && this.STATUTS_ACTIFS_FULL.includes(s.statut))
+        || (this.etatFilter === 'TERMINE' && s.statut === 'TERMINE');
+      return matchSearch && matchEtat;
     });
   }
 
@@ -133,6 +136,11 @@ export class EncadrantDashboardComponent implements OnInit {
   // Stagiaires acceptés par encadrant mais en attente validation RH
   private readonly STATUTS_EN_ATTENTE_RH = ['VALIDEE', 'CONVENTION_GENEREE'];
   private readonly STATUTS_ACTIFS = ['CONVENTION_SIGNEE', 'EN_COURS'];
+  // Stage « actif » au sens large : en cours ou à clôturer (à évaluer)
+  private readonly STATUTS_ACTIFS_FULL = ['EN_COURS', 'CONVENTION_SIGNEE', 'EN_ATTENTE_EVALUATION'];
+
+  // Compteurs pour la séparation actifs / terminés
+  get nbActifs(): number { return this.allStagiaires.filter((s:any) => this.STATUTS_ACTIFS_FULL.includes(s.statut)).length; }
 
   get stagiairesEnAttenteRH(): any[] {
     return this.allStagiaires.filter((s: any) => this.STATUTS_EN_ATTENTE_RH.includes(s.statut));

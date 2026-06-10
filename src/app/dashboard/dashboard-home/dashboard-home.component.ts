@@ -13,13 +13,14 @@ import { ExportService } from '../../core/services/export.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { Chart, registerables } from 'chart.js';
+import { ChatbotRhComponent } from '../../chatbot-rh/chatbot-rh.component';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatSnackBarModule, RouterModule, BaseChartDirective],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatTooltipModule, MatSnackBarModule, RouterModule, BaseChartDirective, ChatbotRhComponent],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss']
 })

@@ -179,6 +179,26 @@
       &.active { background: #00843D; color: white; border-color: #00843D; }
     }
   }
+
+  // Segmented control : séparation actifs / terminés
+  .etat-segments { display: flex; gap: 8px; flex-wrap: wrap;
+    .seg {
+      display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+      padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+      background: #F8FAFC; border: 1px solid #E2E8F0; color: #475569; transition: all 0.15s;
+      mat-icon { font-size: 17px; width: 17px; height: 17px; }
+      .seg-count {
+        background: #E2E8F0; color: #475569; border-radius: 999px;
+        padding: 1px 8px; font-size: 11px; font-weight: 700; min-width: 18px; text-align: center;
+      }
+      &:hover { border-color: #00843D; color: #00843D; }
+      &.active {
+        background: #00843D; color: #fff; border-color: #00843D;
+        box-shadow: 0 2px 8px rgba(0,132,61,.25);
+        .seg-count { background: rgba(255,255,255,.25); color: #fff; }
+      }
+    }
+  }
 }
 
 // ── Section groups
