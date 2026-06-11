@@ -186,3 +186,12 @@
   font-size: 11px; color: #94A3B8; margin-top: 10px;
   text-align: center; font-style: italic;
 }
+// Édition de l'entité d'accueil (dialogue détail)
+.entite-edit {
+  align-items: center; gap: 8px;
+  .entite-input {
+    flex: 1; border: 1px solid #cbd5e1; border-radius: 8px; padding: 7px 10px;
+    font-size: 13px; color: #1e293b; outline: none; font-family: inherit;
+    &:focus { border-color: #00843D; box-shadow: 0 0 0 2px rgba(0,132,61,.12); }
+  }
+}

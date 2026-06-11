@@ -194,6 +194,15 @@
           <span>{{ selectedConvention?.stageDebut | date:'dd/MM/yyyy' }}
             → {{ selectedConvention?.stageFin | date:'dd/MM/yyyy' }}</span>
         </div>
+        <div class="detail-row entite-edit">
+          <mat-icon>business_center</mat-icon>
+          <input [(ngModel)]="entiteEdit" class="entite-input"
+                 placeholder="Entité / service d'accueil (figurera sur la convocation)">
+          <button mat-icon-button color="primary" (click)="enregistrerEntite()"
+                  [disabled]="savingEntite" matTooltip="Enregistrer l'entité d'accueil">
+            <mat-icon>save</mat-icon>
+          </button>
+        </div>
       </div>
       <div class="detail-section">
         <p class="section-title">Parties</p>

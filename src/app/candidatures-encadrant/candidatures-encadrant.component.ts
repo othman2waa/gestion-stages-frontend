@@ -85,7 +85,7 @@ export class CandidaturesEncadrantComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     this.meetingForm  = this.fb.group({ dateMeeting: ['', Validators.required] });
-    this.decisionForm = this.fb.group({ decision: ['', Validators.required], note: [''], sujet: [''], dateDebut: [''], dateFin: [''] });
+    this.decisionForm = this.fb.group({ decision: ['', Validators.required], note: [''], sujet: [''], dateDebut: [''], dateFin: [''], entiteAccueil: [''] });
   }
 
   ngOnInit(): void {

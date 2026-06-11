@@ -110,9 +110,33 @@ export class ConventionListComponent implements OnInit {
   exportExcel(): void { this.exportService.exportConventions(this.conventions); }
   exportPdf(): void { this.exportService.exportConventionsPdf(this.conventions); }
 
+  entiteEdit = '';
+  savingEntite = false;
+
   voirDetail(c: any): void {
     this.selectedConvention = c;
+    this.entiteEdit = c.entiteAccueil ?? '';
     this.dialog.open(this.detailDialog, { width: '600px' });
+  }
+
+  enregistrerEntite(): void {
+    if (!this.selectedConvention) { return; }
+    this.savingEntite = true;
+    this.http.patch(`${this.api}/${this.selectedConvention.id}/entite-accueil`,
+      { entiteAccueil: this.entiteEdit }
+    ).subscribe({
+      next: (res: any) => {
+        this.savingEntite = false;
+        this.selectedConvention.entiteAccueil = res?.entiteAccueil ?? this.entiteEdit;
+        const inList = this.conventions.find(c => c.id === this.selectedConvention.id);
+        if (inList) { inList.entiteAccueil = this.selectedConvention.entiteAccueil; }
+        this.snackBar.open('✅ Entité d\'accueil enregistrée', 'Fermer', { duration: 3000 });
+      },
+      error: () => {
+        this.savingEntite = false;
+        this.snackBar.open('❌ Erreur enregistrement', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 
   ouvrirSignature(convention: any, cible: 'stagiaire' | 'encadrant'): void {
