@@ -1,0 +1,109 @@
+<div class="remuneration-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h2><mat-icon>payments</mat-icon> Rémunération PFE</h2>
+      <p>Liste des stagiaires PFE Bac+5 à rémunérer, par tranche (juillet / septembre)</p>
+    </div>
+    <div class="header-actions no-print">
+      <mat-form-field appearance="outline" class="sel-field">
+        <mat-label>Tranche</mat-label>
+        <mat-select [(ngModel)]="tranche" (selectionChange)="charger()">
+          <mat-option value="JUILLET">Tranche Juillet</mat-option>
+          <mat-option value="SEPTEMBRE">Tranche Septembre</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="sel-field annee">
+        <mat-label>Année</mat-label>
+        <mat-select [(ngModel)]="annee" (selectionChange)="charger()">
+          <mat-option *ngFor="let a of annees" [value]="a">{{ a }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-stroked-button (click)="exporter()" [disabled]="!lignesFiltrees.length">
+        <mat-icon>table_view</mat-icon> Excel
+      </button>
+      <button mat-stroked-button (click)="imprimer()" [disabled]="!lignesFiltrees.length">
+        <mat-icon>print</mat-icon> Imprimer
+      </button>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- Bandeau récap -->
+  <div class="recap-band" *ngIf="resultat && !loading">
+    <div class="recap-item">
+      <span class="recap-val">{{ resultat.total }}</span>
+      <span class="recap-lbl">stagiaire(s) à rémunérer</span>
+    </div>
+    <div class="recap-sep"></div>
+    <div class="recap-period">
+      <mat-icon>event</mat-icon>
+      {{ resultat.libelle }}
+    </div>
+  </div>
+
+  <!-- Ventilation par département (cliquable pour filtrer) -->
+  <div class="dept-chips no-print" *ngIf="groupes.length && !loading">
+    <span class="dept-chips-lbl">Par département :</span>
+    <button class="dept-chip" [class.active]="departementFiltre === 'TOUS'"
+            (click)="departementFiltre = 'TOUS'">
+      Tous <span class="cnt">{{ resultat?.total }}</span>
+    </button>
+    <button class="dept-chip" *ngFor="let g of groupes"
+            [class.active]="departementFiltre === g.departement"
+            (click)="filtrerDepartement(g.departement)">
+      {{ g.departement }} <span class="cnt">{{ g.total }}</span>
+    </button>
+  </div>
+
+  <!-- Erreur -->
+  <div class="state-box error" *ngIf="error && !loading">
+    <mat-icon>error_outline</mat-icon>
+    <p>Impossible de générer la liste. Réessayez.</p>
+    <button mat-stroked-button (click)="charger()">Réessayer</button>
+  </div>
+
+  <!-- Vide -->
+  <div class="state-box empty" *ngIf="resultat && !loading && !lignesFiltrees.length">
+    <mat-icon>inbox</mat-icon>
+    <p>Aucun stagiaire éligible sur cette tranche.</p>
+    <span class="hint">Critères : stage PFE · niveau Bac+5 · attestation validée · terminé dans la fenêtre de la tranche</span>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-wrap" *ngIf="lignesFiltrees.length && !loading">
+    <table class="remu-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Stagiaire</th>
+          <th>CIN</th>
+          <th>Établissement</th>
+          <th>Filière / Niveau</th>
+          <th>Département</th>
+          <th>Sujet PFE</th>
+          <th>Période</th>
+          <th class="num">Durée</th>
+          <th>Attestation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let l of lignesFiltrees; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td class="strong">{{ l.stagiairePrenom }} {{ l.stagiaireNom }}</td>
+          <td>{{ l.cin || '—' }}</td>
+          <td>{{ l.etablissement || '—' }}</td>
+          <td>{{ l.filiere || '—' }}<br><small>{{ l.niveau }}</small></td>
+          <td>{{ l.departement || '(Non affecté)' }}</td>
+          <td class="sujet" [matTooltip]="l.sujet">{{ l.sujet || '—' }}</td>
+          <td><small>{{ l.dateDebut }} →<br>{{ l.dateFin }}</small></td>
+          <td class="num"><span class="duree-badge">{{ l.dureeMois }} mois</span></td>
+          <td><span class="att-num">{{ l.numeroAttestation || '—' }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

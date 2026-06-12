@@ -24,6 +24,7 @@ import { ArchivesComponent } from '../archives/archives.component';
 import { ReportingComponent } from '../reporting/reporting.component';
 import { NotificationsPageComponent } from '../notifications-page/notifications-page.component';
 import { FichesAppreciationAdminComponent } from '../fiches-appreciation-admin/fiches-appreciation-admin.component';
+import { RemunerationComponent } from '../remuneration/remuneration.component';
 
 const routes: Routes = [
   {
@@ -54,6 +55,7 @@ const routes: Routes = [
       { path: 'reporting', component: ReportingComponent },
       { path: 'notifications', component: NotificationsPageComponent },
       { path: 'fiches-appreciation', component: FichesAppreciationAdminComponent },
+      { path: 'remuneration', component: RemunerationComponent },
     ]
   }
 ];

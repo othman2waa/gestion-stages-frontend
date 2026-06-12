@@ -92,6 +92,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       roles: ['ADMIN_RH', 'RESPONSABLE_RH'],
       items: [
         { label:'Attestations', icon:'workspace_premium',  route:'/attestations',        roles:['ADMIN_RH','RESPONSABLE_RH'] },
+        { label:'Rémunération PFE', icon:'payments',       route:'/remuneration',        roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label:'Comptes',      icon:'manage_accounts',    route:'/gestion-comptes',     roles:['ADMIN_RH'] },
         { label:'Reporting',    icon:'bar_chart',          route:'/reporting',           roles:['ADMIN_RH','RESPONSABLE_RH'] },
         { label: 'Archives', icon: 'archive', route: '/archives', roles: ['ADMIN_RH', 'RESPONSABLE_RH'] },
