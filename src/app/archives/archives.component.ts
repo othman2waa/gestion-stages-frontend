@@ -128,6 +128,35 @@ export class ArchivesComponent implements OnInit {
     });
   }
 
+  isPurging = false;
+
+  purgerExpirees(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '460px',
+      data: {
+        title: 'Purge de rétention',
+        message: 'Anonymiser les archives dont le stage est terminé depuis plus d\'un an et supprimer définitivement leurs documents ? Seuls les indicateurs (KPIs) seront conservés. Cette action est irréversible.',
+        confirmText: 'Purger'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) { return; }
+      this.isPurging = true;
+      this.http.post(`${this.api}/purger`, {}).subscribe({
+        next: (res: any) => {
+          this.isPurging = false;
+          this.snackBar.open(`✅ ${res.anonymises} archive(s) anonymisée(s) — documents supprimés`, 'Fermer', { duration: 4500 });
+          this.loadArchives();
+          this.loadStats();
+        },
+        error: () => {
+          this.isPurging = false;
+          this.snackBar.open('❌ Erreur lors de la purge', 'Fermer', { duration: 3000 });
+        }
+      });
+    });
+  }
+
   exportExcel(): void {
     const headers = ['Stagiaire', 'Email', 'Filière', 'Niveau', 'Établissement',
                      'Encadrant', 'Département', 'Sujet', 'Type', 'Début', 'Fin',

@@ -182,14 +182,18 @@ applyFilter(): void {
 
   envoyerDecision(): void {
     if (this.decisionForm.invalid || !this.selected) return;
+    // Refus = suppression automatique de la candidature (libère l'espace candidature)
+    if (this.decisionForm.value.decision === 'REFUSE') {
+      this.dialog.closeAll();
+      this.supprimerCandidature(this.selected, true);
+      return;
+    }
     this.http.patch(`${this.api}/${this.selected.id}/decision-encadrant`,
       this.decisionForm.value
     ).subscribe({
       next: () => {
-        const msg = this.decisionForm.value.decision === 'ACCEPTE'
-          ? 'Accepté — Email + identifiants envoyés'
-          : 'Refusé — Email envoyé';
-        this.snackBar.open(msg, 'Fermer', { duration: 4000 });
+        this.snackBar.open('Accepté — le stagiaire accède à son espace (en attente d\'acceptation du dossier)',
+          'Fermer', { duration: 4500 });
         this.dialog.closeAll(); this.load();
       },
       error: (err) => {
@@ -198,6 +202,22 @@ applyFilter(): void {
           : err.error?.message ?? 'Erreur lors de l\'envoi de la décision';
         this.snackBar.open(msg, 'Fermer', { duration: 4000 });
       }
+    });
+  }
+
+  supprimerCandidature(c: any, fromRefus = false): void {
+    const nom = `${c.prenom ?? ''} ${c.nom ?? ''}`.trim();
+    const message = fromRefus
+      ? `Refuser la candidature de ${nom} ? Elle sera définitivement supprimée (libère l'espace candidature).`
+      : `Supprimer la candidature de ${nom} ? Cette action est irréversible.`;
+    if (!window.confirm(message)) { return; }
+    this.http.delete(`${this.api}/${c.id}`).subscribe({
+      next: () => {
+        this.snackBar.open(fromRefus ? '🗑️ Candidature refusée et supprimée' : '🗑️ Candidature supprimée',
+          'Fermer', { duration: 3500 });
+        this.load();
+      },
+      error: () => this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 })
     });
   }
 

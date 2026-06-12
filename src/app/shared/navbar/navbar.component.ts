@@ -11,7 +11,7 @@ const ROUTE_LABELS: Record<string, Breadcrumb> = {
   stagiaires:             { label: 'Stagiaires',            icon: 'school' },
   stages:                 { label: 'Stages',                icon: 'work' },
   encadrants:             { label: 'Encadrants',            icon: 'supervisor_account' },
-  conventions:            { label: 'Conventions',           icon: 'description' },
+  conventions:            { label: 'Convocations',           icon: 'description' },
   evaluations:            { label: 'Évaluations',           icon: 'star_rate' },
   onboarding:             { label: 'Onboarding',            icon: 'how_to_reg' },
   'suivi-hebdomadaire':   { label: 'Suivi Hebdomadaire',    icon: 'event_note' },

@@ -15,6 +15,12 @@
         <mat-icon>archive</mat-icon>
         {{ isArchiving ? 'Archivage...' : 'Archiver stages terminés' }}
       </button>
+      <button mat-stroked-button color="warn"
+              (click)="purgerExpirees()" [disabled]="isPurging"
+              matTooltip="Anonymiser les archives > 1 an et supprimer leurs documents (KPIs conservés)">
+        <mat-icon>auto_delete</mat-icon>
+        {{ isPurging ? 'Purge...' : 'Purger (> 1 an)' }}
+      </button>
     </div>
   </div>
 

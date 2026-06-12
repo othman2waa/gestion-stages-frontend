@@ -187,6 +187,10 @@
                   </span>
                 </div>
                 <div class="stag-right">
+                  <span class="eval-badge" *ngIf="carteAEvaluer(s)"
+                        matTooltip="Cliquez sur la carte pour consulter le rapport et remplir les fiches d'appréciation">
+                    <mat-icon>fact_check</mat-icon> À évaluer
+                  </span>
                   <div class="statut-pill" [style.background]="getStatutConf(s.statut).color + '18'"
                        [style.color]="getStatutConf(s.statut).color"
                        [style.border]="'1px solid ' + getStatutConf(s.statut).color + '40'">

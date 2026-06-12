@@ -149,10 +149,15 @@
                 (click)="ouvrirMeeting(c)">
           <mat-icon>event</mat-icon> Planifier meeting
         </button>
+        <button mat-stroked-button color="warn"
+                *ngIf="c.statut === 'EN_ATTENTE'"
+                (click)="supprimerCandidature(c)">
+          <mat-icon>delete</mat-icon> Supprimer
+        </button>
         <button mat-raised-button class="btn-decision"
                 *ngIf="c.statut === 'MEETING_PLANIFIE'"
                 (click)="ouvrirDecision(c)">
-          <mat-icon>how_to_reg</mat-icon> Donner décision
+          <mat-icon>how_to_reg</mat-icon> Décision (accepter / refuser)
         </button>
       </div>
 

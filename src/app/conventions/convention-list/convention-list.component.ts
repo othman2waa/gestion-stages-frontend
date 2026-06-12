@@ -175,7 +175,7 @@ export class ConventionListComponent implements OnInit {
       if (result) {
         this.conventionService.delete(id).subscribe({
           next: () => {
-            this.snackBar.open('Convention supprimée', 'Fermer', { duration: 3000 });
+            this.snackBar.open('Convocation supprimée', 'Fermer', { duration: 3000 });
             this.loadConventions();
           }
         });

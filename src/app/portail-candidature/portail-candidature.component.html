@@ -243,18 +243,11 @@
             Chargement des spécialités...
           </div>
 
-          <div class="form-row">
-            <div class="native-field">
-              <label>Type de stage *</label>
-              <select formControlName="typeStage" class="native-select">
-                <option *ngFor="let t of typeStages" [value]="t">{{ t }}</option>
-              </select>
-            </div>
-            <mat-form-field appearance="outline">
-              <mat-label>Sujet souhaité *</mat-label>
-              <input matInput formControlName="sujetSouhaite"
-                     placeholder="Ex: Développement API REST">
-            </mat-form-field>
+          <div class="native-field full-width" style="margin-bottom:16px">
+            <label>Type de stage *</label>
+            <select formControlName="typeStage" class="native-select">
+              <option *ngFor="let t of typeStages" [value]="t">{{ t }}</option>
+            </select>
           </div>
 
           <mat-form-field appearance="outline" class="full-width">

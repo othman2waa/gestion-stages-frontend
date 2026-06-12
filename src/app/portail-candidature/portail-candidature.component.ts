@@ -57,7 +57,6 @@ export class PortailCandidatureComponent implements OnInit {
     this.step2Form = this.fb.group({
       departementId: [null, Validators.required],
       specialite:    ['',   Validators.required],
-      sujetSouhaite: ['',   Validators.required],
       typeStage:     ['PFE', Validators.required],
       message:       [''],
     });

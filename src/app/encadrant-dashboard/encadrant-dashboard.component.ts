@@ -52,8 +52,8 @@ export class EncadrantDashboardComponent implements OnInit {
   readonly statutConfig: Record<string, { label: string; color: string; icon: string }> = {
     EN_ATTENTE:             { label:'En attente',      color:'#94A3B8', icon:'hourglass_empty' },
     VALIDEE:                { label:'Validée',          color:'#3B82F6', icon:'verified' },
-    CONVENTION_GENEREE:     { label:'Convention générée',color:'#7C3AED',icon:'description' },
-    CONVENTION_SIGNEE:      { label:'Convention signée', color:'#0891B2', icon:'draw' },
+    CONVENTION_GENEREE:     { label:'Convocation générée',color:'#7C3AED',icon:'description' },
+    CONVENTION_SIGNEE:      { label:'Convocation signée', color:'#0891B2', icon:'draw' },
     EN_COURS:               { label:'En cours',         color:'#00843D', icon:'play_circle' },
     EN_ATTENTE_EVALUATION:  { label:'À évaluer',        color:'#F59E0B', icon:'star_rate' },
     FIN_STAGE:              { label:'Fin de stage',      color:'#F47920', icon:'flag' },
@@ -115,8 +115,22 @@ export class EncadrantDashboardComponent implements OnInit {
           next: (f) => this.ficheStagiaireStatus[s.stageId] = f,
           error: () => this.ficheStagiaireStatus[s.stageId] = null
         });
+        // Précharge la méta du rapport pour signaler ce qui reste à faire
+        this.rapportService.getMeta(s.stageId).subscribe({
+          next: (meta) => this.rapportStatus[s.stageId] = meta,
+          error: () => this.rapportStatus[s.stageId] = null
+        });
       }
     }
+  }
+
+  /** Vrai si le stage est terminé et qu'il reste une action d'évaluation à faire. */
+  carteAEvaluer(s: any): boolean {
+    if (!this.isStageFinished(s.statut)) { return false; }
+    const rap = this.rapportStatus[s.stageId];
+    const rapportAValider = !!rap && rap.statut === 'EN_ATTENTE';      // rapport déposé non validé
+    const ficheManquante = !this.ficheStageStatus[s.stageId] || !this.ficheStagiaireStatus[s.stageId];
+    return rapportAValider || ficheManquante;
   }
 
   get filteredStagiaires(): any[] {
