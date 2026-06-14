@@ -1,34 +1,18 @@
 <div class="dept-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>business</mat-icon> Gestion des Départements</h2>
-      <p>{{ departements.length }} département(s) enregistré(s)</p>
-    </div>
+  <app-page-header icon="business" titre="Gestion des Départements" [sousTitre]="(departements.length) + ' département(s) enregistré(s)'">
     <button mat-raised-button color="primary" (click)="openForm()">
       <mat-icon>add</mat-icon> Nouveau département
     </button>
-  </div>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card blue">
-      <mat-icon>business</mat-icon>
-      <div><span class="kpi-val">{{ departements.length }}</span><span class="kpi-lbl">Départements</span></div>
-    </div>
-    <div class="kpi-card green">
-      <mat-icon>supervisor_account</mat-icon>
-      <div><span class="kpi-val">{{ totalEncadrants }}</span><span class="kpi-lbl">Encadrants</span></div>
-    </div>
-    <div class="kpi-card orange">
-      <mat-icon>work</mat-icon>
-      <div><span class="kpi-val">{{ totalStages }}</span><span class="kpi-lbl">Stages</span></div>
-    </div>
-    <div class="kpi-card purple">
-      <mat-icon>trending_up</mat-icon>
-      <div><span class="kpi-val">{{ totalEnCours }}</span><span class="kpi-lbl">En cours</span></div>
-    </div>
+    <app-stat-card color="blue" icon="business" [value]="departements.length" label="Départements"></app-stat-card>
+    <app-stat-card color="green" icon="supervisor_account" [value]="totalEncadrants" label="Encadrants"></app-stat-card>
+    <app-stat-card color="orange" icon="work" [value]="totalStages" label="Stages"></app-stat-card>
+    <app-stat-card color="purple" icon="trending_up" [value]="totalEnCours" label="En cours"></app-stat-card>
   </div>
 
   <!-- Search -->

@@ -1,42 +1,25 @@
 <div class="stages-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>work</mat-icon> Gestion des Stages</h2>
-      <p>{{ totalElements }} stage(s) au total</p>
-    </div>
-    <div class="header-actions">
-      <button mat-stroked-button (click)="exportExcel()">
-        <mat-icon>table_view</mat-icon> Excel
-      </button>
-      <button mat-stroked-button color="warn" (click)="exportPdf()">
-        <mat-icon>picture_as_pdf</mat-icon> PDF
-      </button>
-      <button mat-raised-button color="primary" (click)="openForm()">
-        <mat-icon>add</mat-icon> Nouveau stage
-      </button>
-    </div>
-  </div>
+  <app-page-header icon="work" titre="Gestion des Stages"
+      [sousTitre]="totalElements + ' stage(s) au total'">
+    <button mat-stroked-button (click)="exportExcel()">
+      <mat-icon>table_view</mat-icon> Excel
+    </button>
+    <button mat-stroked-button color="warn" (click)="exportPdf()">
+      <mat-icon>picture_as_pdf</mat-icon> PDF
+    </button>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon> Nouveau stage
+    </button>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-item blue">
-      <mat-icon>work</mat-icon>
-      <div><span class="kpi-val">{{ totalElements }}</span><span class="kpi-lbl">Total stages</span></div>
-    </div>
-    <div class="kpi-item green">
-      <mat-icon>play_circle</mat-icon>
-      <div><span class="kpi-val">{{ stagesEnCours }}</span><span class="kpi-lbl">En cours</span></div>
-    </div>
-    <div class="kpi-item orange">
-      <mat-icon>hourglass_empty</mat-icon>
-      <div><span class="kpi-val">{{ stagesEnAttente }}</span><span class="kpi-lbl">En attente</span></div>
-    </div>
-    <div class="kpi-item purple">
-      <mat-icon>check_circle</mat-icon>
-      <div><span class="kpi-val">{{ stagesTermines }}</span><span class="kpi-lbl">Terminés</span></div>
-    </div>
+    <app-stat-card color="blue" icon="work" [value]="totalElements" label="Total stages"></app-stat-card>
+    <app-stat-card color="green" icon="play_circle" [value]="stagesEnCours" label="En cours"></app-stat-card>
+    <app-stat-card color="orange" icon="hourglass_empty" [value]="stagesEnAttente" label="En attente"></app-stat-card>
+    <app-stat-card color="purple" icon="check_circle" [value]="stagesTermines" label="Terminés"></app-stat-card>
   </div>
 
   <!-- Filtres -->

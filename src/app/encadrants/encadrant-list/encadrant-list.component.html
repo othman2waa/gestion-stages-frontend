@@ -1,34 +1,23 @@
 <div class="encadrants-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>supervisor_account</mat-icon> Gestion des Encadrants</h2>
-      <p>{{ encadrants.length }} encadrant(s) enregistré(s)</p>
-    </div>
-    <div class="header-actions">
-      <button mat-stroked-button (click)="exportExcel()">
-        <mat-icon>table_view</mat-icon> Excel
-      </button>
-      <button mat-stroked-button color="warn" (click)="exportPdf()">
-        <mat-icon>picture_as_pdf</mat-icon> PDF
-      </button>
-      <button mat-raised-button color="primary" (click)="openForm()">
-        <mat-icon>add</mat-icon> Nouvel encadrant
-      </button>
-    </div>
-  </div>
+  <app-page-header icon="supervisor_account" titre="Gestion des Encadrants"
+      [sousTitre]="encadrants.length + ' encadrant(s) enregistré(s)'">
+    <button mat-stroked-button (click)="exportExcel()">
+      <mat-icon>table_view</mat-icon> Excel
+    </button>
+    <button mat-stroked-button color="warn" (click)="exportPdf()">
+      <mat-icon>picture_as_pdf</mat-icon> PDF
+    </button>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon> Nouvel encadrant
+    </button>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card blue">
-      <mat-icon>supervisor_account</mat-icon>
-      <div><span class="kpi-val">{{ encadrants.length }}</span><span class="kpi-lbl">Total encadrants</span></div>
-    </div>
-    <div class="kpi-card green">
-      <mat-icon>work</mat-icon>
-      <div><span class="kpi-val">{{ filteredEncadrants.length }}</span><span class="kpi-lbl">Affichés</span></div>
-    </div>
+    <app-stat-card color="blue" icon="supervisor_account" [value]="encadrants.length" label="Total encadrants"></app-stat-card>
+    <app-stat-card color="green" icon="work" [value]="filteredEncadrants.length" label="Affichés"></app-stat-card>
   </div>
 
   <!-- Search + Filters -->

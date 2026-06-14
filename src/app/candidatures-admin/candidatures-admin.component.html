@@ -1,44 +1,19 @@
 <div class="candidatures-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>people</mat-icon> Candidatures</h2>
-      <p>{{ candidatures.length }} candidature(s) au total</p>
-    </div>
-    <div class="header-actions">
-      <button mat-stroked-button (click)="exportExcel()"><mat-icon>table_chart</mat-icon> Excel</button>
-      <button mat-stroked-button (click)="exportPdf()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
-    </div>
-  </div>
+  <app-page-header icon="people" titre="Candidatures"
+      [sousTitre]="candidatures.length + ' candidature(s) au total'">
+    <button mat-stroked-button (click)="exportExcel()"><mat-icon>table_chart</mat-icon> Excel</button>
+    <button mat-stroked-button (click)="exportPdf()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-  <div class="kpi-card purple" (click)="filterStatut = 'ACCEPTEE_ENCADRANT'; pageIndex = 0">
-    <mat-icon>how_to_reg</mat-icon>
-    <div><span class="kpi-val">{{ aTraiterRH.length }}</span>
-    <span class="kpi-lbl">À traiter RH</span></div>
-  </div>
-  <div class="kpi-card blue" (click)="filterStatut = 'DOCUMENTS_SOUMIS'; pageIndex = 0">
-    <mat-icon>upload_file</mat-icon>
-    <div><span class="kpi-val">{{ docssoumis.length }}</span>
-    <span class="kpi-lbl">Docs soumis</span></div>
-  </div>
-  <div class="kpi-card green" (click)="filterStatut = 'ACCEPTEE_RH'; pageIndex = 0">
-    <mat-icon>check_circle</mat-icon>
-    <div><span class="kpi-val">{{ acceptees.length }}</span>
-    <span class="kpi-lbl">Acceptées RH</span></div>
-  </div>
-  <div class="kpi-card red" (click)="filterStatut = 'REFUSEE_RH'; pageIndex = 0">
-    <mat-icon>cancel</mat-icon>
-    <div><span class="kpi-val">{{ refusees.length }}</span>
-    <span class="kpi-lbl">Refusées</span></div>
-  </div>
-  <div class="kpi-card blue" (click)="filterStatut = ''; pageIndex = 0">
-    <mat-icon>people</mat-icon>
-    <div><span class="kpi-val">{{ candidatures.length }}</span>
-    <span class="kpi-lbl">Total</span></div>
-  </div>
+  <app-stat-card color="purple" icon="how_to_reg" [value]="aTraiterRH.length" label="À traiter RH" [clickable]="true" (click)="filterStatut = 'ACCEPTEE_ENCADRANT'; pageIndex = 0"></app-stat-card>
+  <app-stat-card color="blue" icon="upload_file" [value]="docssoumis.length" label="Docs soumis" [clickable]="true" (click)="filterStatut = 'DOCUMENTS_SOUMIS'; pageIndex = 0"></app-stat-card>
+  <app-stat-card color="green" icon="check_circle" [value]="acceptees.length" label="Acceptées RH" [clickable]="true" (click)="filterStatut = 'ACCEPTEE_RH'; pageIndex = 0"></app-stat-card>
+  <app-stat-card color="red" icon="cancel" [value]="refusees.length" label="Refusées" [clickable]="true" (click)="filterStatut = 'REFUSEE_RH'; pageIndex = 0"></app-stat-card>
+  <app-stat-card color="blue" icon="people" [value]="candidatures.length" label="Total" [clickable]="true" (click)="filterStatut = ''; pageIndex = 0"></app-stat-card>
 </div>
 
   <!-- Search + Filter -->

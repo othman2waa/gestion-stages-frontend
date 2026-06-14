@@ -1,0 +1,39 @@
+.app-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .aph-text {
+    min-width: 0;
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 4px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1a3c2e;
+      mat-icon { color: #00843D; }
+    }
+    p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+  }
+
+  .aph-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-page-header { flex-direction: column; }
+  .app-page-header .aph-actions { width: 100%; }
+}

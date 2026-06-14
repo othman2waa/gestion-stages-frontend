@@ -11,13 +11,15 @@ import { environment } from '../../environments/environment';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, Chart, registerables } from 'chart.js';
 import { ExportService } from '../core/services/export.service';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-reporting',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatTooltipModule, MatTabsModule, BaseChartDirective],
+  imports: [
+    StatCardComponent,CommonModule, FormsModule, MatIconModule, MatProgressBarModule, MatButtonModule, MatTooltipModule, MatTabsModule, BaseChartDirective],
   templateUrl: './reporting.component.html',
   styleUrls: ['./reporting.component.scss']
 })

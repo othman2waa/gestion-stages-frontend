@@ -1,11 +1,7 @@
 <div class="archives-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>archive</mat-icon> Archives des Stages</h2>
-      <p>{{ totalArchives }} stage(s) archivé(s) au total</p>
-    </div>
+  <app-page-header icon="archive" titre="Archives des Stages" [sousTitre]="(totalArchives) + ' stage(s) archivé(s) au total'">
     <div class="header-actions">
       <button mat-stroked-button (click)="exportExcel()" [disabled]="filtered.length === 0">
         <mat-icon>table_chart</mat-icon> Export CSV
@@ -22,7 +18,7 @@
         {{ isPurging ? 'Purge...' : 'Purger (> 1 an)' }}
       </button>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- Stats KPIs -->
   <div class="stats-row" *ngIf="stats">

@@ -1,34 +1,18 @@
 <div class="annonces-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>campaign</mat-icon> Gestion des Annonces</h2>
-      <p>{{ annonces.length }} annonce(s) au total</p>
-    </div>
+  <app-page-header icon="campaign" titre="Gestion des Annonces" [sousTitre]="(annonces.length) + ' annonce(s) au total'">
     <button mat-raised-button color="primary" (click)="openForm()">
       <mat-icon>add</mat-icon> Nouvelle annonce
     </button>
-  </div>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-item blue">
-      <mat-icon>campaign</mat-icon>
-      <div><span class="kpi-val">{{ annonces.length }}</span><span class="kpi-lbl">Total</span></div>
-    </div>
-    <div class="kpi-item green">
-      <mat-icon>visibility</mat-icon>
-      <div><span class="kpi-val">{{ annoncesActives }}</span><span class="kpi-lbl">Actives</span></div>
-    </div>
-    <div class="kpi-item orange">
-      <mat-icon>visibility_off</mat-icon>
-      <div><span class="kpi-val">{{ annonces.length - annoncesActives }}</span><span class="kpi-lbl">Fermées</span></div>
-    </div>
-    <div class="kpi-item purple">
-      <mat-icon>people</mat-icon>
-      <div><span class="kpi-val">{{ totalCandidatures }}</span><span class="kpi-lbl">Candidatures</span></div>
-    </div>
+    <app-stat-card color="blue" icon="campaign" [value]="annonces.length" label="Total"></app-stat-card>
+    <app-stat-card color="green" icon="visibility" [value]="annoncesActives" label="Actives"></app-stat-card>
+    <app-stat-card color="orange" icon="visibility_off" [value]="annonces.length - annoncesActives" label="Fermées"></app-stat-card>
+    <app-stat-card color="purple" icon="people" [value]="totalCandidatures" label="Candidatures"></app-stat-card>
   </div>
 
   <!-- Search & Filters -->

@@ -26,16 +26,20 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { StatutLabelPipe } from '../../shared/pipes/statut-label.pipe';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { StatCardComponent } from '../../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-stage-list',
   standalone: true,
   imports: [
+    StatCardComponent,
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatInputModule, MatFormFieldModule, MatCardModule,
     MatSnackBarModule, MatDialogModule, MatTooltipModule,
     MatProgressBarModule, MatSelectModule, MatChipsModule,
-    MatPaginatorModule, MatMenuModule, RouterModule, StatutLabelPipe
+    MatPaginatorModule, MatMenuModule, RouterModule, StatutLabelPipe,
+    PageHeaderComponent
   ],
   templateUrl: './stage-list.component.html',
   styleUrls: ['./stage-list.component.scss']

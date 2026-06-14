@@ -16,6 +16,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../core/services/export.service';
 import { StatutLabelPipe } from '../shared/pipes/statut-label.pipe';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-attestations-admin',
@@ -23,7 +25,8 @@ import { StatutLabelPipe } from '../shared/pipes/statut-label.pipe';
   imports: [
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule,
-    FormsModule, MatSelectModule, MatDialogModule, MatPaginatorModule, StatutLabelPipe
+    FormsModule, MatSelectModule, MatDialogModule, MatPaginatorModule, StatutLabelPipe,
+    PageHeaderComponent, StatCardComponent
   ],
   templateUrl: './attestations-admin.component.html',
   styleUrls: ['./attestations-admin.component.scss']

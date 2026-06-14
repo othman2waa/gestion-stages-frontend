@@ -13,11 +13,15 @@ import { MatInputModule } from '@angular/material/input';
 import { FicheAppreciationService } from '../core/services/fiche-appreciation.service';
 import { ExportService } from '../core/services/export.service';
 import { FicheStageResponse, FicheStagiaireResponse } from '../core/models/fiche-appreciation.model';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-fiches-appreciation-admin',
   standalone: true,
   imports: [
+    StatCardComponent,
+    PageHeaderComponent,
     CommonModule, FormsModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatSelectModule, MatFormFieldModule,
     MatPaginatorModule, MatChipsModule, MatTooltipModule, MatInputModule

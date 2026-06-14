@@ -8,12 +8,7 @@
   <ng-container *ngIf="!isLoading">
 
     <!-- Header -->
-    <div class="page-header">
-      <div>
-        <h2><mat-icon>upload_file</mat-icon> Mon Rapport de Stage</h2>
-        <p *ngIf="dashboard?.stageSujet">Stage : {{ dashboard.stageSujet }}</p>
-      </div>
-    </div>
+    <app-page-header icon="upload_file" titre="Mon Rapport de Stage" [sousTitre]="(dashboard?.stageSujet) ? ('Stage : ' + (dashboard.stageSujet)) : ''"></app-page-header>
 
     <!-- Pas de stage -->
     <div *ngIf="!dashboard?.stageId" class="empty-card">

@@ -5,11 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { EvaluationService } from '../../core/services/evaluation.service';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 @Component({
   selector: 'app-stagiaire-evaluations',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatProgressBarModule, MatChipsModule],
+  imports: [
+    PageHeaderComponent,CommonModule, MatCardModule, MatIconModule, MatProgressBarModule, MatChipsModule],
   templateUrl: './stagiaire-evaluations.component.html',
   styleUrls: ['./stagiaire-evaluations.component.scss']
 })

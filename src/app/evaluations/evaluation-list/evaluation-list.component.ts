@@ -18,6 +18,8 @@ import { ExportService } from '../../core/services/export.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartConfiguration, Chart, registerables } from 'chart.js';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { StatCardComponent } from '../../shared/stat-card/stat-card.component';
 
 Chart.register(...registerables);
 
@@ -25,6 +27,8 @@ Chart.register(...registerables);
   selector: 'app-evaluation-list',
   standalone: true,
   imports: [
+    StatCardComponent,
+    PageHeaderComponent,
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
     MatTooltipModule, MatProgressBarModule, MatChipsModule, MatSelectModule,

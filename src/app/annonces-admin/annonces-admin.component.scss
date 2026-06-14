@@ -4,30 +4,9 @@
   margin: 0 auto;
 }
 
-.page-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 10px; margin: 0;
-    font-size: 22px; color: #1E293B; font-weight: 800; letter-spacing: -0.02em;
-    mat-icon { font-size: 26px; color: #00843D; } }
-  p { margin: 4px 0 0; color: #94A3B8; font-size: 13px; }
-}
-
 // KPIs
 .kpi-row {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;
-  .kpi-item {
-    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-    border-radius: 14px; color: white;
-    mat-icon { font-size: 24px; opacity: 0.9; }
-    .kpi-val { display: block; font-size: 22px; font-weight: 800; }
-    .kpi-lbl { font-size: 11px; opacity: 0.85; }
-    &.blue   { background: linear-gradient(135deg, #1e40af, #3b82f6); }
-    &.green  { background: linear-gradient(135deg, #059669, #10b981); }
-    &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
-    &.purple { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
-  }
-}
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;}
 
 // Filtres
 .filtres-bar {

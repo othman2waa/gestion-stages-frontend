@@ -1,11 +1,7 @@
 <div class="comptes-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div class="header-left">
-      <h2><mat-icon>manage_accounts</mat-icon> Gestion des Comptes</h2>
-      <p>{{ stagiaires.length }} stagiaire(s) avec compte</p>
-    </div>
+  <app-page-header icon="manage_accounts" titre="Gestion des Comptes" [sousTitre]="(stagiaires.length) + ' stagiaire(s) avec compte'">
     <div class="header-stats">
       <div class="stat-chip actif"><mat-icon>check_circle</mat-icon> {{ totalActifs }} actifs</div>
       <div class="stat-chip inactif"><mat-icon>block</mat-icon> {{ totalInactifs }} inactifs</div>
@@ -13,7 +9,7 @@
     <button mat-stroked-button color="warn" (click)="exportPdf()">
   <mat-icon>picture_as_pdf</mat-icon> Export PDF
 </button>
-  </div>
+  </app-page-header>
 
   <!-- Password Banner -->
   <div class="password-banner" *ngIf="resetPasswordResult">

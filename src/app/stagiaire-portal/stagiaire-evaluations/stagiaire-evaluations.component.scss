@@ -3,16 +3,6 @@
   margin: 0 auto;
 }
 
-.page-header {
-  margin-bottom: 24px;
-  h2 {
-    display: flex; align-items: center; gap: 8px;
-    margin: 0; font-size: 24px; color: #00843D;
-    mat-icon { font-size: 28px; color: #F47920; }
-  }
-  p { margin: 4px 0 0; color: #666; }
-}
-
 .moyenne-card {
   margin-bottom: 24px;
   border-left: 4px solid #00843D;

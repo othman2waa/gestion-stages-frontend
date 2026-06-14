@@ -1,24 +1,6 @@
 .cand-enc-container { padding: 24px; max-width: 1100px; margin: 0 auto; }
 
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 22px; color: #1E293B;
-    mat-icon { color: #00843D; } }
-  p { margin: 4px 0 0; color: #64748B; font-size: 13px; }
-}
-
-.kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px;
-  .kpi-card { border-radius: 14px; padding: 16px; display: flex; align-items: center;
-    gap: 12px; color: white; cursor: pointer; transition: transform 0.15s;
-    &:hover { transform: translateY(-2px); }
-    mat-icon { font-size: 26px; }
-    .kv { display: block; font-size: 24px; font-weight: 800; }
-    .kl { font-size: 11px; opacity: .85; }
-    &.amber { background: linear-gradient(135deg, #d97706, #f59e0b); }
-    &.teal  { background: linear-gradient(135deg, #0891b2, #22d3ee); }
-    &.green { background: linear-gradient(135deg, #00843D, #10b981); }
-    &.gray  { background: linear-gradient(135deg, #475569, #64748b); }
-  }
-}
+.kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px;}
 
 .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
   .search-box { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 200px;

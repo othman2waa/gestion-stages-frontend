@@ -11,11 +11,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Router } from '@angular/router';
 import { NotificationService, AppNotification } from '../core/services/notification.service';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-notifications-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatChipsModule, MatPaginatorModule, MatTooltipModule, MatInputModule, MatFormFieldModule],
+  imports: [
+    StatCardComponent,
+    PageHeaderComponent,CommonModule, FormsModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatChipsModule, MatPaginatorModule, MatTooltipModule, MatInputModule, MatFormFieldModule],
   templateUrl: './notifications-page.component.html',
   styleUrls: ['./notifications-page.component.scss']
 })

@@ -11,11 +11,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RapportService } from '../core/services/rapport.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { StagiaireDashboardService } from '../core/services/stagiaire-dashboard.service';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 @Component({
   selector: 'app-rapport-stage',
   standalone: true,
   imports: [
+    PageHeaderComponent,
     CommonModule, MatCardModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatSnackBarModule, MatTooltipModule, MatChipsModule, MatDialogModule
   ],

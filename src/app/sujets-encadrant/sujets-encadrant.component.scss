@@ -1,22 +1,6 @@
 .sujets-enc-container { padding: 24px; max-width: 900px; margin: 0 auto; }
 
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 22px; color: #1e40af; mat-icon { font-size: 26px; } }
-  p { margin: 4px 0 0; color: #64748b; font-size: 13px; }
-  .btn-new { background: #00843D; color: white; border-radius: 10px; }
-}
-
-.kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px;
-  .kpi-card { border-radius: 14px; padding: 16px 20px; display: flex; align-items: center;
-    gap: 14px; color: white;
-    mat-icon { font-size: 28px; }
-    .kv { display: block; font-size: 24px; font-weight: 800; }
-    .kl { font-size: 12px; opacity: 0.85; }
-    &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
-    &.green  { background: linear-gradient(135deg, #059669, #10b981); }
-    &.blue   { background: linear-gradient(135deg, #1e40af, #3b82f6); }
-  }
-}
+.kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px;}
 
 .flux-info {
   display: flex; align-items: center; gap: 8px; background: white;

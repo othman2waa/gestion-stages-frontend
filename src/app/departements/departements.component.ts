@@ -15,10 +15,14 @@ import { DepartementService } from '../core/services/departement.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 @Component({
   selector: 'app-departements',
   standalone: true,
   imports: [
+    StatCardComponent,
+    PageHeaderComponent,
     CommonModule, FormsModule, ReactiveFormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatFormFieldModule, MatInputModule, MatDialogModule,

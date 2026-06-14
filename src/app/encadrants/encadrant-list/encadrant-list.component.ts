@@ -20,15 +20,19 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 import { StageService } from '../../core/services/stage.service';
 import { ExportService } from '../../core/services/export.service';
 import { StatutLabelPipe } from '../../shared/pipes/statut-label.pipe';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { StatCardComponent } from '../../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-encadrant-list',
   standalone: true,
   imports: [
+    StatCardComponent,
     CommonModule, FormsModule, MatButtonModule, MatIconModule,
     MatCardModule, MatSnackBarModule, MatDialogModule,
     MatTooltipModule, MatProgressBarModule, MatChipsModule,
-    MatSelectModule, MatFormFieldModule, MatPaginatorModule, StatutLabelPipe
+    MatSelectModule, MatFormFieldModule, MatPaginatorModule, StatutLabelPipe,
+    PageHeaderComponent
   ],
   templateUrl: './encadrant-list.component.html',
   styleUrls: ['./encadrant-list.component.scss']

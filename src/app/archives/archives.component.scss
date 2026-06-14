@@ -1,13 +1,5 @@
 .archives-container { padding: 24px; max-width: 1300px; margin: 0 auto; }
 
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 22px; color: #1E293B;
-    mat-icon { color: #00843D; } }
-  p { margin: 4px 0 0; color: #64748B; font-size: 13px; }
-  .header-actions { display: flex; gap: 10px; }
-  .btn-archive { background: #00843D !important; color: white !important; border-radius: 10px !important; }
-}
-
 .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;
   .stat-card { border-radius: 14px; padding: 16px; display: flex; align-items: center;
     gap: 12px; color: white;

@@ -1,35 +1,21 @@
 <div class="attestations-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>workspace_premium</mat-icon> Attestations de Stage</h2>
-      <p>{{ attestations.length }} demande(s) au total</p>
-    </div>
-    <div class="header-actions">
-      <button mat-stroked-button (click)="telechargerBatch()" *ngIf="approuvees > 0">
-        <mat-icon>download</mat-icon> Tout télécharger ({{ approuvees }})
-      </button>
-      <button mat-stroked-button (click)="exportExcel()">
-        <mat-icon>table_view</mat-icon> Excel
-      </button>
-    </div>
-  </div>
+  <app-page-header icon="workspace_premium" titre="Attestations de Stage"
+      [sousTitre]="attestations.length + ' demande(s) au total'">
+    <button mat-stroked-button (click)="telechargerBatch()" *ngIf="approuvees > 0">
+      <mat-icon>download</mat-icon> Tout télécharger ({{ approuvees }})
+    </button>
+    <button mat-stroked-button (click)="exportExcel()">
+      <mat-icon>table_view</mat-icon> Excel
+    </button>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card orange">
-      <mat-icon>hourglass_empty</mat-icon>
-      <div><span class="kpi-val">{{ enAttente }}</span><span class="kpi-lbl">En attente</span></div>
-    </div>
-    <div class="kpi-card green">
-      <mat-icon>verified</mat-icon>
-      <div><span class="kpi-val">{{ approuvees }}</span><span class="kpi-lbl">Approuvées</span></div>
-    </div>
-    <div class="kpi-card red">
-      <mat-icon>cancel</mat-icon>
-      <div><span class="kpi-val">{{ refusees }}</span><span class="kpi-lbl">Refusées</span></div>
-    </div>
+    <app-stat-card color="orange" icon="hourglass_empty" [value]="enAttente" label="En attente"></app-stat-card>
+    <app-stat-card color="green" icon="verified" [value]="approuvees" label="Approuvées"></app-stat-card>
+    <app-stat-card color="red" icon="cancel" [value]="refusees" label="Refusées"></app-stat-card>
   </div>
 
   <!-- Toolbar filtres -->

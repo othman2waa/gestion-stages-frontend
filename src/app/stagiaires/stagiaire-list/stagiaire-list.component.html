@@ -1,12 +1,9 @@
 <div class="stagiaires-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>school</mat-icon> Gestion des Stagiaires</h2>
-      <p>{{ totalStagiaires }} stagiaire(s) enregistré(s)</p>
-    </div>
-    <div class="header-actions" *ngIf="!isEncadrant">
+  <app-page-header icon="school" titre="Gestion des Stagiaires"
+      [sousTitre]="totalStagiaires + ' stagiaire(s) enregistré(s)'">
+    <ng-container *ngIf="!isEncadrant">
       <button mat-stroked-button (click)="exportExcel()">
         <mat-icon>table_view</mat-icon> Excel
       </button>
@@ -16,27 +13,15 @@
       <button mat-raised-button color="primary" (click)="openForm()">
         <mat-icon>add</mat-icon> Nouveau stagiaire
       </button>
-    </div>
-  </div>
+    </ng-container>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-item blue">
-      <mat-icon>people</mat-icon>
-      <div><span class="kpi-val">{{ totalStagiaires }}</span><span class="kpi-lbl">Total</span></div>
-    </div>
-    <div class="kpi-item green">
-      <mat-icon>person</mat-icon>
-      <div><span class="kpi-val">{{ avecCompte }}</span><span class="kpi-lbl">Avec compte</span></div>
-    </div>
-    <div class="kpi-item orange">
-      <mat-icon>filter_list</mat-icon>
-      <div><span class="kpi-val">{{ filteredStagiaires.length }}</span><span class="kpi-lbl">Filtrés</span></div>
-    </div>
-    <div class="kpi-item purple">
-      <mat-icon>school</mat-icon>
-      <div><span class="kpi-val">{{ filieres.length }}</span><span class="kpi-lbl">Filières</span></div>
-    </div>
+    <app-stat-card color="blue" icon="people" [value]="totalStagiaires" label="Total"></app-stat-card>
+    <app-stat-card color="green" icon="person" [value]="avecCompte" label="Avec compte"></app-stat-card>
+    <app-stat-card color="orange" icon="filter_list" [value]="filteredStagiaires.length" label="Filtrés"></app-stat-card>
+    <app-stat-card color="purple" icon="school" [value]="filieres.length" label="Filières"></app-stat-card>
   </div>
 
   <!-- Filtres -->

@@ -14,11 +14,15 @@ import { MatChipsModule } from '@angular/material/chips';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-candidatures-encadrant',
   standalone: true,
   imports: [
+    StatCardComponent,
+    PageHeaderComponent,
     CommonModule, FormsModule, ReactiveFormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatDialogModule, MatSnackBarModule, MatFormFieldModule,

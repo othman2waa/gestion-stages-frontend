@@ -1,11 +1,7 @@
 <div class="conventions-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>description</mat-icon> Gestion des Convocations</h2>
-      <p>{{ totalConventions }} convocation(s) au total</p>
-    </div>
+  <app-page-header icon="description" titre="Gestion des Convocations" [sousTitre]="(totalConventions) + ' convocation(s) au total'">
     <div class="header-actions">
       <button mat-stroked-button (click)="exportExcel()">
         <mat-icon>table_view</mat-icon> Excel
@@ -17,26 +13,14 @@
         <mat-icon>add</mat-icon> Nouvelle convocation
       </button>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card blue">
-      <mat-icon>description</mat-icon>
-      <div><span class="kpi-val">{{ totalConventions }}</span><span class="kpi-lbl">Total</span></div>
-    </div>
-    <div class="kpi-card green">
-      <mat-icon>verified</mat-icon>
-      <div><span class="kpi-val">{{ conventionsSignees }}</span><span class="kpi-lbl">Signées</span></div>
-    </div>
-    <div class="kpi-card orange">
-      <mat-icon>edit_note</mat-icon>
-      <div><span class="kpi-val">{{ conventionsBrouillon }}</span><span class="kpi-lbl">Brouillons</span></div>
-    </div>
-    <div class="kpi-card purple">
-      <mat-icon>draw</mat-icon>
-      <div><span class="kpi-val">{{ partiellementSignees }}</span><span class="kpi-lbl">En signature</span></div>
-    </div>
+    <app-stat-card color="blue" icon="description" [value]="totalConventions" label="Total"></app-stat-card>
+    <app-stat-card color="green" icon="verified" [value]="conventionsSignees" label="Signées"></app-stat-card>
+    <app-stat-card color="orange" icon="edit_note" [value]="conventionsBrouillon" label="Brouillons"></app-stat-card>
+    <app-stat-card color="purple" icon="draw" [value]="partiellementSignees" label="En signature"></app-stat-card>
   </div>
 
   <!-- Filtres -->

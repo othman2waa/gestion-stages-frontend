@@ -1,36 +1,20 @@
 <div class="fiches-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>fact_check</mat-icon> Fiches d'Appréciation</h2>
-      <p>{{ totalFichesStage }} fiche(s) stage · {{ totalFichesStagiaire }} fiche(s) stagiaire</p>
-    </div>
+  <app-page-header icon="fact_check" titre="Fiches d'Appréciation" [sousTitre]="(totalFichesStage) + ' fiche(s) stage · ' + (totalFichesStagiaire) + ' fiche(s) stagiaire'">
     <div class="header-actions">
       <button mat-stroked-button (click)="exportExcel()">
         <mat-icon>table_view</mat-icon> Excel
       </button>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card purple">
-      <mat-icon>assignment</mat-icon>
-      <div><span class="kpi-val">{{ totalFichesStage }}</span><span class="kpi-lbl">Fiches Stage</span></div>
-    </div>
-    <div class="kpi-card blue">
-      <mat-icon>person</mat-icon>
-      <div><span class="kpi-val">{{ totalFichesStagiaire }}</span><span class="kpi-lbl">Fiches Stagiaire</span></div>
-    </div>
-    <div class="kpi-card green">
-      <mat-icon>grade</mat-icon>
-      <div><span class="kpi-val">{{ moyenneStage | number:'1.1-1' }}</span><span class="kpi-lbl">Moy. Stage /20</span></div>
-    </div>
-    <div class="kpi-card orange">
-      <mat-icon>emoji_events</mat-icon>
-      <div><span class="kpi-val">{{ moyenneStagiaire | number:'1.1-1' }}</span><span class="kpi-lbl">Moy. Stagiaire /20</span></div>
-    </div>
+    <app-stat-card color="purple" icon="assignment" [value]="totalFichesStage" label="Fiches Stage"></app-stat-card>
+    <app-stat-card color="blue" icon="person" [value]="totalFichesStagiaire" label="Fiches Stagiaire"></app-stat-card>
+    <app-stat-card color="green" icon="grade" [value]="moyenneStage | number:'1.1-1'" label="Moy. Stage /20"></app-stat-card>
+    <app-stat-card color="orange" icon="emoji_events" [value]="moyenneStagiaire | number:'1.1-1'" label="Moy. Stagiaire /20"></app-stat-card>
   </div>
 
   <!-- Tabs -->

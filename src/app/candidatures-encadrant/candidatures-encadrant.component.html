@@ -1,31 +1,14 @@
 <div class="cand-enc-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>inbox</mat-icon> Candidatures — Mon Département</h2>
-      <p>{{ candidatures.length }} candidature(s) · {{ avecScore }} avec score IA</p>
-    </div>
-  </div>
+  <app-page-header icon="inbox" titre="Candidatures — Mon Département" [sousTitre]="(candidatures.length) + ' candidature(s) · ' + (avecScore) + ' avec score IA'"></app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card amber" (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'; applyFilter()">
-      <mat-icon>hourglass_empty</mat-icon>
-      <div><span class="kv">{{ enAttente }}</span><span class="kl">En attente</span></div>
-    </div>
-    <div class="kpi-card teal" (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'; applyFilter()">
-      <mat-icon>event</mat-icon>
-      <div><span class="kv">{{ meetingPlanifie }}</span><span class="kl">Meeting planifié</span></div>
-    </div>
-    <div class="kpi-card blue" (click)="filterStatut = ''; applyFilter()">
-      <mat-icon>psychology</mat-icon>
-      <div><span class="kv">{{ avecScore }}</span><span class="kl">Avec score IA</span></div>
-    </div>
-    <div class="kpi-card gray" (click)="filterStatut = ''; applyFilter()">
-      <mat-icon>list</mat-icon>
-      <div><span class="kv">{{ candidatures.length }}</span><span class="kl">Total</span></div>
-    </div>
+    <app-stat-card color="amber" icon="hourglass_empty" [value]="enAttente" label="En attente" [clickable]="true" (click)="filterStatut = filterStatut === 'EN_ATTENTE' ? '' : 'EN_ATTENTE'; applyFilter()"></app-stat-card>
+    <app-stat-card color="teal" icon="event" [value]="meetingPlanifie" label="Meeting planifié" [clickable]="true" (click)="filterStatut = filterStatut === 'MEETING_PLANIFIE' ? '' : 'MEETING_PLANIFIE'; applyFilter()"></app-stat-card>
+    <app-stat-card color="blue" icon="psychology" [value]="avecScore" label="Avec score IA" [clickable]="true" (click)="filterStatut = ''; applyFilter()"></app-stat-card>
+    <app-stat-card color="gray" icon="list" [value]="candidatures.length" label="Total" [clickable]="true" (click)="filterStatut = ''; applyFilter()"></app-stat-card>
   </div>
 
   <!-- Toolbar -->

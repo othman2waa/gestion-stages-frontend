@@ -4,23 +4,6 @@
   margin: 0 auto;
 }
 
-.page-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 10px; margin: 0;
-    font-size: 22px; color: #1E293B; font-weight: 800; letter-spacing: -0.02em;
-    mat-icon { font-size: 26px; color: #00843D; } }
-  p { margin: 4px 0 0; color: #94A3B8; font-size: 13px; }
-  .header-stats { display: flex; gap: 10px;
-    .stat-chip { display: flex; align-items: center; gap: 6px;
-      padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
-      mat-icon { font-size: 16px; }
-      &.actif { background: #dcfce7; color: #166534; }
-      &.inactif { background: #fee2e2; color: #991b1b; }
-    }
-  }
-}
-
 .password-banner {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   background: #fffbeb; border: 1px solid #fde68a;

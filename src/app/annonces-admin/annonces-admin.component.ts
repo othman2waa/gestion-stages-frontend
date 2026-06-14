@@ -20,11 +20,15 @@ import { AnnonceService } from '../core/services/annonce.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { CandidatureService } from '../core/services/candidature.service';
 import { StatutLabelPipe } from '../shared/pipes/statut-label.pipe';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-annonces-admin',
   standalone: true,
   imports: [
+    StatCardComponent,
+    PageHeaderComponent,
     CommonModule, FormsModule, ReactiveFormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,

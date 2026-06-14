@@ -23,17 +23,21 @@ import { CandidatureService } from '../core/services/candidature.service';
 import { EncadrantService } from '../core/services/encadrant.service';
 import { DepartementService } from '../core/services/departement.service';
 import { ExportService } from '../core/services/export.service';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-candidatures-admin',
   standalone: true,
   imports: [
+    StatCardComponent,
     CommonModule, FormsModule, ReactiveFormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,
     MatChipsModule, MatDialogModule, MatSnackBarModule,
     MatProgressBarModule, MatTooltipModule, MatTabsModule,
-    MatBadgeModule, MatDatepickerModule, MatNativeDateModule, MatPaginatorModule
+    MatBadgeModule, MatDatepickerModule, MatNativeDateModule, MatPaginatorModule,
+    PageHeaderComponent
   ],
   templateUrl: './candidatures-admin.component.html',
   styleUrls: ['./candidatures-admin.component.scss']

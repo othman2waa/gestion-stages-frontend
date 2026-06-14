@@ -16,11 +16,15 @@ import { SujetStageService } from '../core/services/sujet-stage.service';
 import { EncadrantService } from '../core/services/encadrant.service';
 import { StageService } from '../core/services/stage.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-sujets-admin',
   standalone: true,
   imports: [
+    StatCardComponent,
+    PageHeaderComponent,
     CommonModule, FormsModule, ReactiveFormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatFormFieldModule, MatInputModule, MatSelectModule,

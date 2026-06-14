@@ -1,34 +1,18 @@
 <div class="sujets-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>assignment</mat-icon> Sujets de Stage</h2>
-      <p>{{ sujets.length }} sujet(s) proposé(s) par les encadrants</p>
-    </div>
+  <app-page-header icon="assignment" titre="Sujets de Stage" [sousTitre]="(sujets.length) + ' sujet(s) proposé(s) par les encadrants'">
     <button mat-raised-button class="btn-new" (click)="ouvrirNouveau()">
       <mat-icon>add</mat-icon> Nouveau sujet
     </button>
-  </div>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card orange" (click)="filterStatut = filterStatut === 'PROPOSE' ? '' : 'PROPOSE'">
-      <mat-icon>pending</mat-icon>
-      <div><span class="kv">{{ proposes }}</span><span class="kl">Proposés</span></div>
-    </div>
-    <div class="kpi-card green" (click)="filterStatut = filterStatut === 'VALIDE' ? '' : 'VALIDE'">
-      <mat-icon>check_circle</mat-icon>
-      <div><span class="kv">{{ valides }}</span><span class="kl">Validés</span></div>
-    </div>
-    <div class="kpi-card blue" (click)="filterStatut = filterStatut === 'AFFECTE' ? '' : 'AFFECTE'">
-      <mat-icon>assignment_ind</mat-icon>
-      <div><span class="kv">{{ affectes }}</span><span class="kl">Affectés</span></div>
-    </div>
-    <div class="kpi-card gray" (click)="filterStatut = ''">
-      <mat-icon>list</mat-icon>
-      <div><span class="kv">{{ sujets.length }}</span><span class="kl">Total</span></div>
-    </div>
+    <app-stat-card color="orange" icon="pending" [value]="proposes" label="Proposés" [clickable]="true" (click)="filterStatut = filterStatut === 'PROPOSE' ? '' : 'PROPOSE'"></app-stat-card>
+    <app-stat-card color="green" icon="check_circle" [value]="valides" label="Validés" [clickable]="true" (click)="filterStatut = filterStatut === 'VALIDE' ? '' : 'VALIDE'"></app-stat-card>
+    <app-stat-card color="blue" icon="assignment_ind" [value]="affectes" label="Affectés" [clickable]="true" (click)="filterStatut = filterStatut === 'AFFECTE' ? '' : 'AFFECTE'"></app-stat-card>
+    <app-stat-card color="gray" icon="list" [value]="sujets.length" label="Total" [clickable]="true" (click)="filterStatut = ''"></app-stat-card>
   </div>
 
   <!-- Search + Filter -->

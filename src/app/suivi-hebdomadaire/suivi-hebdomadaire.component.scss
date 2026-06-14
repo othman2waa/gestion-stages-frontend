@@ -1,27 +1,9 @@
 .suivi-container { padding: 24px; max-width: 1100px; margin: 0 auto; }
 
 // ─── Page Header ───
-.page-header {
-  margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 24px; color: #1e293b;
-    mat-icon { color: #1e40af; font-size: 28px; }
-  }
-  p { margin: 4px 0 0; color: #64748b; font-size: 13px; }
-}
-
 // ─── KPIs ───
 .kpi-row {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px;
-  .kpi-item {
-    border-radius: 12px; padding: 14px 18px; display: flex; align-items: center;
-    gap: 12px; color: white;
-    mat-icon { font-size: 24px; opacity: 0.9; }
-    .kpi-val { display: block; font-size: 22px; font-weight: 800; }
-    .kpi-lbl { font-size: 11px; opacity: 0.85; }
-    &.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
-    &.green { background: linear-gradient(135deg, #059669, #10b981); }
-  }
-}
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px;}
 
 // ─── Search ───
 .search-bar {

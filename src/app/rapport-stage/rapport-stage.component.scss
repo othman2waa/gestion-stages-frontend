@@ -3,14 +3,6 @@
 .loading { text-align: center; padding: 40px;
   p { color: #666; margin-top: 12px; } }
 
-.page-header {
-  margin-bottom: 24px;
-  h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 22px; color: #1E293B;
-    font-weight: 800; letter-spacing: -0.02em;
-    mat-icon { font-size: 26px; color: #00843D; } }
-  p { margin: 4px 0 0; color: #94A3B8; font-size: 13px; }
-}
-
 .empty-card {
   text-align: center; padding: 60px; color: #94a3b8;
   mat-icon { font-size: 56px; display: block; margin-bottom: 12px; }

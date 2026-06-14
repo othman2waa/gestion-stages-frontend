@@ -2,27 +2,9 @@
   padding: 24px; max-width: 1200px; margin: 0 auto;
 }
 
-.page-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 22px; color: #1E293B;
-    font-weight: 800; letter-spacing: -0.02em;
-    mat-icon { font-size: 26px; color: #00843D; } }
-  p { margin: 4px 0 0; color: #94A3B8; font-size: 13px; }
-  .header-actions { display: flex; gap: 8px; align-items: center; }
-}
-
 .kpi-row {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;
-  max-width: 400px;
-  .kpi-card { border-radius: 14px; padding: 18px 20px; display: flex; align-items: center;
-    gap: 14px; color: white;
-    mat-icon { font-size: 32px; opacity: 0.9; }
-    .kpi-val { display: block; font-size: 26px; font-weight: 800; }
-    .kpi-lbl { font-size: 12px; opacity: 0.85; }
-    &.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
-    &.green { background: linear-gradient(135deg, #059669, #10b981); }
-  }
-}
+  max-width: 400px;}
 
 .filtres-bar {
   display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;

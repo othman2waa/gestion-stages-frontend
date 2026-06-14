@@ -4,23 +4,12 @@
   <div *ngIf="!selectedStagiaire">
 
     <!-- Header -->
-    <div class="page-header">
-      <div>
-        <h2><mat-icon>how_to_reg</mat-icon> Suivi Hebdomadaire</h2>
-        <p>Gérez la présence de vos stagiaires</p>
-      </div>
-    </div>
+    <app-page-header icon="how_to_reg" titre="Suivi Hebdomadaire" sousTitre="Gérez la présence de vos stagiaires"></app-page-header>
 
     <!-- KPIs -->
     <div class="kpi-row">
-      <div class="kpi-item blue">
-        <mat-icon>school</mat-icon>
-        <div><span class="kpi-val">{{ totalStagiaires }}</span><span class="kpi-lbl">Stagiaires</span></div>
-      </div>
-      <div class="kpi-item green">
-        <mat-icon>play_circle</mat-icon>
-        <div><span class="kpi-val">{{ stagesEnCours }}</span><span class="kpi-lbl">En cours</span></div>
-      </div>
+      <app-stat-card color="blue" icon="school" [value]="totalStagiaires" label="Stagiaires"></app-stat-card>
+      <app-stat-card color="green" icon="play_circle" [value]="stagesEnCours" label="En cours"></app-stat-card>
     </div>
 
     <!-- Search -->

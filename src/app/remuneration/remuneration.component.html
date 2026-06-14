@@ -1,11 +1,7 @@
 <div class="remuneration-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>payments</mat-icon> Rémunération PFE</h2>
-      <p>Liste des stagiaires PFE Bac+5 à rémunérer, par tranche (juillet / septembre)</p>
-    </div>
+  <app-page-header icon="payments" titre="Rémunération PFE" sousTitre="Liste des stagiaires PFE Bac+5 à rémunérer, par tranche (juillet / septembre)">
     <div class="header-actions no-print">
       <mat-form-field appearance="outline" class="sel-field">
         <mat-label>Tranche</mat-label>
@@ -27,7 +23,7 @@
         <mat-icon>print</mat-icon> Imprimer
       </button>
     </div>
-  </div>
+  </app-page-header>
 
   <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 

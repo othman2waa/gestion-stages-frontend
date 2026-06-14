@@ -1,30 +1,17 @@
 <div class="sujets-enc-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>assignment</mat-icon> Mes Sujets Proposés</h2>
-      <p>Proposez des sujets de stage — le RH les validera et les affectera aux stagiaires</p>
-    </div>
+  <app-page-header icon="assignment" titre="Mes Sujets Proposés" sousTitre="Proposez des sujets de stage — le RH les validera et les affectera aux stagiaires">
     <button mat-raised-button class="btn-new" (click)="ouvrirNouveau()">
       <mat-icon>add</mat-icon> Proposer un sujet
     </button>
-  </div>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card orange">
-      <mat-icon>hourglass_empty</mat-icon>
-      <div><span class="kv">{{ proposes }}</span><span class="kl">En attente RH</span></div>
-    </div>
-    <div class="kpi-card green">
-      <mat-icon>check_circle</mat-icon>
-      <div><span class="kv">{{ valides }}</span><span class="kl">Validés</span></div>
-    </div>
-    <div class="kpi-card blue">
-      <mat-icon>assignment_ind</mat-icon>
-      <div><span class="kv">{{ affectes }}</span><span class="kl">Affectés</span></div>
-    </div>
+    <app-stat-card color="orange" icon="hourglass_empty" [value]="proposes" label="En attente RH"></app-stat-card>
+    <app-stat-card color="green" icon="check_circle" [value]="valides" label="Validés"></app-stat-card>
+    <app-stat-card color="blue" icon="assignment_ind" [value]="affectes" label="Affectés"></app-stat-card>
   </div>
 
   <!-- Flux info -->

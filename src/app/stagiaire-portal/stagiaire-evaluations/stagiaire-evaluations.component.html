@@ -1,9 +1,6 @@
 <div class="evaluations-container">
 
-  <div class="page-header">
-    <h2><mat-icon>star</mat-icon> Mes Évaluations</h2>
-    <p>Vos évaluations par votre encadrant OCP</p>
-  </div>
+  <app-page-header icon="star" titre="Mes Évaluations" sousTitre="Vos évaluations par votre encadrant OCP"></app-page-header>
 
   <div *ngIf="isLoading" class="loading">
     <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>

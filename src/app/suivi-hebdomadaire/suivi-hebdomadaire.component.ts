@@ -16,6 +16,8 @@ import { SuiviService } from '../core/services/suivi.service';
 import { AuthService } from '../core/services/auth.service';
 import { SuiviResponse } from '../core/models';
 import { ExportService } from '../core/services/export.service';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { StatCardComponent } from '../shared/stat-card/stat-card.component';
 
 interface CalendarDay {
   date: Date;
@@ -46,6 +48,8 @@ interface StagiaireInfo {
   selector: 'app-suivi-hebdomadaire',
   standalone: true,
   imports: [
+    StatCardComponent,
+    PageHeaderComponent,
     CommonModule, FormsModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatFormFieldModule, MatInputModule,

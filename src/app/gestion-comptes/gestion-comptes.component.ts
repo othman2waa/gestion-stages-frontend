@@ -18,11 +18,13 @@ import { environment } from '../../environments/environment';
 import { StagiaireService } from '../core/services/stagiaire.service';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../core/services/export.service';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 @Component({
   selector: 'app-gestion-comptes',
   standalone: true,
   imports: [
+    PageHeaderComponent,
     CommonModule, FormsModule, MatCardModule, MatIconModule,
     MatButtonModule, MatInputModule, MatFormFieldModule,
     MatChipsModule, MatTooltipModule, MatSnackBarModule,

@@ -1,0 +1,32 @@
+:host { display: block; }
+
+.app-stat-card {
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+
+  mat-icon { font-size: 28px; width: 28px; height: 28px; opacity: 0.9; }
+  .asc-body { display: flex; flex-direction: column; line-height: 1.1; }
+  .asc-val { font-size: 24px; font-weight: 800; }
+  .asc-lbl { font-size: 12px; opacity: 0.88; margin-top: 2px; }
+
+  &.blue   { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+  &.green  { background: linear-gradient(135deg, #059669, #10b981); }
+  &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
+  &.purple { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+  &.amber  { background: linear-gradient(135deg, #b45309, #fbbf24); }
+  &.red    { background: linear-gradient(135deg, #dc2626, #ef4444); }
+  &.teal   { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+  &.gray   { background: linear-gradient(135deg, #475569, #64748b); }
+
+  &.clickable {
+    cursor: pointer;
+    &:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+    &:not(.active) { opacity: 0.92; }
+    &.active { box-shadow: 0 0 0 3px rgba(255,255,255,0.55) inset; }
+  }
+}

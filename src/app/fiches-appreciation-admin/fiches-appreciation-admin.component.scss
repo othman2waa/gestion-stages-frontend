@@ -1,25 +1,7 @@
 .fiches-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
 
-.page-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-  h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 24px; color: #1e293b;
-    mat-icon { font-size: 28px; color: #7C3AED; } }
-  p { margin: 4px 0 0; color: #666; font-size: 13px; }
-}
-
 .kpi-row {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
-  .kpi-card { border-radius: 14px; padding: 16px 20px; display: flex; align-items: center;
-    gap: 14px; color: white;
-    mat-icon { font-size: 28px; opacity: 0.9; }
-    .kpi-val { display: block; font-size: 24px; font-weight: 800; }
-    .kpi-lbl { font-size: 12px; opacity: 0.85; }
-    &.purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
-    &.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
-    &.green { background: linear-gradient(135deg, #059669, #10b981); }
-    &.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
-  }
-}
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;}
 
 .tabs {
   display: flex; gap: 8px; margin-bottom: 16px;

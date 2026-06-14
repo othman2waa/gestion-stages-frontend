@@ -23,6 +23,8 @@ import { StagiaireFormComponent } from '../stagiaire-form/stagiaire-form.compone
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExportService } from '../../core/services/export.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { StatCardComponent } from '../../shared/stat-card/stat-card.component';
 
 @Component({
   selector: 'app-stagiaire-list',
@@ -32,7 +34,8 @@ import { AuthService } from '../../core/services/auth.service';
     MatButtonModule, MatIconModule, MatInputModule,
     MatFormFieldModule, MatCardModule, MatSnackBarModule,
     MatDialogModule, MatTooltipModule, MatProgressBarModule,
-    MatSelectModule, MatChipsModule, MatBadgeModule, MatPaginatorModule
+    MatSelectModule, MatChipsModule, MatBadgeModule, MatPaginatorModule,
+    PageHeaderComponent, StatCardComponent
   ],
   templateUrl: './stagiaire-list.component.html',
   styleUrls: ['./stagiaire-list.component.scss']

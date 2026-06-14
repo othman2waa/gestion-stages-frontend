@@ -1,11 +1,7 @@
 <div class="evaluations-container">
 
   <!-- Header -->
-  <div class="page-header">
-    <div>
-      <h2><mat-icon>star</mat-icon> {{ isEncadrant ? 'Mes Évaluations' : 'Gestion des Évaluations' }}</h2>
-      <p>{{ evaluations.length }} évaluation(s) au total</p>
-    </div>
+  <app-page-header icon="star" [titre]="(isEncadrant ? 'Mes Évaluations' : 'Gestion des Évaluations')" [sousTitre]="(evaluations.length) + ' évaluation(s) au total'">
     <div class="header-actions">
       <button mat-stroked-button (click)="exportExcel()">
         <mat-icon>table_view</mat-icon> Excel
@@ -17,30 +13,15 @@
         <mat-icon>add</mat-icon> Nouvelle évaluation
       </button>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- KPIs -->
   <div class="kpi-row">
-    <div class="kpi-card blue">
-      <mat-icon>star</mat-icon>
-      <div><span class="kpi-val">{{ evaluations.length }}</span><span class="kpi-lbl">Total</span></div>
-    </div>
-    <div class="kpi-card purple">
-      <mat-icon>grade</mat-icon>
-      <div><span class="kpi-val">{{ moyenneGenerale | number:'1.1-1' }}</span><span class="kpi-lbl">Moyenne /20</span></div>
-    </div>
-    <div class="kpi-card green">
-      <mat-icon>emoji_events</mat-icon>
-      <div><span class="kpi-val">{{ nombreExcellent }}</span><span class="kpi-lbl">Excellent (≥16)</span></div>
-    </div>
-    <div class="kpi-card orange">
-      <mat-icon>thumbs_up_down</mat-icon>
-      <div><span class="kpi-val">{{ nombreBien }}</span><span class="kpi-lbl">Bien (12-15)</span></div>
-    </div>
-    <div class="kpi-card red">
-      <mat-icon>warning</mat-icon>
-      <div><span class="kpi-val">{{ nombreInsuffisant }}</span><span class="kpi-lbl">Insuffisant (&lt;10)</span></div>
-    </div>
+    <app-stat-card color="blue" icon="star" [value]="evaluations.length" label="Total"></app-stat-card>
+    <app-stat-card color="purple" icon="grade" [value]="moyenneGenerale | number:'1.1-1'" label="Moyenne /20"></app-stat-card>
+    <app-stat-card color="green" icon="emoji_events" [value]="nombreExcellent" label="Excellent (≥16)"></app-stat-card>
+    <app-stat-card color="orange" icon="thumbs_up_down" [value]="nombreBien" label="Bien (12-15)"></app-stat-card>
+    <app-stat-card color="red" icon="warning" [value]="nombreInsuffisant" label="Insuffisant (&lt;10)"></app-stat-card>
   </div>
 
   <!-- Graphiques -->

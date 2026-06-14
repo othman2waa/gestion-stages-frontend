@@ -11,11 +11,13 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { HttpClient } from '@angular/common/http';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
 import { environment } from '../../environments/environment';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 @Component({
   selector: 'app-archives',
   standalone: true,
   imports: [
+    PageHeaderComponent,
     CommonModule, FormsModule, MatIconModule, MatButtonModule,
     MatProgressBarModule, MatTooltipModule, MatSnackBarModule, MatDialogModule, MatPaginatorModule
   ],

@@ -13,6 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { environment } from '../../environments/environment';
 import { ExportService } from '../core/services/export.service';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 interface LigneRemuneration {
   stagiaireNom: string;
@@ -52,6 +53,7 @@ interface ResultatRemuneration {
   selector: 'app-remuneration',
   standalone: true,
   imports: [
+    PageHeaderComponent,
     CommonModule, FormsModule,
     MatCardModule, MatIconModule, MatButtonModule, MatSelectModule,
     MatFormFieldModule, MatProgressBarModule, MatTooltipModule, MatChipsModule, MatSnackBarModule
