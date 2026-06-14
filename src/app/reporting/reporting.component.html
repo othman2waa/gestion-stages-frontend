@@ -103,6 +103,22 @@
       </div>
     </div>
 
+    <!-- STAGIAIRES PAR ÉCOLE -->
+    <div class="section-title"><mat-icon>school</mat-icon> Stagiaires par école / établissement
+      <span class="section-hint" *ngIf="nombreEcoles">({{ nombreEcoles }} établissement(s))</span>
+    </div>
+    <div class="charts-row one" *ngIf="nombreEcoles > 0; else noEcole">
+      <div class="chart-panel wide">
+        <div class="chart-title">Répartition des stagiaires par établissement d'origine</div>
+        <div class="chart-wrap bar-wrap tall">
+          <canvas baseChart [data]="ecoleChartData" [options]="deptChartOptions" type="bar"></canvas>
+        </div>
+      </div>
+    </div>
+    <ng-template #noEcole>
+      <div class="ecole-empty">Aucun établissement renseigné pour le moment.</div>
+    </ng-template>
+
     <!-- DEPT TABLE -->
     <div class="section-title" *ngIf="stats?.stagesParDepartement?.length > 0">
       <mat-icon>domain</mat-icon> Détail par département

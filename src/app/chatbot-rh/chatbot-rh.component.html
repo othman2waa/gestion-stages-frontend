@@ -2,22 +2,34 @@
 
   <div class="cbrh-header">
     <div class="cbrh-icon"><mat-icon>smart_toy</mat-icon></div>
-    <div>
+    <div class="cbrh-title">
       <h3>Assistant RH IA</h3>
       <p>Posez une question sur l'activité (candidatures, stages, conformité) ou demandez un résumé.</p>
     </div>
-  </div>
-
-  <div class="cbrh-input">
-    <input [(ngModel)]="question" type="text"
-      placeholder="Ex : combien de candidatures en attente ? Résume la situation."
-      (keydown.enter)="envoyer()">
-    <button mat-flat-button class="cbrh-send" [disabled]="loading || !question.trim()" (click)="envoyer()">
-      <mat-icon>send</mat-icon>
+    <button mat-stroked-button class="cbrh-new" *ngIf="messages.length" (click)="nouvelleConversation()"
+            matTooltip="Oublier l'historique et repartir avec des données fraîches">
+      <mat-icon>refresh</mat-icon> Nouvelle conversation
     </button>
   </div>
 
-  <div class="cbrh-examples" *ngIf="!reponse && !loading">
+  <!-- Indicateurs (dernier état connu) -->
+  <div class="cbrh-kpis" *ngIf="reponse?.stats">
+    <div class="kpi" *ngFor="let k of kpis">
+      <span class="kpi-val">{{ k.value }}</span>
+      <span class="kpi-lbl">{{ k.label }}</span>
+    </div>
+  </div>
+
+  <!-- Fil de discussion (l'assistant garde la mémoire de l'échange) -->
+  <div class="cbrh-thread" *ngIf="messages.length">
+    <div *ngFor="let m of messages" class="msg" [class.user]="m.role === 'user'" [class.bot]="m.role === 'bot'">
+      <mat-icon *ngIf="m.role === 'bot'">smart_toy</mat-icon>
+      <p>{{ m.text }}</p>
+    </div>
+  </div>
+
+  <!-- Suggestions (seulement au début) -->
+  <div class="cbrh-examples" *ngIf="!messages.length && !loading">
     <button class="ex-chip" *ngFor="let e of exemples" (click)="utiliser(e)">{{ e }}</button>
   </div>
 
@@ -28,17 +40,13 @@
 
   <div *ngIf="error" class="cbrh-error"><mat-icon>error_outline</mat-icon> {{ error }}</div>
 
-  <div *ngIf="reponse && !loading" class="cbrh-result">
-    <div class="cbrh-kpis">
-      <div class="kpi" *ngFor="let k of kpis">
-        <span class="kpi-val">{{ k.value }}</span>
-        <span class="kpi-lbl">{{ k.label }}</span>
-      </div>
-    </div>
-    <div class="cbrh-answer">
-      <mat-icon>smart_toy</mat-icon>
-      <p>{{ reponse.message }}</p>
-    </div>
+  <div class="cbrh-input">
+    <input [(ngModel)]="question" type="text"
+      placeholder="Ex : combien de candidatures en attente ? Résume la situation."
+      (keydown.enter)="envoyer()">
+    <button mat-flat-button class="cbrh-send" [disabled]="loading || !question.trim()" (click)="envoyer()">
+      <mat-icon>send</mat-icon>
+    </button>
   </div>
 
 </div>

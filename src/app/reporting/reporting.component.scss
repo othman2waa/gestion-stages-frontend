@@ -66,7 +66,11 @@
   display: grid; gap: 16px; margin-bottom: 8px;
   &.three { grid-template-columns: repeat(3, 1fr); }
   &.two { grid-template-columns: 1.5fr 1fr; }
+  &.one { grid-template-columns: 1fr; }
 }
+
+.section-hint { font-weight: 500; color: #94A3B8; font-size: 11px; margin-left: 4px; text-transform: none; }
+.ecole-empty { color: #94A3B8; font-size: 13px; padding: 14px 4px; }
 
 .chart-panel {
   background: white; border-radius: 14px; padding: 20px;
@@ -79,6 +83,7 @@
   &.doughnut-wrap { height: 260px; }
   &.polar-wrap { height: 260px; }
   &.bar-wrap { height: 280px; }
+  &.bar-wrap.tall { height: 360px; }
 }
 
 .chart-center-label {

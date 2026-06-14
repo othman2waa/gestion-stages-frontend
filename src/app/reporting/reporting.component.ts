@@ -127,6 +127,20 @@ export class ReportingComponent implements OnInit {
     plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 11 } } } }
   };
 
+  // Bar horizontal : stagiaires par école / établissement
+  get ecoleChartData(): ChartData<'bar'> {
+    if (!this.stats?.stagiairesParEcole) return { labels: [], datasets: [] };
+    return {
+      labels: this.stats.stagiairesParEcole.map((d: any) => d[0] ?? 'N/A'),
+      datasets: [{
+        label: 'Stagiaires', data: this.stats.stagiairesParEcole.map((d: any) => d[1] ?? 0),
+        backgroundColor: '#7C3AED', borderRadius: 6, barThickness: 24
+      }]
+    };
+  }
+
+  get nombreEcoles(): number { return this.stats?.stagiairesParEcole?.length ?? 0; }
+
   // Bar: types de stages
   get typesChartData(): ChartData<'bar'> {
     if (!this.stats?.stagesParType) return { labels: [], datasets: [] };
