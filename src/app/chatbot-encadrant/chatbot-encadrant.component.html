@@ -31,6 +31,11 @@
   <div *ngIf="reponse && !loading" class="cb-result">
     <div class="cb-bot-msg"><mat-icon>smart_toy</mat-icon><span>{{ reponse.message }}</span></div>
 
+    <div class="cb-meta" *ngIf="reponse.vivierAnalyse">
+      <mat-icon>insights</mat-icon>
+      <span><strong>{{ reponse.vivierAnalyse }}</strong> profil(s) comparé(s) sémantiquement · {{ reponse.methode }}</span>
+    </div>
+
     <div class="cb-cards">
       <div class="cb-card" *ngFor="let c of reponse.candidats; let i = index">
         <div class="cb-rank">{{ i + 1 }}</div>
@@ -41,6 +46,14 @@
           <h4>{{ c.prenom }} {{ c.nom }}</h4>
           <span class="cb-sub">{{ c.filiere }} — {{ c.niveau }}</span>
           <p class="cb-just">{{ c.justification }}</p>
+          <div class="cb-breakdown" *ngIf="c.scoreLLM != null || c.scoreSemantique != null">
+            <span class="bd" title="Jugement du modèle de langage (rerank précis)">
+              <mat-icon>psychology</mat-icon>LLM <strong>{{ c.scoreLLM }}</strong>
+            </span>
+            <span class="bd" title="Similarité d'embeddings (recherche sémantique sur tout le vivier)">
+              <mat-icon>hub</mat-icon>Sémantique <strong>{{ c.scoreSemantique }}</strong>
+            </span>
+          </div>
         </div>
         <div class="cb-score-wrap">
           <div class="cb-score" [style.background]="scoreColor(c.score) + '18'" [style.color]="scoreColor(c.score)">

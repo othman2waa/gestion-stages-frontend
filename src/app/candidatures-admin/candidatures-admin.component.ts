@@ -61,6 +61,7 @@ export class CandidaturesAdminComponent implements OnInit {
   iaResult: any = null;
   isVerifyingIa = false;
   isProcessing = false;
+  reindexing = false;
 
   // Pagination
   pageSize = 12;
@@ -162,6 +163,21 @@ get departementsDisponibles(): string[] {
     this.http.get<any[]>(`${environment.apiUrl}/candidatures/rh`).subscribe({
   next: (data) => { this.candidatures = data; this.isLoading = false; },
       error: () => this.isLoading = false
+    });
+  }
+
+  /** Lance la réindexation IA (texte + embedding) des CV non encore traités, en tâche de fond. */
+  reindexerCv(): void {
+    this.reindexing = true;
+    this.http.post<any>(`${environment.apiUrl}/candidatures/reindex-cv`, {}).subscribe({
+      next: (r) => {
+        this.snackBar.open(r?.message ?? 'Réindexation lancée.', 'OK', { duration: 5000 });
+        this.reindexing = false;
+      },
+      error: () => {
+        this.snackBar.open('Erreur lors du lancement de la réindexation.', 'Fermer', { duration: 4000 });
+        this.reindexing = false;
+      }
     });
   }
 

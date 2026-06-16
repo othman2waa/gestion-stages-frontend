@@ -1,12 +1,23 @@
-<div class="login-container">
+<div class="login-page">
+
+  <!-- Panneau visuel (image de fond OCP) -->
+  <div class="login-visual">
+    <div class="visual-overlay"></div>
+    <div class="visual-content">
+      <h1>Gestion des Stages</h1>
+      <p>Le Groupe OCP, leader mondial du phosphate, digitalise le parcours de ses stagiaires :
+         une plateforme unique pour candidater, conventionner, suivre et évaluer les stages.</p>
+    </div>
+  </div>
+
+  <!-- Panneau formulaire -->
+  <div class="login-form-pane">
   <mat-card class="login-card">
 
     <!-- Logo & Titre -->
     <mat-card-header>
       <div class="login-header">
-        <div class="logo">
-          <span class="logo-text">OCP</span>
-        </div>
+        <img src="/ocp-logo.png" alt="OCP" class="login-logo-img">
         <h1>Gestion des Stages</h1>
         <p>Connectez-vous à votre espace</p>
       </div>
@@ -62,21 +73,8 @@
         </button>
 
       </form>
-
-      <!-- Demo Accounts -->
-      <div class="demo-hint">
-        <div class="demo-title">
-          <mat-icon>science</mat-icon>
-          <span>Comptes de démonstration</span>
-        </div>
-        <div class="demo-accounts">
-          <button *ngFor="let acc of demoAccounts" class="demo-chip" (click)="fillDemo(acc)">
-            <mat-icon>{{ acc.icon }}</mat-icon>
-            <span>{{ acc.label }}</span>
-          </button>
-        </div>
-      </div>
     </mat-card-content>
 
   </mat-card>
+  </div>
 </div>

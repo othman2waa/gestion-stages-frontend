@@ -5,6 +5,11 @@
       [sousTitre]="candidatures.length + ' candidature(s) au total'">
     <button mat-stroked-button (click)="exportExcel()"><mat-icon>table_chart</mat-icon> Excel</button>
     <button mat-stroked-button (click)="exportPdf()"><mat-icon>picture_as_pdf</mat-icon> PDF</button>
+    <button mat-stroked-button (click)="reindexerCv()" [disabled]="reindexing"
+            matTooltip="Pré-calculer texte + embedding des CV (recherche sémantique de l'encadrant plus rapide)">
+      <mat-icon>{{ reindexing ? 'hourglass_top' : 'auto_awesome' }}</mat-icon>
+      {{ reindexing ? 'Réindexation…' : 'Réindexer CV (IA)' }}
+    </button>
   </app-page-header>
 
   <!-- KPIs -->
